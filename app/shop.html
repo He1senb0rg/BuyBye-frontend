@@ -12,11 +12,11 @@
       :root {
         --bs-primary: #ff5733; /* Replace with your desired color */
       }
-      .avatar {
+      .icon-color {
         transition: 0.3s;
       }
 
-      .avatar:hover {
+      .icon-color:hover {
         color: #00adef;
       }
     </style>
@@ -32,26 +32,38 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="shop.html">Home</a>
+                <a class="nav-link" aria-current="page" href="#">Produtos</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">Produtos</a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Produtos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Produtos</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Sobre Nós</a>
+              </li>
             </ul>
-            <form class="d-flex" role="search">
+            <form class="d-flex pe-4" role="search">
               <label class="visually-hidden" for="autoSizingInputGroup">Pesquisa</label>
               <div class="input-group">
                 <div class="input-group-text"><i class="bi bi-search"></i></div>
                 <input type="search" class="form-control" aria-label="Search" placeholder="Pesquisar...">
               </div>
             </form>
+            <div class="pe-3">
+              <a class="nav-link" href="#"><i class="bi bi-cart2 icon-color fs-2"></i></a>
+            </div>
             <div class="dropdown">
               <a href="#" class="d-flex align-items-center text-white text-decoration-none" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-person-circle fs-2 avatar"></i>
+                <i class="bi bi-person-circle fs-2 icon-color"></i>
               </a>
               
-              <ul class="dropdown-menu dropdown-menu-end pt-0" aria-labelledby="dropdownMenuButton">
-                <li><h6 class="dropdown-header bg-primary">Junta-te à BuyBye!</h6></li>
+              <ul class="dropdown-menu dropdown-menu-end pt-0 " aria-labelledby="dropdownMenuButton">
+                <li><h6 class="dropdown-header bg-primary text-light fw-bold py-2 rounded-top">Junta-te à BuyBye!</h6></li>
                 <li><a class="dropdown-item" href="#">Registar Conta</a></li>
                 <li><a class="dropdown-item" href="#">Iniciar Sessão</a></li>
               </ul>
@@ -61,15 +73,52 @@
       </nav>
     </header>
     <main>
-		  <section>
-			  <div class="container">
-				  <div class="row">
-					  <div class="col">
-						  <h1>BuyBye</h1>
-					  </div>
-				  </div>
-			  </div>
-		  </section>
+		  <section class="py-5 text-center container">
+        <div class="row py-lg-5">
+          <div class="col-lg-6 col-md-8 mx-auto">
+            <h1 class="fw-light">Os Melhores Produtos!</h1>
+            <p class="lead text-body-secondary">Era só o que me faltava, agora até o Lorem Ipsum fala à tuga! Não sou nada, nunca serei nada… a não ser que haja uma bela francesinha à minha espera! Ó chefe, saia mais um cafezinho e uma nata! Ó menino, não faças fita!</p>
+            <p>
+              <a href="#" class="btn btn-primary my-2">Começar a Comprar!</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="bg-body-tertiary py-5">
+        <div class="container">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+            <div class="col">
+              <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div><div class="col">
+              <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                  <h5 class="card-title">Card title</h5>
+                  <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                  <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
     <script src="assets/js/bootstrap.bundle.min.js"></script>
   </body>
