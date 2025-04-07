@@ -1,60 +1,50 @@
-body {
-    font-family: 'Segoe UI';
-    font-style: normal;
-    background-color: #001242;
-    color: white;
-    margin: 0;
-}
-    
-nav {
-    background-color: #0094C6;
-    display: flex;
-    gap: 30px;
-    padding: 20px 20px 20px 20px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap');
+
+body{
+    font-family: 'Poppins', sans-serif;
+    background: #ececec;
 }
 
-.nav-item {
-    text-decoration: none;
-    color:white;
-    background-color: #005E7C;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    padding-right: 10px;
+/*------------ Login container ------------*/
+
+.box-area{
+    width: 930px;
 }
 
-main {
-    margin: 10px 10px 10px 10px
+/*------------ Right box ------------*/
+
+.right-box{
+    padding: 40px 30px 40px 40px;
 }
 
-.logo {
-    border-radius: 6px;
+/*------------ Custom Placeholder ------------*/
+
+::placeholder{
+    font-size: 16px;
 }
 
-.linkedin {
-    color: white;
-    background-color: #0a66c2;
-    padding: 10px 8px 10px 8px;
-    text-decoration: none;
-    border-radius: 6px;
+.rounded-4{
+    border-radius: 20px;
+}
+.rounded-5{
+    border-radius: 30px;
 }
 
-h1 {
-    color: pink
-}
 
-h2 {
-    color: purple
-}
+/*------------ For small screens------------*/
 
-p {
-    margin: 0 50px 0 50px;
-    line-height: 20px;
-}
+@media only screen and (max-width: 768px){
 
-ul {
-    list-style-type: armenian;
+     .box-area{
+        margin: 0 10px;
+
+     }
+     .left-box{
+        height: 100px;
+        overflow: hidden;
+     }
+     .right-box{
+        padding: 20px;
+     }
+
 }
