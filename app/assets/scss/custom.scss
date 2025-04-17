@@ -1,13 +1,15 @@
-// Required
-@import "../../../node_modules/bootstrap/scss/functions";
+// 1. Configurações iniciais
+@use 'bootstrap/scss/bootstrap';
 
-// Default variable overrides
+// 2. Suas customizações
 $primary: #00adef;
 $secondary: #2596be;
 
-// Required
-@import "../../../node_modules/bootstrap/scss/variables";
-@import "../../../node_modules/bootstrap/scss/variables-dark";
-@import "../../../node_modules/bootstrap/scss/maps";
-@import "../../../node_modules/bootstrap/scss/mixins";
-@import "../../../node_modules/bootstrap/scss/root";
+// 3. Importe apenas o necessário
+// @use "bootstrap/scss/root";
+// @use "bootstrap/scss/reboot";
+// @use "bootstrap/scss/type";
+// @use "bootstrap/scss/containers";
+// @use "bootstrap/scss/grid";
+// @use "bootstrap/scss/utilities";
+// @use "bootstrap/scss/utilities/api";
