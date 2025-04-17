@@ -1,60 +1,65 @@
-body {
-    font-family: 'Segoe UI';
-    font-style: normal;
-    background-color: #001242;
-    color: white;
+.icon-color {
+    transition: 0.3s;
+}
+
+.icon-color:hover {
+    color: #00adef;
+}
+
+.product-image {
+    height: 290px;
+    max-height: 290px;
+}
+
+.product-image {
+    height: 300px;
+    overflow: hidden;
+
+}
+
+.product-image img {
+    transition: 0.3s;
+}
+
+.product-image:hover img {
+    transform: scale(1.05) rotate(2deg);
+}
+
+.card-title:hover {
+    color: #00adef;
+}
+
+.payment-icon {
+    width: 50px;
+    height: auto;
+    margin: 0 10px;
+}
+
+.swiper-thumbs {
+    height: 20%;
+    box-sizing: border-box;
+    padding: 10px 0;
+}
+
+.swiper-thumbs .swiper-slide {
+    width: 25%;
+    height: 80%;
+    opacity: 0.4;
+}
+
+.swiper-thumbs .swiper-slide-thumb-active {
+    opacity: 1;
+}
+
+.swiper-slide img {
+    display: block;
+    width: 80%;
+    height: 100%;
+    object-fit: cover;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
     margin: 0;
-}
-    
-nav {
-    background-color: #0094C6;
-    display: flex;
-    gap: 30px;
-    padding: 20px 20px 20px 20px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
-}
-
-.nav-item {
-    text-decoration: none;
-    color:white;
-    background-color: #005E7C;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-main {
-    margin: 10px 10px 10px 10px
-}
-
-.logo {
-    border-radius: 6px;
-}
-
-.linkedin {
-    color: white;
-    background-color: #0a66c2;
-    padding: 10px 8px 10px 8px;
-    text-decoration: none;
-    border-radius: 6px;
-}
-
-h1 {
-    color: pink
-}
-
-h2 {
-    color: purple
-}
-
-p {
-    margin: 0 50px 0 50px;
-    line-height: 20px;
-}
-
-ul {
-    list-style-type: armenian;
 }
