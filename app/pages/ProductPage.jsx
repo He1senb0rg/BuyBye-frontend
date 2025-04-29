@@ -29,15 +29,19 @@ const ProductPage = () => {
                 </div>
                 <div className="row">
                     <div className="col-12 col-md-6">
-                        <Swiper modules={[Navigation, Pagination, Thumbs]} navigation pagination={{ clickable: true }} loop={true} thumbs={{ swiper: thumbsSwiper }} className="mySwiper2">
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                        <Swiper modules={[Navigation, Pagination, Thumbs]} spaceBetween={10} navigation pagination={{ clickable: true }} loop={true} thumbs={{ swiper: thumbsSwiper }} className="mySwiper2 pb-2">
+                            <SwiperSlide><img src="/assets/images/fogao1.webp" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao2.webp" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao3.webp" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao4.webp" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao5.webp" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
                         </Swiper>
                         <Swiper onSwiper={setThumbsSwiper} spaceBetween={10} slidesPerView={3} watchSlidesProgress={true} className="mySwiper">
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
-                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao1.webp" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao2.webp" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao3.webp" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao4.webp" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/fogao5.webp" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
                         </Swiper>
                     </div>
                     <div className="col-12 col-md-6">
