@@ -1,58 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Thumbs } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/thumbs';
 
 const ProductPage = () => {
-    useEffect(() => {
-        const swiper_thumbs = new Swiper('.swiper-thumbs', {
-            spaceBetween: 10,
-            slidesPerView: 4,
-            freeMode: true,
-            watchSlidesProgress: true,
-        });
-
-        const swiper = new Swiper('.swiper-product', {
-            loop: true,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            thumbs: {
-                swiper: swiper_thumbs,
-            },
-        });
-
-        const decreaseButton = document.getElementById('decreaseQuantity');
-        const increaseButton = document.getElementById('increaseQuantity');
-        const quantityInput = document.getElementById('quantityInput');
-
-        decreaseButton.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-
-        increaseButton.addEventListener('click', () => {
-            let currentValue = parseInt(quantityInput.value);
-            quantityInput.value = currentValue + 1;
-        });
-
-        // Cleanup the event listeners when the component unmounts
-        return () => {
-            decreaseButton.removeEventListener('click', () => { });
-            increaseButton.removeEventListener('click', () => { });
-        };
-    }, []);
+    const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     return (
         <main>
             <section className="container pb-3 pt-4">
                 <div className="row">
                     <div className="col">
-                        <nav style={{ '--bs-breadcrumb-divider': '>' }} aria-label="breadcrumb">
+                        <nav aria-label="breadcrumb">
                             <ol className="breadcrumb">
                                 <li className="breadcrumb-item">
                                     <a href="shop.html">Home</a>
@@ -66,40 +29,16 @@ const ProductPage = () => {
                 </div>
                 <div className="row">
                     <div className="col-12 col-md-6">
-                        {/* Slider main container */}
-                        <div className="swiper swiper-product">
-                            {/* Additional required wrapper */}
-                            <div className="swiper-wrapper">
-                                {/* Slides */}
-                                <div className="swiper-slide d-flex justify-content-center align-items-center">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image" />
-                                </div>
-                                <div className="swiper-slide d-flex justify-content-center align-items-center">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image" />
-                                </div>
-                                <div className="swiper-slide d-flex justify-content-center align-items-center">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image" />
-                                </div>
-                            </div>
-
-                            <div className="swiper-pagination"></div>
-
-                            <div className="swiper-button-prev"></div>
-                            <div className="swiper-button-next"></div>
-                        </div>
-                        <div className="swiper swiper-thumbs">
-                            <div className="swiper-wrapper">
-                                <div className="swiper-slide">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image Thumbnail" />
-                                </div>
-                                <div className="swiper-slide">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image Thumbnail" />
-                                </div>
-                                <div className="swiper-slide">
-                                    <img src="/assets/images/cao.gif" className="img-fluid rounded" alt="Product Image Thumbnail" />
-                                </div>
-                            </div>
-                        </div>
+                        <Swiper modules={[Navigation, Pagination, Thumbs]} navigation pagination={{ clickable: true }} loop={true} thumbs={{ swiper: thumbsSwiper }} className="mySwiper2">
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image" /></SwiperSlide>
+                        </Swiper>
+                        <Swiper onSwiper={setThumbsSwiper} spaceBetween={10} slidesPerView={3} watchSlidesProgress={true} className="mySwiper">
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                            <SwiperSlide><img src="/assets/images/cao.gif" class="img-fluid rounded" alt="Product Image Thumbnail" /></SwiperSlide>
+                        </Swiper>
                     </div>
                     <div className="col-12 col-md-6">
                         <div className="d-flex flex-column justify-content-between h-100">

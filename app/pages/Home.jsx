@@ -76,7 +76,7 @@ const Home = () => {
                 discount="50"
                 image="/assets/images/cao.gif"
                 rating={4.5}
-                link="product.html"
+                link="product"
               />
             </div>
             <div className="col">

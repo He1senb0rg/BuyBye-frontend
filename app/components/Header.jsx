@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
 const Header = () => (
   <header>
@@ -16,36 +17,28 @@ const Header = () => (
         >
           <span className="navbar-toggler-icon" />
         </button>
-        <a className="navbar-brand" href="/">
+        <NavLink className="navbar-brand" to="/">
           <img
             className="w-auto mb-2"
             height={30}
             alt="BuyByeLogo"
             src="/assets/images/BuyByeLogo.png"
           />
-        </a>
+        </NavLink>
       </div>
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
         <ul className="navbar-nav me-auto mb-2 mb-lg-0">
           <li className="nav-item">
-            <a className="nav-link" href="#">
-              Produtos
-            </a>
+            <NavLink className="nav-link" to="/">Produtos</NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">
-              Em Promoção
-            </a>
+            <NavLink className="nav-link" to="/">Promoções</NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">
-              Novidades
-            </a>
+            <NavLink className="nav-link" to="/">Novidades</NavLink>
           </li>
           <li className="nav-item">
-            <a className="nav-link" href="#">
-              Sobre Nós
-            </a>
+            <NavLink className="nav-link" to="/">Sobre Nós</NavLink>
           </li>
         </ul>
         <form className="d-flex pe-4" role="search">
