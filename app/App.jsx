@@ -23,11 +23,10 @@ function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/product" element={<ProductPage />} />
+          <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
           <Route path="/account/billing" element={<AccountDetailsBilling />} />
           <Route path="/account/security" element={<AccountDetailsSecurity />} />
-          
         </Routes>
       <Footer />
     </Router>

@@ -10,7 +10,7 @@ const Footer = () => (
             style={{ maxWidth: "100%", height: "auto" }}
             height={60}
             alt="BuyByeLogo"
-            src="assets/images/BuyByeLogo.png"
+            src="/assets/images/BuyByeLogo.png"
           />
           <p className="text-body-secondary text-center text-md-start">
             A BuyBye é uma loja online dedicada a produtos de qualidade e com
