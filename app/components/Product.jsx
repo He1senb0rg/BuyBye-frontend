@@ -1,76 +1,95 @@
-import React from 'react';
+import React from "react";
+import StarRating from "./StarRating";
 
-const Product = ({ name, description, price, discountPrice, discount, image, rating, link }) => {
-	const renderStars = (rating) => {
-		const fullStars = Math.floor(rating);
-		const halfStar = rating % 1 >= 0.5;
-		const stars = [];
+const Product = ({
+  name,
+  description,
+  price,
+  discount,
+  images,
+  rating,
+  link,
+}) => {
+  const hasActiveDiscount = (discount) => {
+    if (!discount) return false;
 
-		for (let i = 0; i < fullStars; i++) {
-			stars.push(<i key={`full-${i}`} className="bi bi-star-fill text-warning" />);
-		}
+    if (!discount.start_date || !discount.end_date) return true;
+  
+    const now = new Date();
+    const start = new Date(discount.start_date);
+    const end = new Date(discount.end_date);
+  
+    return now >= start && now <= end;
+  };
 
-		if (halfStar) {
-			stars.push(<i key="half" className="bi bi-star-half text-warning" />);
-		}
+  const calculateFinalPrice = () => {
+    if (hasActiveDiscount(discount)) {
+      const { type, value } = discount;
+  
+      if (type === 'percentage') {
+        return (price * (1 - value)).toFixed(2);
+      } else if (type === 'fixed') {
+        return price - value;
+      }
+    }
+  
+    return price;
+  };
 
-		while (stars.length < 5) {
-			stars.push(<i key={`empty-${stars.length}`} className="bi bi-star text-warning" />);
-		}
-
-		return stars;
-	};
-
-	return (
-		<div className="card">
-			<a
-				href={link}
-				className="text-decoration-none product-image rounded mx-3 mt-3"
-			>
-				<img
-					src={image}
-					className="card-img-top rounded"
-					alt={name}
-				/>
-			</a>
-			<div className="card-body">
-				<div className="d-flex justify-content-between">
-					<a
-						href={link}
-						className="text-decoration-none text-light"
-					>
-						<h5 className="card-title text-wrap" style={{ transition: "0.3s" }}>
-							{name}
-						</h5>
-					</a>
-					{discount ? (
-						<div className="card-img-overlay" style={{ "pointer-events": "none" }}>
-							<span className="badge bg-primary p-2 mt-1 ms-1 fs-5">-{discount}%</span>
-						</div>
-					) : null
-					}
-					<i className="bi bi-heart-fill text-danger" />
-				</div>
-				<p className="card-text">{description}</p>
-				<div className="d-flex justify-content-between">
-					{discountPrice ? (
-						<>
-							<div className="d-flex">
-								<p className="h4 me-2">{discountPrice}€</p>
-								<p className="text-decoration-line-through text-muted ">{price}€</p>
-							</div>
-						</>
-					) : (
-						<p className="h4">{price}€</p>
-					)}
-					<div>
-						{renderStars(rating)}
-						<small className="text-muted">({rating})</small>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+  return (
+    <div className="col">
+      <div className="card">
+        <a
+          href={link}
+          className="text-decoration-none product-image rounded mx-3 mt-3"
+        >
+          <img src={images?.[0] || '/assets/images/cao.gif'} className="card-img-top rounded" alt={name} />
+        </a>
+        <div className="card-body">
+          <div className="d-flex justify-content-between">
+            <a href={link} className="text-decoration-none text-light">
+              <h5
+                className="card-title text-wrap"
+                style={{ transition: "0.3s" }}
+              >
+                {name}
+              </h5>
+            </a>
+            {discount ? (
+              <div
+                className="card-img-overlay"
+                style={{ "pointer-events": "none" }}
+              >
+                <span className="badge bg-primary p-2 mt-1 ms-1 fs-5">
+                  {discount.type === "percentage" ? `-${discount.value * 100}%` : `-${discount.value}€`}
+                </span>
+              </div>
+            ) : null}
+            <i className="bi bi-heart-fill text-danger" />
+          </div>
+          <p className="card-text">{description}</p>
+          <div className="d-flex justify-content-between">
+            {discount ? (
+              <>
+                <div className="d-flex">
+                  <p className="h4 me-2">{calculateFinalPrice()}€</p>
+                  <p className="text-decoration-line-through text-muted ">
+                    {price}€
+                  </p>
+                </div>
+              </>
+            ) : (
+              <p className="h4">{price}€</p>
+            )}
+            <div>
+              <StarRating rating={rating} />
+              <small className="text-muted">({rating})</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Product;
