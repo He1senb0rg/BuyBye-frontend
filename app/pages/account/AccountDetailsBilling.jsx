@@ -6,7 +6,7 @@ const BillingPage = () => {
     <main>
       <div className="container-xl px-4 mt-4">
         <AccountNavigation activePage="billing" />
-        <hr className="mt-0 mb-4" />
+        <hr className="mt-0 mb-3" />
         <div className="card mb-4">
           <div className="card-header">Histórico de Encomendas</div>
           <div className="card-body">
