@@ -7,7 +7,6 @@ import ProductPage from './pages/ProductPage.jsx';
 import AccountDetailsProfile from './pages/account/AccountDetailsProfile.jsx';
 import AccountDetailsBilling from './pages/account/AccountDetailsBilling.jsx';
 import AccountDetailsSecurity from './pages/account/AccountDetailsSecurity.jsx';
-import AccountDetailsNotifications from './pages/account/AccountDetailsNotifications.jsx';
 
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -28,7 +27,6 @@ function App() {
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
           <Route path="/account/billing" element={<AccountDetailsBilling />} />
           <Route path="/account/security" element={<AccountDetailsSecurity />} />
-          <Route path="/account/notifications" element={<AccountDetailsNotifications />} />
           
         </Routes>
       <Footer />

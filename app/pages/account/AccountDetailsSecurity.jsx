@@ -1,7 +1,6 @@
 import React from 'react';
 import AccountNavigation from '../../components/accountDetailsComponents/AccountNavigation';
 import ChangePasswordCard from '../../components/accountDetailsComponents/ChangePasswordCard';
-import TwoFactorAuthCard from '../../components/accountDetailsComponents/TwoFactorAuthCard';
 import DeleteAccountCard from '../../components/accountDetailsComponents/DeleteAccountCard';
 
 const SecurityPage = () => {
@@ -15,7 +14,6 @@ const SecurityPage = () => {
             <ChangePasswordCard />
           </div>
           <div className="col-md-4">
-            <TwoFactorAuthCard />
             <DeleteAccountCard />
           </div>
         </div>

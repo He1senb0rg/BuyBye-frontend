@@ -12,9 +12,6 @@ export default function AccountNavigation() {
       <NavLink to="/account/security" className="nav-link" activeClassName="active">
         Segurança
       </NavLink>
-      <NavLink to="/account/notifications" className="nav-link" activeClassName="active">
-        Notificações
-      </NavLink>
     </nav>
   );
 }
