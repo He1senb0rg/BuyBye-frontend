@@ -36,6 +36,7 @@ const Home = () => {
 
         // Atualiza o token
         setToken(data.token);
+        localStorage.setItem('token', data.token);
       } catch (error) {
         console.error("Erro ao fazer login:", error);
       }

@@ -1,13 +1,7 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Thumbs } from "swiper/modules";
 import { getProductById, getProductReviewsStats } from "../services/api";
-
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import "swiper/css/thumbs";
+import ProductImagesSwiper from "../components/ProductImagesSwiper";
 import Review from "../components/Review";
 import StarRating from "../components/StarRating";
 import StarBar from "../components/StarBar";
@@ -23,7 +17,6 @@ const ProductPage = () => {
   const [loadingProductStats, setLoadingProductStats] = useState(true);
   const [errorProductStats, setErrorProductStats] = useState(null);
 
-  const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
   const decreaseQuantity = () => {
@@ -122,42 +115,7 @@ const ProductPage = () => {
             </div>
             <div className="row">
               <div className="col-12 col-md-6">
-                <Swiper
-                  modules={[Navigation, Pagination, Thumbs]}
-                  spaceBetween={10}
-                  navigation
-                  pagination={{ clickable: true }}
-                  loop={true}
-                  thumbs={{ swiper: thumbsSwiper }}
-                  className="mySwiper2 pb-2"
-                >
-                  {product.images.map((image, index) => (
-                    <SwiperSlide key={index}>
-                      <img
-                        src={image}
-                        className="img-fluid rounded"
-                        alt={`Product Image ${index + 1}`}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
-                <Swiper
-                  onSwiper={setThumbsSwiper}
-                  spaceBetween={10}
-                  slidesPerView={3}
-                  watchSlidesProgress={true}
-                  className="mySwiper"
-                >
-                  {product.images.map((image, index) => (
-                    <SwiperSlide key={index}>
-                      <img
-                        src={image}
-                        className="img-fluid rounded"
-                        alt={`Product Image Thumbnail ${index + 1}`}
-                      />
-                    </SwiperSlide>
-                  ))}
-                </Swiper>
+                <ProductImagesSwiper imageFiles={product.images} />
               </div>
               <div className="col-12 col-md-6">
                 <div className="d-flex flex-column justify-content-between h-100">
@@ -200,24 +158,16 @@ const ProductPage = () => {
                         {product.description}
                       </p>
                     </div>
-                    {product.colors &&
-                      product.colors.length > 0 && (
-                        <div className="pb-3">
-                          <ProductOptions
-                            options={product.colors}
-                            type="color"
-                          />
-                        </div>
-                      )}
-                    {product.sizes &&
-                      product.sizes.length > 0 && (
-                        <div className="pb-3">
-                          <ProductOptions
-                            options={product.sizes}
-                            type="size"
-                          />
-                        </div>
-                      )}
+                    {product.colors && product.colors.length > 0 && (
+                      <div className="pb-3">
+                        <ProductOptions options={product.colors} type="color" />
+                      </div>
+                    )}
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="pb-3">
+                        <ProductOptions options={product.sizes} type="size" />
+                      </div>
+                    )}
                     <div className="row mt-5">
                       <div className="col-6 col-lg-6 col-xl-3 pe-0 mb-3">
                         <div className="input-group">
