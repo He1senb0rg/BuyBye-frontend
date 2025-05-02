@@ -64,3 +64,13 @@ export const deleteProduct = async (id) => {
   });
   return response.json();
 };
+
+export const getCategories = async () => {
+  const response = await fetch(`${BASE_URL}/categories`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+}

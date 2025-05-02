@@ -1,6 +1,6 @@
 import React from "react";
-import { useState } from "react";
-import { createProduct } from "../services/api";
+import { useState, useEffect } from "react";
+import { createProduct, getCategories } from "../services/api";
 import FloatingInput from "../components/FloatingInput";
 import FloatingSelect from "../components/FloatingSelect";
 import Checkbox from "../components/Checkbox";
@@ -9,12 +9,38 @@ import ProductImagesSwiper from "../components/ProductImagesSwiper";
 const CreateProduct = () => {
   const [step, setStep] = useState(1);
 
-  const nextStep = () => setStep((prev) => prev + 1);
+  const nextStep = (e) => {if (e) e.preventDefault(); setStep( (prev) => prev + 1);};
   const prevStep = () => setStep((prev) => prev - 1);
 
   const [useDiscount, setUseDiscount] = useState(false);
   const [discountType, setDiscountType] = useState("percentage");
   const [discountValue, setDiscountValue] = useState("");
+
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        const formatted = response.map((cat) => ({
+          value: cat._id,
+          label: cat.name,
+        }));
+
+        setCategories(formatted);
+        console.log(formatted);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        setError("Failed to fetch categories");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const [imageFiles, setImageFiles] = useState([]);
 
@@ -155,12 +181,7 @@ const CreateProduct = () => {
                   id="category"
                   label="Categoria"
                   name="category"
-                  options={[
-                    { value: "eletronicos", label: "Eletrónicos" },
-                    { value: "moda", label: "Moda" },
-                    { value: "casa", label: "Casa" },
-                    { value: "brinquedos", label: "Brinquedos" },
-                  ]}
+                  options={categories}
                   placeholder="Categoria"
                   onChange={handleChange}
                   required={true}
