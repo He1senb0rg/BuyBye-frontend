@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createProduct, getCategories } from "../services/api";
 import FloatingInput from "../components/FloatingInput";
 import FloatingSelect from "../components/FloatingSelect";
@@ -7,9 +7,18 @@ import Checkbox from "../components/Checkbox";
 import ProductImagesSwiper from "../components/ProductImagesSwiper";
 
 const CreateProduct = () => {
+  const formRef = useRef();
   const [step, setStep] = useState(1);
 
-  const nextStep = (e) => {if (e) e.preventDefault(); setStep( (prev) => prev + 1);};
+  const nextStep = (e) => {
+    if (e) e.preventDefault();
+  
+    if (formRef.current.checkValidity()) {
+      setStep((prev) => prev + 1);
+    } else {
+      formRef.current.reportValidity();
+    }
+  };
   const prevStep = () => setStep((prev) => prev - 1);
 
   const [useDiscount, setUseDiscount] = useState(false);
@@ -30,7 +39,6 @@ const CreateProduct = () => {
         }));
 
         setCategories(formatted);
-        console.log(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
         setError("Failed to fetch categories");
@@ -85,8 +93,6 @@ const CreateProduct = () => {
     try {
       console.log("Dados do produto:", finalProductData);
       const response = await createProduct(finalProductData);
-
-      if (!response.ok) throw new Error("Erro ao criar o produto");
 
       const data = await response.json();
       console.log("Produto criado:", data);
@@ -159,6 +165,7 @@ const CreateProduct = () => {
                   id="euros"
                   placeholder="Euros"
                   label="Euros"
+                  value={productData.euros}
                   maxLength={6}
                   required={true}
                   onChange={handleChange}
@@ -169,6 +176,7 @@ const CreateProduct = () => {
                   type="text"
                   name="centimos"
                   id="centimos"
+                  value={productData.centimos}
                   placeholder="Centimos"
                   label="Centimos"
                   maxLength={2}
@@ -181,6 +189,7 @@ const CreateProduct = () => {
                   id="category"
                   label="Categoria"
                   name="category"
+                  value={productData.category}
                   options={categories}
                   placeholder="Categoria"
                   onChange={handleChange}
@@ -205,12 +214,13 @@ const CreateProduct = () => {
                     { value: "percentage", label: "Percentagem" },
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
-                  value={discountType}
+                  value={productData.discount_type}
                   onChange={(e) => {
                     setDiscountType(e.target.value);
                     handleChange;
                   }}
                   disabled={!useDiscount}
+                  required={useDiscount}
                   placeholder="Tipo de Desconto"
                 />
               </div>
@@ -222,7 +232,8 @@ const CreateProduct = () => {
                   placeholder="Valor do Desconto"
                   label="Valor do Desconto"
                   disabled={!useDiscount}
-                  value={discountValue}
+                  required={useDiscount}
+                  value={productData.discount_value}
                   maxLength={6}
                   onChange={(e) => {
                     setDiscountValue(e.target.value);
@@ -272,7 +283,7 @@ const CreateProduct = () => {
                 </h5>
               </div>
               <div className="card-body">
-                <form onSubmit={handleSubmit}>
+                <form ref={formRef} onSubmit={handleSubmit}>
                   {renderStep()}
                   <div className="d-flex justify-content-between mt-0">
                     {step > 1 && (
