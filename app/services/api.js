@@ -28,4 +28,49 @@ export const getProductReviewsStats = async (id) => {
     },
   });
   return response.json();
+};
+
+export const createProduct = async (product) => {
+  const response = await fetch(`${BASE_URL}/products`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(product),
+  });
+  return response.json();
+};
+
+export const updateProduct = async (id, product) => {
+  const response = await fetch(`${BASE_URL}/products/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(product),
+  });
+  return response.json();
+};
+
+export const deleteProduct = async (id) => {
+  const response = await fetch(`${BASE_URL}/products/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+  });
+  return response.json();
+};
+
+export const getCategories = async () => {
+  const response = await fetch(`${BASE_URL}/categories`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
 }

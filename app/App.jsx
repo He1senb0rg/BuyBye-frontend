@@ -7,6 +7,7 @@ import ProductPage from './pages/ProductPage.jsx';
 import AccountDetailsProfile from './pages/account/AccountDetailsProfile.jsx';
 import AccountDetailsBilling from './pages/account/AccountDetailsBilling.jsx';
 import AccountDetailsSecurity from './pages/account/AccountDetailsSecurity.jsx';
+import CreateProduct from './pages/CreateProduct.jsx';
 
 import Header from './components/Header.jsx';
 import Footer from './components/Footer.jsx';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/product/:id" element={<ProductPage />} />
+          <Route path="/product/create" element={<CreateProduct />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
           <Route path="/account/billing" element={<AccountDetailsBilling />} />
           <Route path="/account/security" element={<AccountDetailsSecurity />} />
