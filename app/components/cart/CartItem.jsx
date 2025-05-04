@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 
-const CartItem = ({ item }) => {
+const CartItem = ({ item, onRemove }) => {
   const [quantity, setQuantity] = useState(item.quantity || 1);
   const [wishlisted, setWishlisted] = useState(false);
 
-  const toggleWishlist = () => {
-    setWishlisted(!wishlisted);
-    // Optionally call some handler here to update backend/local storage
-  };
-
+  const toggleWishlist = () => setWishlisted(!wishlisted);
   const increaseQty = () => setQuantity((prev) => prev + 1);
   const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
@@ -16,7 +12,7 @@ const CartItem = ({ item }) => {
     <div className="card mb-3">
       <div className="row g-0 align-items-center">
         <div className="col-md-4">
-          <img src={item.image} className="img-fluid rounded-start" alt={item.name} />
+          <img src={item.image} className="img-fluid rounded-start mx-3" alt={item.name} />
         </div>
         <div className="col-md-8">
           <div className="card-body">
@@ -37,7 +33,16 @@ const CartItem = ({ item }) => {
               <span>{quantity}</span>
               <button className="btn btn-outline-secondary btn-sm ms-2" onClick={increaseQty}>+</button>
             </div>
-            <p className="card-text fw-bold">€{(item.price * quantity).toFixed(2)}</p>
+            <p className="card-text fw-bold">
+              €{(item.price * quantity).toFixed(2)} <br />
+              <span className="text-muted">€{item.price.toFixed(2)} cada</span>
+            </p>
+            <button
+              className="btn btn-sm btn-outline-danger mt-2"
+              onClick={() => onRemove(item.id)}
+            >
+              Remover do Carrinho
+            </button>
           </div>
         </div>
       </div>

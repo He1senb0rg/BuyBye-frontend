@@ -27,7 +27,7 @@ const CartSummary = () => {
         <div className="mt-3">
         <button className="btn btn-primary w-100 mb-3">Finalizar Compra</button>
         <Link to="/shop" className="btn btn-outline-secondary w-100">
-          Continue Shopping
+          Continue as suas compras
         </Link>
         </div>
       </div>
