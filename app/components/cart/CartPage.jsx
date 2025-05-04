@@ -2,7 +2,7 @@ import React from 'react';
 
 const CartPage = ({ children }) => {
   return (
-    <main className="container-fluid">
+    <main className="container-fluid align-content-lg-stretch">
       <div className="row">
         {/* Make left column take more space on large screens */}
         <div className="col-12 col-lg-9 mb-4">

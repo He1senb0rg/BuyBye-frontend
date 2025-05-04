@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const CartSummary = () => {
   return (
@@ -11,6 +12,11 @@ const CartSummary = () => {
           <hr />
           <h6>Total: €105.00</h6>
           <button className="btn btn-primary w-100 mt-3">Finalizar Compra</button>
+          <div className="mt-3">
+          <Link to="/shop" className="btn btn-outline-secondary w-100">
+          Continue as suas compras
+          </Link>
+      </div>
         </div>
       </div>
     </div>
