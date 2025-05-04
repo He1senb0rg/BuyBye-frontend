@@ -5,7 +5,7 @@ const CartPage = ({ children }) => {
     <main className="container-fluid">
       <div className="row">
         {/* Make left column take more space on large screens */}
-        <div className="col-md-8 offset-md-1">
+        <div className="col-md-10 offset-md-1">
           {children[0] /* CartHeader */}
           {children[1] /* CartItemsList */}
         </div>

@@ -10,21 +10,8 @@ const CartItem = ({ item, onRemove }) => {
 
   return (
     <div className="card mb-3 w-100">
-      <div className="row g-0">
-        <div className="col-md-3 d-flex align-items-center">
-          <img src={item.image} className="img-fluid rounded-start p-2" alt={item.name} />
-        </div>
-
-        <div className="col-md-9">
-          <div className="card-body">
-            <div className="d-flex justify-content-between align-items-start">
-              {/* Name column */}
-              <div className="col">
-                <h5 className="card-title">{item.name}</h5>
-              </div>
-
-              {/* Wishlist + Remove buttons */}
-              <div className="d-flex gap-2">
+      {/* Wishlist + Remove buttons */}
+      <div className="d-inline-flex gap-2 position-absolute top-0 end-0 mx-2 my-2">
                 <button
                   type="button"
                   className="btn btn-link p-0"
@@ -41,7 +28,20 @@ const CartItem = ({ item, onRemove }) => {
                 >
                   <i className="bi bi-x"></i>
                 </button>
+              </div>  
+      <div className="row g-0">
+        <div className="col-md-3 d-flex align-items-center">
+          <img src={item.image} className="img-fluid rounded-start p-2" alt={item.name} />
+        </div>
+
+        <div className="col-md-9">
+          <div className="card-body">
+            <div className="d-flex justify-content-between align-items-start">
+              {/* Name column */}
+              <div className="col">
+                <h5 className="card-title">{item.name}</h5>
               </div>
+
             </div>
 
             {/* Quantity & Price Row */}
