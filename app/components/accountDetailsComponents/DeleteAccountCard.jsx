@@ -17,15 +17,15 @@ const DeleteAccountCard = () => {
           <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
             <div className="modal-dialog modal-dialog-centered" role="document">
               <div className="modal-content">
-                <div className="modal-header">
+              <div className="modal-header">
                   <h5 className="modal-title">Tem a certeza?</h5>
                   <button
                     type="button"
-                    className="close"
-                    data-dismiss="modal"
+                    className="btn btn-md ms-auto"
                     onClick={() => setShowModal(false)}
+                    aria-label="Fechar"
                   >
-                    <span aria-hidden="true">&times;</span>
+                    <i className="bi bi-x"></i>
                   </button>
                 </div>
                 <div className="modal-body">

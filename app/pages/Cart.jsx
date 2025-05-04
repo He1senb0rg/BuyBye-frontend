@@ -6,18 +6,18 @@ import CartSummary from '../components/cart/CartSummary';
 
 const Cart = () => {
   return (
-    <main className="container mt-4">
-      <CartPage>
+    <main className="container-fluid py-4">
+    <CartPage>
         <CartHeader />
         <div className="row">
-          <div className="col-md-8">
+        <div className="col-lg-8">
             <CartItemsList />
-          </div>
-          <div className="col-md-4">
-            <CartSummary />
-          </div>
         </div>
-      </CartPage>
+        <div className="col-lg-4">
+            <CartSummary />
+        </div>
+        </div>
+    </CartPage>
     </main>
   );
 };
