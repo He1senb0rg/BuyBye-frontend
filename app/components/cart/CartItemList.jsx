@@ -12,7 +12,7 @@ const CartItemsList = () => {
   };
 
   return (
-    <div>
+    <div className="w-100">
       {items.length > 0 ? (
         items.map(item => (
           <CartItem key={item.id} item={item} onRemove={handleRemove} />

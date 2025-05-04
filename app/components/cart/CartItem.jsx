@@ -9,45 +9,59 @@ const CartItem = ({ item, onRemove }) => {
   const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div className="card mb-3 position-relative">
-      <div className="row g-0 align-items-center">
-        <div className="col-md-4">
-          <img src={item.image} className="img-fluid rounded-start p-3" alt={item.name} />
+    <div className="card mb-3 w-100">
+      <div className="row g-0">
+        <div className="col-md-3 d-flex align-items-center">
+          <img src={item.image} className="img-fluid rounded-start p-2" alt={item.name} />
         </div>
-        <div className="col-md-8">
+
+        <div className="col-md-9">
           <div className="card-body">
-            {/* Top-right buttons container */}
-            <div className="position-absolute top-0 end-0 m-2 d-flex gap-2">
-              <button
-                type="button"
-                className="btn btn-link p-0"
-                onClick={toggleWishlist}
-                aria-label="Toggle Wishlist"
-              >
-                <i className={`bi ${wishlisted ? 'bi-heart-fill text-danger' : 'bi-heart'}`} />
-              </button>
-              <button
-                type="button"
-                className="btn btn-outline-danger btn-sm"
-                onClick={() => onRemove(item.id)}
-                aria-label="Remover do Carrinho"
-              >
-                <i className="bi bi-x"></i>
-              </button>
+            <div className="d-flex justify-content-between align-items-start">
+              {/* Name column */}
+              <div className="col">
+                <h5 className="card-title">{item.name}</h5>
+              </div>
+
+              {/* Wishlist + Remove buttons */}
+              <div className="d-flex gap-2">
+                <button
+                  type="button"
+                  className="btn btn-link p-0"
+                  onClick={toggleWishlist}
+                  aria-label="Toggle Wishlist"
+                >
+                  <i className={`bi ${wishlisted ? 'bi-heart-fill text-danger' : 'bi-heart'}`} />
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-outline-danger btn-sm"
+                  onClick={() => onRemove(item.id)}
+                  aria-label="Remover do Carrinho"
+                >
+                  <i className="bi bi-x"></i>
+                </button>
+              </div>
             </div>
 
-            <h5 className="card-title mb-1">{item.name}</h5>
+            {/* Quantity & Price Row */}
+            <div className="row align-items-center py-5 px-2">
+              {/* Quantity controls */}
+              <div className="col-md-12 d-flex">
+                <button className="btn btn-outline-secondary btn-sm me-2" onClick={decreaseQty}>-</button>
+                <span>{quantity}</span>
+                <button className="btn btn-outline-secondary btn-sm ms-2" onClick={increaseQty}>+</button>
+              </div>
 
-            <div className="d-flex align-items-center mb-2">
-              <button className="btn btn-outline-secondary btn-sm me-2" onClick={decreaseQty}>-</button>
-              <span>{quantity}</span>
-              <button className="btn btn-outline-secondary btn-sm ms-2" onClick={increaseQty}>+</button>
+              {/* Price */}
+              <div className="text fw-bold text-end">
+                €{(item.price * quantity).toFixed(2)}
+                <div className="text-muted text-end">
+                €{item.price.toFixed(2)} cada
+              </div>
+              </div>
             </div>
 
-            <p className="card-text fw-bold">
-              €{(item.price * quantity).toFixed(2)} <br />
-              <span className="text-muted">€{item.price.toFixed(2)} cada</span>
-            </p>
           </div>
         </div>
       </div>
