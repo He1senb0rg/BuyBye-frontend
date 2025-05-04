@@ -59,15 +59,15 @@ const Header = () => (
         </form>
       </div>
       <div className="d-flex align-items-center">
-        <div className="pe-3">
-          <a className="nav-link" href="#">
+      <div className="pe-3">
+          <NavLink to="/wishlist" className="nav-link">
             <i className="bi bi-heart icon-color fs-2" />
-          </a>
+          </NavLink>
         </div>
         <div className="pe-3">
-          <a className="nav-link" href="#">
+          <NavLink to="/cart" className="nav-link">
             <i className="bi bi-cart icon-color fs-2" />
-          </a>
+          </NavLink>
         </div>
         <div className="dropdown">
           <a

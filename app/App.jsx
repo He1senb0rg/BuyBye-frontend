@@ -3,6 +3,7 @@ import Home from './pages/Home.jsx';
 import Perfil from './pages/Perfil.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import Cart from './pages/Cart.jsx';
 import ProductPage from './pages/ProductPage.jsx';
 import AccountDetailsProfile from './pages/account/AccountDetailsProfile.jsx';
 import AccountDetailsBilling from './pages/account/AccountDetailsBilling.jsx';
@@ -24,6 +25,7 @@ function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/cart" element={<Cart />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/product/create" element={<CreateProduct />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
