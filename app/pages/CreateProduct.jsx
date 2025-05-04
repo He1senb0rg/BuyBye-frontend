@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import { createProduct, getCategories } from "../services/api";
 import FloatingInput from "../components/FloatingInput";
@@ -91,13 +93,13 @@ const CreateProduct = () => {
     };
 
     try {
-      console.log("Dados do produto:", finalProductData);
       const response = await createProduct(finalProductData);
 
-      const data = await response.json();
-      console.log("Produto criado:", data);
+      toast.success("Produto criado com sucesso!");
+      setTimeout(() => navigate("/"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
+      toast.error("Erro ao criar o produto.");
     }
   };
 

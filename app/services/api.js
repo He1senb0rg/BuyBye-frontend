@@ -65,8 +65,8 @@ export const deleteProduct = async (id) => {
   return response.json();
 };
 
-export const getCategories = async () => {
-  const response = await fetch(`${BASE_URL}/categories`, {
+export const getCategories = async (page, limit, sort) => {
+  const response = await fetch(`${BASE_URL}/categories?page=${page}&limit=${limit}&sort=${sort}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -74,3 +74,48 @@ export const getCategories = async () => {
   });
   return response.json();
 }
+
+export const getCategoryById = async (id) => {
+  const response = await fetch(`${BASE_URL}/categories/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
+export const createCategory = async (category) => {
+  const response = await fetch(`${BASE_URL}/categories`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(category),
+  });
+  return response.json();
+};
+
+export const updateCategory = async (id, category) => {
+  const response = await fetch(`${BASE_URL}/categories/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(category),
+  });
+  return response.json();
+};
+
+export const deleteCategory = async (id) => {
+  const response = await fetch(`${BASE_URL}/categories/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+  });
+  return response.json();
+};
