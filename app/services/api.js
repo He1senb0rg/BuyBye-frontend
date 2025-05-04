@@ -65,8 +65,8 @@ export const deleteProduct = async (id) => {
   return response.json();
 };
 
-export const getCategories = async (page, limit, sort) => {
-  const response = await fetch(`${BASE_URL}/categories?page=${page}&limit=${limit}&sort=${sort}`, {
+export const getCategories = async (page, limit, sort, search) => {
+  const response = await fetch(`${BASE_URL}/categories?page=${page}&limit=${limit}&sort=${sort}&search=${search}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

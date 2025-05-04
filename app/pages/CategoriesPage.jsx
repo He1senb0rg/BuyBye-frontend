@@ -1,8 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import FloatingInput from "../components/FloatingInput";
-import FloatingSelect from "../components/FloatingSelect";
-import { getCategories } from "../services/api";
+import { getCategories, deleteCategory } from "../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
@@ -12,20 +10,45 @@ const CategoriesPage = () => {
 
   const [categories, setCategories] = useState([]);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
-  const page = parseInt(searchParams.get("page")) || 1;
-  const limit = parseInt(searchParams.get("limit")) || 10;
+
+  const page = searchParams.get("page") || 1;
+  const limit = searchParams.get("limit") || 10;
   const sort = searchParams.get("sort") || "mais_recente";
+  const search = searchParams.get("search") || "";
+  
+  const [searchValue, setSearchValue] = useState(search);
+
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      setSearchParams({
+        page: "1",
+        limit,
+        sort,
+        search: searchValue,
+      });
+    }, 300);
+  
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchValue]);
 
   const handleSortChange = (e) => {
-    searchParams.set("sort", e.target.value);
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
+    setSearchParams({
+      page: "1",
+      limit,
+      sort: e.target.value,
+    });
   };
 
   const handleLimitChange = (e) => {
-    searchParams.set("limit", e.target.value);
-    searchParams.set("page", 1);
-    setSearchParams(searchParams);
+    setSearchParams({
+      page: "1",
+      limit: e.target.value,
+      sort,
+    });
   };
 
   const handlePageChange = (page) => {
@@ -36,20 +59,33 @@ const CategoriesPage = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const page2 = searchParams.get("page") || 1;
-        const limit2 = searchParams.get("limit") || 10;
-        const sort2 = searchParams.get("sort") || "mais_recente";
-        const response = await getCategories({ page2, limit2, sort2 });
+        const response = await getCategories(page, limit, sort, searchValue);
         setCategories(response);
       } catch (error) {
         console.error("Erro:", error.message);
         toast.error("Erro ao buscar as categorias.");
       }
     };
-    console.log(limit, page, sort);
 
     fetchCategories();
   }, [searchParams]);
+
+  const handleDeleteCategory = async () => {
+    try {
+      await deleteCategory(categoryToDelete._id);
+      setCategories((prevCategories) =>
+        prevCategories.filter((category) => category._id !== categoryToDelete._id)
+      );
+      
+      toast.success("Categoria apagada com sucesso.");
+    } catch (error) {
+      console.error("Erro:", error.message);
+      toast.error("Erro ao apagar a categoria.");
+    } finally {
+      setCategoryToDelete(null);
+    }
+  }
+
   return (
     <main>
       <section className="container py-4">
@@ -65,7 +101,7 @@ const CategoriesPage = () => {
           <div className="col">
             <div className="card bg-body-tertiary">
               <div className="card-header">
-                <form className="d-flex justify-content-between align-items-center">
+                <div className="d-flex justify-content-between align-items-center">
                   <div>
                     <label
                       className="visually-hidden"
@@ -79,6 +115,8 @@ const CategoriesPage = () => {
                       </div>
                       <input
                         type="search"
+                        onChange={handleSearchChange}
+                        value={searchValue}
                         className="form-control me-3"
                         aria-label="Search"
                         placeholder="Pesquisar..."
@@ -119,10 +157,10 @@ const CategoriesPage = () => {
                       <label htmlFor="floatingSelect">Ordenar por</label>
                     </div>
                   </div>
-                </form>
+                </div>
               </div>
               <div className="card-body">
-                <table className="table table-striped">
+                <table className="table table-striped border">
                   <thead>
                     <tr>
                       <th scope="col">Nome</th>
@@ -194,7 +232,7 @@ const CategoriesPage = () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Confirmar Apagar</h5>
+              <h5 className="modal-title">Apagar {categoryToDelete?.name}</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -203,7 +241,7 @@ const CategoriesPage = () => {
               ></button>
             </div>
             <div className="modal-body">
-              Tens a certeza que queres apagar esta categoria?
+              Tens a certeza que queres apagar a categoria {categoryToDelete?.name}? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
               <button
@@ -213,7 +251,7 @@ const CategoriesPage = () => {
               >
                 Cancelar
               </button>
-              <button type="button" className="btn btn-danger">
+              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteCategory}>
                 Apagar
               </button>
             </div>
