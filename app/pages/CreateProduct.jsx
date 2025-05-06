@@ -1,4 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
 import { createProduct, getCategories } from "../services/api";
 import FloatingInput from "../components/FloatingInput";
@@ -7,6 +9,7 @@ import Checkbox from "../components/Checkbox";
 import ProductImagesSwiper from "../components/ProductImagesSwiper";
 
 const CreateProduct = () => {
+  const navigate = useNavigate();
   const formRef = useRef();
   const [step, setStep] = useState(1);
 
@@ -37,7 +40,7 @@ const CreateProduct = () => {
           value: cat._id,
           label: cat.name,
         }));
-
+        console.log("Categories:", formatted);
         setCategories(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
@@ -91,13 +94,13 @@ const CreateProduct = () => {
     };
 
     try {
-      console.log("Dados do produto:", finalProductData);
       const response = await createProduct(finalProductData);
 
-      const data = await response.json();
-      console.log("Produto criado:", data);
+      toast.success("Produto criado com sucesso!");
+      setTimeout(() => navigate("/"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
+      toast.error("Erro ao criar o produto.");
     }
   };
 

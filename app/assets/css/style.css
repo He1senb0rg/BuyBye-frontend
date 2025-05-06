@@ -22,7 +22,7 @@
   transform: scale(1.05) rotate(2deg);
 }
 
-.card-title:hover {
+.product-title:hover {
   color: #00adef;
 }
 

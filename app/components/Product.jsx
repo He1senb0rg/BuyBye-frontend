@@ -49,7 +49,7 @@ const Product = ({
           <div className="d-flex justify-content-between">
             <a href={link} className="text-decoration-none text-light">
               <h5
-                className="card-title text-wrap"
+                className="card-title product-title text-wrap"
                 style={{ transition: "0.3s" }}
               >
                 {name}
