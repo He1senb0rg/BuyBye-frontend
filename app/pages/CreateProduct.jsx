@@ -9,6 +9,7 @@ import Checkbox from "../components/Checkbox";
 import ProductImagesSwiper from "../components/ProductImagesSwiper";
 
 const CreateProduct = () => {
+  const navigate = useNavigate();
   const formRef = useRef();
   const [step, setStep] = useState(1);
 
@@ -39,7 +40,7 @@ const CreateProduct = () => {
           value: cat._id,
           label: cat.name,
         }));
-
+        console.log("Categories:", formatted);
         setCategories(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);

@@ -9,12 +9,15 @@ const CategoriesPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [categories, setCategories] = useState([]);
+  const [totalCategories, setTotalCategories] = useState(0);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
 
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 10;
   const sort = searchParams.get("sort") || "mais_recente";
   const search = searchParams.get("search") || "";
+
+  const totalPages = Math.ceil(totalCategories / limit);
   
   const [searchValue, setSearchValue] = useState(search);
 
@@ -60,7 +63,8 @@ const CategoriesPage = () => {
     const fetchCategories = async () => {
       try {
         const response = await getCategories(page, limit, sort, searchValue);
-        setCategories(response);
+        setCategories(response.categories);
+        setTotalCategories(response.totalCategories);
       } catch (error) {
         console.error("Erro:", error.message);
         toast.error("Erro ao buscar as categorias.");
@@ -201,25 +205,28 @@ const CategoriesPage = () => {
                 </table>
                 <nav>
                   <ul className="pagination justify-content-center">
-                    <li className="page-item disabled">
-                      <a className="page-link" href="#" tabIndex="-1">
+                    <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
+                      <button className="page-link" tabIndex="-1" onClick={() => handlePageChange(Number(page) - 1)}>
                         Anterior
-                      </a>
+                      </button>
                     </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
-                        1
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
-                        2
-                      </a>
-                    </li>
-                    <li className="page-item">
-                      <a className="page-link" href="#">
+                    {Array.from({ length: totalPages }, (_, index) => (
+                      <li
+                        key={index}
+                        className={`page-item ${Number(page) === index + 1 ? "active" : ""}`}
+                      >
+                        <button
+                          className="page-link"
+                          onClick={() => handlePageChange(index + 1)}
+                        >
+                          {index + 1}
+                        </button>
+                      </li>
+                    ))}
+                    <li className={`page-item ${Number(page) >= totalPages ? "disabled" : ""}`}>
+                      <button className="page-link" onClick={() => handlePageChange(Number(page) + 1)}>
                         Próximo
-                      </a>
+                      </button>
                     </li>
                   </ul>
                 </nav>
