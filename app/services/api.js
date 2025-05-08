@@ -1,5 +1,27 @@
 const BASE_URL = "http://localhost:3000/api";
 
+export const login = async (credentials) => {
+    const response = await fetch(`${BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(credentials),
+    });
+    return response.json();
+}
+
+export const register = async(user) => {
+  const response = await fetch(`${BASE_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(user),
+  });
+  return response.json();
+}
+
 export const getProducts = async () => {
   const response = await fetch(`${BASE_URL}/products`, {
     method: "GET",

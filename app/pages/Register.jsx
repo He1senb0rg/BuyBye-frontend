@@ -1,6 +1,42 @@
 import React from 'react';
+import { useState } from 'react';
+import toast from 'react-hot-toast';
+import { register } from '../services/api';
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+	const navigate = useNavigate();
+	const [user,setUser]=useState({
+		firstName: "",
+		lastName: "",
+		email:"",
+		password:"",
+		passwordConf:""
+
+	})
+
+	const handleChange = (e) => {
+		setUser({ ...user, [e.target.name]: e.target.value });
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+		if(user.password !== user.passwordConf){
+			toast.error("As palavras passe não coincidem")
+		}
+		
+		try {
+			const response = await register(user);
+			
+		
+			toast.success("Conta criada com sucesso!");
+			setTimeout(() => navigate("/login"), 100);
+		} catch (error) {
+			console.error("Erro ao criar conta:", error);
+			toast.error("Erro ao criar conta.");
+		}
+		
+	}
 	return (
 		<main>
 			<section className="container py-5">
@@ -9,7 +45,7 @@ const Register = () => {
 						<div className="card bg-body-tertiary">
 							<div className="card-body p-4">
 								<p className="h2">Criar Conta</p>
-								<form>
+								<form  onSubmit={handleSubmit}>
 									<div className="row">
 										<div className="col">
 											<div className="form-floating mb-3">
@@ -18,6 +54,10 @@ const Register = () => {
 													className="form-control"
 													placeholder=""
 													id="inputFirstName"
+													name ="firstName"
+													onChange={handleChange}
+													required
+
 												/>
 												<label htmlFor="inputFirstName">Nome Proprio</label>
 											</div>
@@ -29,6 +69,10 @@ const Register = () => {
 													className="form-control"
 													placeholder=""
 													id="inputLastName"
+													name ="lastName"
+													onChange={handleChange}
+													required
+
 												/>
 												<label htmlFor="inputLastName">Apelido</label>
 											</div>
@@ -42,6 +86,10 @@ const Register = () => {
 													className="form-control"
 													placeholder=""
 													id="inputEmail"
+													name="email"
+													onChange={handleChange}
+													required
+
 												/>
 												<label htmlFor="inputEmail">Email</label>
 											</div>
@@ -55,6 +103,10 @@ const Register = () => {
 													className="form-control"
 													placeholder=""
 													id="inputPassword"
+													name="password"
+													onChange={handleChange}
+													required
+
 												/>
 												<label htmlFor="inputPassword">Password</label>
 											</div>
@@ -66,6 +118,10 @@ const Register = () => {
 													className="form-control"
 													placeholder=""
 													id="inputPasswordConf"
+													name="passwordConf"
+													onChange={handleChange}
+													required
+
 												/>
 												<label htmlFor="inputPasswordConf">
 													Confirmar Password
@@ -92,7 +148,7 @@ const Register = () => {
 											</a>
 										</label>
 									</div>
-									<button className="btn btn-primary" type="button">
+									<button className="btn btn-primary" type="submit">
 										Criar Conta
 									</button>
 								</form>

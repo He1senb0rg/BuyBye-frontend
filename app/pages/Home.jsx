@@ -6,50 +6,6 @@ import ShopBanner from "../components/ShopBanner";
 import toast from "react-hot-toast";
 
 const Home = () => {
-  const [userData, setUserData] = useState({
-    name: "",
-    email: "",
-    tipo: "",
-  });
-  const [token, setToken] = useState("");
-
-  useEffect(() => {
-    const login = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/api/auth/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: "teste@email.com",
-            password: "senhaSegura123",
-          }),
-        });
-
-        const data = await response.json();
-        console.log("Login response:", data);
-
-        // Atualiza os dados do usuário
-        setUserData({
-          name: data.user.name,
-          email: data.user.email,
-          tipo: data.user.role,
-        });
-
-        // Atualiza o token
-        setToken(data.token);
-        localStorage.setItem("token", data.token);
-        toast.success("Login realizado com sucesso!");
-      } catch (error) {
-        console.error("Erro ao fazer login:", error);
-        toast.error("Erro ao fazer login.");
-      }
-    };
-
-    login();
-  }, []);
-
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
