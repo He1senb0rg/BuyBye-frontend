@@ -1,6 +1,37 @@
 import React from 'react';
+import { useState } from 'react';
+import { login } from "../services/api";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
+	const navigate = useNavigate();
+	const [credentials, setCredentials] = useState({
+		email: "",
+		password: ""
+	})
+
+	const handleChange = (e) => {
+		setCredentials({ ...credentials, [e.target.name]: e.target.value });
+	};
+
+	const handleSubmit = async (e) => {
+		e.preventDefault();
+
+		try {
+			const response = await login(credentials);
+			
+			// Atualiza o token
+			localStorage.setItem("token", response.token);
+
+			toast.success("Login realizado com sucesso!");
+			setTimeout(() => navigate("/"), 100);
+		} catch (error) {
+			console.error("Erro ao fazer login:", error);
+			toast.error("Erro ao fazer login.");
+		}
+	};
+
 	return (
 		<main>
 			<section className="container py-5">
@@ -9,7 +40,7 @@ const Login = () => {
 						<div className="card bg-body-tertiary h-100">
 							<div className="card-body p-4">
 								<p className="h2">Iniciar Sessão</p>
-								<form>
+								<form onSubmit={handleSubmit}>
 									<div className="row">
 										<div className="col">
 											<div className="form-floating mb-3">
@@ -18,6 +49,9 @@ const Login = () => {
 													className="form-control"
 													placeholder=""
 													id="inputEmail"
+													name="email"
+													onChange={handleChange}
+													required
 												/>
 												<label htmlFor="inputEmail">Email</label>
 											</div>
@@ -31,12 +65,15 @@ const Login = () => {
 													className="form-control"
 													placeholder=""
 													id="inputPassword"
+													name="password"
+													onChange={handleChange}
+													required
 												/>
 												<label htmlFor="inputPassword">Password</label>
 											</div>
 										</div>
 									</div>
-									<button className="btn btn-primary" type="button">
+									<button className="btn btn-primary" type="submit">
 										Iniciar Sessão
 									</button>
 								</form>
