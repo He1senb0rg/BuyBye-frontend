@@ -14,6 +14,7 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import Checkout from './pages/Checkout';
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -35,6 +36,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/product/create" element={<CreateProduct />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />

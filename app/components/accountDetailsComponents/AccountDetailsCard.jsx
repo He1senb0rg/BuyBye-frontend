@@ -1,14 +1,16 @@
 import React from 'react';
+import { useAuth } from "../../contexts/AuthContext"
 
 const AccountDetailsCard = () => {
+    const { user } = useAuth();
   return (
     <div className="card mb-3">
       <div className="card-header">Detalhes de Conta</div>
       <div className="card-body">
         <form>
           <div className="form-floating mb-3">
-            <input type="text" className="form-control" id="inputUser" placeholder="Insira o seu utilizador" />
-            <label htmlFor="inputUser">Utilizador</label>
+            <input type="email" className="form-control" id="inputEmailAddress" placeholder="Insira o seu e-mail" />
+            <label htmlFor="inputEmailAddress">Enderenço E-mail</label>
           </div>
           <div className="row mb-3">
             <div className="col">
@@ -24,21 +26,11 @@ const AccountDetailsCard = () => {
               </div>
             </div>
           </div>
-          <div className="form-floating mb-3">
-            <input type="email" className="form-control" id="inputEmailAddress" placeholder="Insira o seu e-mail" />
-            <label htmlFor="inputEmailAddress">Enderenço E-mail</label>
-          </div>
           <div className="row mb-3">
             <div className="col">
               <div className="form-floating">
                 <input type="tel" className="form-control" id="inputPhone" placeholder="Insira o seu número de telefone" />
                 <label htmlFor="inputPhone">Número de Telefone</label>
-              </div>
-            </div>
-            <div className="col">
-              <div className="form-floating">
-                <input type="date" className="form-control" id="inputBirthday" placeholder="Insira o seu aniversário" />
-                <label htmlFor="inputBirthday">Aniversário</label>
               </div>
             </div>
           </div>
