@@ -25,8 +25,7 @@ const Checkout = () => {
           {renderStep()}
           <div className="d-flex justify-content-between mt-4">
             {step > 0 && <button className="btn btn-outline-secondary" onClick={handleBack}>Back</button>}
-            {step < 2 && <button className="btn btn-primary ms-auto" onClick={handleNext}>Next</button>}
-            {step === 2 && <button className="btn btn-success ms-auto">Place Order</button>}
+            {step < 1 && <button className="btn btn-primary ms-auto" onClick={handleNext}>Next</button>}
           </div>
         </div>
         <div className="col-md-5">
