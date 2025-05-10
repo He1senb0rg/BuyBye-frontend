@@ -1,8 +1,14 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext.jsx";
 
 const Header = () => {
-  const isLoggedIn = !!localStorage.getItem("token");
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout(); 
+    window.location.reload();
+  };
 
   return (
     <header>
@@ -32,16 +38,24 @@ const Header = () => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">Produtos</NavLink>
+                <NavLink className="nav-link" to="/">
+                  Produtos
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">Promoções</NavLink>
+                <NavLink className="nav-link" to="/">
+                  Promoções
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">Novidades</NavLink>
+                <NavLink className="nav-link" to="/">
+                  Novidades
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">Sobre Nós</NavLink>
+                <NavLink className="nav-link" to="/">
+                  Sobre Nós
+                </NavLink>
               </li>
             </ul>
             <form className="d-flex pe-4" role="search">
@@ -87,40 +101,45 @@ const Header = () => {
               >
                 <li>
                   <h6 className="dropdown-header bg-primary text-light fw-bold py-2 rounded-top">
-                    {isLoggedIn ? ('Bem-vindo de volta!') : ('Junta-te à BuyBye!')}
-
+                    {user
+                      ? `Olá, ${user.name}!`
+                      : "Junta-te à BuyBye!"}
                   </h6>
                 </li>
-                {isLoggedIn ? (
-                  <><li>
-                    <a className='dropdown-item' href='/account/profile'>
-                      Perfil do Utilizador
-                    </a>
-                  </li><li>
-                      <a className='dropdown-item' href='/account/profile'>
-                        Definições
+                {user ? (
+                  <>
+                    <li>
+                      <a className="dropdown-item" href="/account/profile">
+                        Perfil do Utilizador
                       </a>
-                    </li></>
-                )
-                  : (<><li>
-                    <a className="dropdown-item" href="/register">
-                      Registar Conta
-                    </a>
-                  </li><li>
+                    </li>
+                    <li>
+                      <button className="dropdown-item" onClick={handleLogout}>
+                        Terminar Sessão
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li>
+                      <a className="dropdown-item" href="/register">
+                        Registar Conta
+                      </a>
+                    </li>
+                    <li>
                       <a className="dropdown-item" href="/login">
                         Iniciar Sessão
                       </a>
                     </li>
-                  </>)}
-
+                  </>
+                )}
               </ul>
             </div>
           </div>
         </div>
       </nav>
     </header>
-
-  )
+  );
 };
 
 export default Header;

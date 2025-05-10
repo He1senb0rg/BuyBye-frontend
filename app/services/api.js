@@ -1,8 +1,6 @@
 const BASE_URL = "http://localhost:3000/api";
 
-//Login and Register
-
-export const login = async (credentials) => {
+export const userLogin = async (credentials) => {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
@@ -11,9 +9,10 @@ export const login = async (credentials) => {
       body: JSON.stringify(credentials),
     });
     return response.json();
+
 }
 
-export const register = async(user) => {
+export const userRegister = async(user) => {
   const response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers: {
@@ -147,7 +146,30 @@ export const deleteCategory = async (id) => {
   return response.json();
 };
 
-//Cart
+export const createReview = async (review) => {
+  const response = await fetch(`${BASE_URL}/reviews`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify(review),
+  });
+  return response.json();
+}
+
+export const deleteReview = async (id) => {
+  const response = await fetch(`${BASE_URL}/reviews/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+  });
+  return response.json();
+}
+
+
 export const getCart = async () => {
   const response = await fetch(`${BASE_URL}/cart`, {
     method: "GET",

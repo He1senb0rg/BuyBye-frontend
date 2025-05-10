@@ -85,3 +85,12 @@ input::-webkit-inner-spin-button {
 .breadcrumb-item + .breadcrumb-item::before {
   content: var(--bs-breadcrumb-divider, ">") !important;
 }
+
+.btn-hover-red i {
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.btn-hover-red:hover i {
+  color: rgb(220, 53, 69);
+}
