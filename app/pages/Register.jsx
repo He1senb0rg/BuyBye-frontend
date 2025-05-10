@@ -1,18 +1,18 @@
 import React from 'react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
-import { register } from '../services/api';
+import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
 	const navigate = useNavigate();
-	const [user,setUser]=useState({
+	const { register } = useAuth();
+	const [user, setUser]=useState({
 		firstName: "",
 		lastName: "",
-		email:"",
-		password:"",
-		passwordConf:""
-
+		email: "",
+		password: "",
+		passwordConf: "",
 	})
 
 	const handleChange = (e) => {
@@ -21,16 +21,29 @@ const Register = () => {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		if(user.password !== user.passwordConf){
 			toast.error("As palavras passe não coincidem")
+			return;
 		}
+
+		const name = user.firstName + " " + user.lastName;
+
+		const finalUser = {
+			...user,
+			name: name,
+		  };
 		
 		try {
-			const response = await register(user);
+			const response = await register(finalUser);
+
+			if (response.error) {
+				toast.error(response.error);
+				return;
+			}
 			
-		
 			toast.success("Conta criada com sucesso!");
-			setTimeout(() => navigate("/login"), 100);
+			setTimeout(() => navigate("/"), 100);
 		} catch (error) {
 			console.error("Erro ao criar conta:", error);
 			toast.error("Erro ao criar conta.");
@@ -136,6 +149,7 @@ const Register = () => {
 											name="terms"
 											id="terms"
 											defaultValue={1}
+											required
 										/>
 										<label className="form-check-label fw-semibold" htmlFor="terms">
 											Li e aceito os{" "}

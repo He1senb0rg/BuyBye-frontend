@@ -1,13 +1,17 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getProductById, getProductReviewsStats } from "../services/api";
+import { getProductById, getProductReviewsStats, createReview, deleteReview } from "../services/api";
 import ProductImagesSwiper from "../components/ProductImagesSwiper";
 import Review from "../components/Review";
 import StarRating from "../components/StarRating";
 import StarBar from "../components/StarBar";
 import ProductOptions from "../components/ProductOptions";
+import { useAuth } from "../contexts/AuthContext";
+import toast from "react-hot-toast";
+import StarSelector from "../components/StarSelector";
 
 const ProductPage = () => {
+  const { user } = useAuth();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
@@ -91,6 +95,58 @@ const ProductPage = () => {
     productStats[2] || 0,
     productStats[1] || 0
   );
+
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+
+    if (!rating) {
+      toast.error("Por favor, atribua uma classificação.");
+      return;
+    }
+  
+    try {
+      const response = await createReview({productId: id, rating, comment});
+  
+      if (response.error) {
+        throw new Error("Erro ao submeter a avaliação");
+      }
+  
+      toast.success("Avaliação enviada com sucesso!");
+  
+      setProduct((prev) => ({
+        ...prev,
+        reviews: [response, ...(prev.reviews || [])],
+      }));
+      setRating(0);
+      setComment("");
+    } catch (err) {
+      toast.error("Erro ao enviar avaliação.");
+    }
+  };
+
+  const [deleteReviewId, setDeleteReviewId] = useState(null);
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      const response = await deleteReview(reviewId);
+      
+      if (response.error) {
+        throw new Error("Erro ao apagar a avaliação");
+      }
+
+      toast.success("Avaliação apagada com sucesso!");
+
+      setProduct((prev) => ({
+        ...prev,
+        reviews: prev.reviews.filter((review) => review._id !== reviewId),
+      }));
+    } catch (err) {
+      toast.error("Erro ao apagar avaliação.");
+    }
+  }
 
   return (
     <main>
@@ -248,14 +304,76 @@ const ProductPage = () => {
                   </div>
                 </div>
               </div>
+              <div className="row mt-4">
+                <div className="col">
+                  <div className="card bg-dark">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-center p-3 pt-3 flex-column">
+                        {user ? (
+                          <form onSubmit={handleSubmitReview}>
+                            <div className="mb-3">
+                              <p className="h4">
+                                Diga o que acha deste produto!
+                              </p>
+                              <div className="fs-4">
+                                <StarSelector value={rating} onChange={setRating} />
+                              </div>
+                            </div>
+                            <textarea
+                              className="form-control"
+                              rows="3"
+                              placeholder="Escreva aqui a sua avaliação..."
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                            <button
+                              className="btn btn-primary mt-2"
+                              type="submit"
+                            >
+                              Enviar Avaliação
+                            </button>
+                          </form>
+                        ) : (
+                          <>
+                            <p className="fs-4 fw-semibold">
+                              Junta-te à conversa e diz o que achaste deste
+                              produto
+                            </p>
+                            <p className="fs-5">
+                              <a
+                                className="fw-semibold text-decoration-none"
+                                href="/register"
+                              >
+                                Cria uma conta
+                              </a>{" "}
+                              ou{" "}
+                              <a
+                                className="fw-semibold text-decoration-none"
+                                href="/login"
+                              >
+                                inicia sessão
+                              </a>{" "}
+                              para poder deixar a sua avaliação!
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               {product?.reviews?.length > 0 ? (
                 product.reviews.map((review, index) => (
                   <Review
                     key={index}
+                    reviewId={review._id}
+                    userId={review.user._id}
                     user={review.user.name}
                     comment={review.comment}
                     rating={review.rating}
                     createdAt={review.createdAt}
+                    reviewDelete={handleDeleteReview}
+                    setReviewDelete={setDeleteReviewId}
                   />
                 ))
               ) : (
@@ -265,6 +383,36 @@ const ProductPage = () => {
           </section>
         </>
       )}
+      <div className="modal fade" id="deleteModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Apagar Comentário</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Fechar"
+              ></button>
+            </div>
+            <div className="modal-body">
+              Tens a certeza que queres apagar este comentário? Esta ação não pode ser revertida.
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={() => handleDeleteReview(deleteReviewId)}>
+                Apagar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 };

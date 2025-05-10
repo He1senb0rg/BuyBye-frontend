@@ -1,11 +1,12 @@
 import React from 'react';
 import { useState } from 'react';
-import { login } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 	const navigate = useNavigate();
+	const { login, user } = useAuth();
 	const [credentials, setCredentials] = useState({
 		email: "",
 		password: ""
@@ -20,11 +21,12 @@ const Login = () => {
 
 		try {
 			const response = await login(credentials);
-			
-			// Atualiza o token
-			localStorage.setItem("token", response.token);
 
-			toast.success("Login realizado com sucesso!");
+			if (response.error) {
+				toast.error(response.error);
+				return;
+			}
+
 			setTimeout(() => navigate("/"), 100);
 		} catch (error) {
 			console.error("Erro ao fazer login:", error);
