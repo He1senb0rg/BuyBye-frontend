@@ -23,6 +23,8 @@ export const userRegister = async(user) => {
   return response.json();
 }
 
+//Product
+
 export const getProducts = async () => {
   const response = await fetch(`${BASE_URL}/products`, {
     method: "GET",
@@ -88,6 +90,7 @@ export const deleteProduct = async (id) => {
   return response.json();
 };
 
+//Category
 export const getCategories = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/categories?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
@@ -166,3 +169,49 @@ export const deleteReview = async (id) => {
   return response.json();
 }
 
+
+export const getCart = async () => {
+  const response = await fetch(`${BASE_URL}/cart`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+export const addToCart = async (item) => {
+  const response = await fetch(`${BASE_URL}/cart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(item),
+  });
+  return response.json();
+};
+
+export const removeFromCart = async (productId) => {
+  const response = await fetch(`${BASE_URL}/cart/${productId}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+export const updateCartItem = async (productId, updatedData) => {
+  const response = await fetch(`${BASE_URL}/cart/${productId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(updatedData),
+  });
+  return response.json();
+};
