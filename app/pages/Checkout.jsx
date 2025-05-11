@@ -10,11 +10,18 @@ const Checkout = () => {
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
+  const handleTotalChange = (total) => {
+    setFormData((prev) => ({ ...prev, amount: total }));
+  };
+
   const renderStep = () => {
     switch (step) {
-      case 0: return <BillingForm formData={formData} setFormData={setFormData} />;
-      case 1: return <PaymentForm formData={formData} setFormData={setFormData} />;
-      default: return null;
+      case 0:
+        return <BillingForm formData={formData} setFormData={setFormData} />;
+      case 1:
+        return <PaymentForm formData={formData} setFormData={setFormData} />;
+      default:
+        return null;
     }
   };
 
@@ -24,12 +31,20 @@ const Checkout = () => {
         <div className="col-md-7 mb-4">
           {renderStep()}
           <div className="d-flex justify-content-between mt-4">
-            {step > 0 && <button className="btn btn-outline-secondary" onClick={handleBack}>Back</button>}
-            {step < 1 && <button className="btn btn-primary ms-auto" onClick={handleNext}>Next</button>}
+            {step > 0 && (
+              <button className="btn btn-outline-secondary" onClick={handleBack}>
+                Back
+              </button>
+            )}
+            {step < 1 && (
+              <button className="btn btn-primary ms-auto" onClick={handleNext}>
+                Next
+              </button>
+            )}
           </div>
         </div>
         <div className="col-md-5">
-          <OrderSummary />
+          <OrderSummary onTotalChange={handleTotalChange} />
         </div>
       </div>
     </div>

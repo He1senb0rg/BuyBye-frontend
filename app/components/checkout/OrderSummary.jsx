@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const OrderSummary = () => {
+const OrderSummary = ({ onTotalChange }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,9 +14,7 @@ const OrderSummary = () => {
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Erro ao buscar o carrinho');
-        }
+        if (!response.ok) throw new Error('Erro ao buscar o carrinho');
 
         const data = await response.json();
         setCartItems(data.cartItems || []);
@@ -33,6 +31,13 @@ const OrderSummary = () => {
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shipping = subtotal > 100 ? 0 : 4.99;
   const total = subtotal + shipping;
+
+  // Send total up to parent
+  useEffect(() => {
+    if (!loading && onTotalChange) {
+      onTotalChange(total);
+    }
+  }, [total, loading, onTotalChange]);
 
   if (loading) {
     return <div>Carregando resumo do pedido...</div>;

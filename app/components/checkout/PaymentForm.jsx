@@ -1,8 +1,62 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
+const generateMultibancoReference = () => {
+  const entidade = '12345';
+  const referencia = Array.from({ length: 9 }, () => Math.floor(Math.random() * 10)).join('');
+  return {
+    entidade,
+    referencia: referencia.replace(/(\d{3})(?=\d)/g, '$1 '),
+  };
+};
+
+const PayPalButton = ({ amount }) => {
+  const paypalRef = useRef();
+
+  useEffect(() => {
+    if (!window.paypal) return;
+
+    window.paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'blue',
+        shape: 'rect',
+        label: 'paypal',
+      },
+      createOrder: (data, actions) => {
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: amount.toFixed(2),
+            },
+          }],
+        });
+      },
+      onApprove: async (data, actions) => {
+        const details = await actions.order.capture();
+        alert(`Pagamento concluído por ${details.payer.name.given_name}`);
+        // Handle confirmation or pass to backend here
+      },
+      onError: (err) => {
+        console.error('PayPal Checkout Error:', err);
+      },
+    }).render(paypalRef.current);
+  }, [amount]);
+
+  return <div ref={paypalRef} />;
+};
+
 const PaymentForm = ({ formData, setFormData }) => {
+  const [mbData, setMbData] = useState({ entidade: '', referencia: '' });
+
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=EUR';
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -11,6 +65,12 @@ const PaymentForm = ({ formData, setFormData }) => {
   const handleFocus = (e) => {
     setFormData((prev) => ({ ...prev, focus: e.target.name }));
   };
+
+  useEffect(() => {
+    if (formData.paymentMethod === 'multibanco') {
+      setMbData(generateMultibancoReference());
+    }
+  }, [formData.paymentMethod]);
 
   return (
     <div>
@@ -34,10 +94,9 @@ const PaymentForm = ({ formData, setFormData }) => {
         <label htmlFor="paymentMethod">Método de Pagamento</label>
       </div>
 
-      {/* Conditional Forms */}
-      {(formData.paymentMethod === 'ccdb') && (
+      {/* Card Payment */}
+      {formData.paymentMethod === 'ccdb' && (
         <>
-          {/* Credit Card Preview */}
           <div className="mb-4">
             <Cards
               number={formData.cardNumber || ''}
@@ -48,7 +107,6 @@ const PaymentForm = ({ formData, setFormData }) => {
             />
           </div>
 
-          {/* Cardholder Name */}
           <div className="form-floating mb-3">
             <input
               type="text"
@@ -63,7 +121,6 @@ const PaymentForm = ({ formData, setFormData }) => {
             <label htmlFor="cardName">Nome no Cartão</label>
           </div>
 
-          {/* Card Number */}
           <div className="form-floating mb-3">
             <input
               type="text"
@@ -79,7 +136,6 @@ const PaymentForm = ({ formData, setFormData }) => {
           </div>
 
           <div className="row">
-            {/* Expiry */}
             <div className="col-md-6 mb-3">
               <div className="form-floating">
                 <input
@@ -95,8 +151,6 @@ const PaymentForm = ({ formData, setFormData }) => {
                 <label htmlFor="expiry">Validade (MM/AA)</label>
               </div>
             </div>
-
-            {/* CVV */}
             <div className="col-md-6 mb-3">
               <div className="form-floating">
                 <input
@@ -116,21 +170,14 @@ const PaymentForm = ({ formData, setFormData }) => {
         </>
       )}
 
+      {/* PayPal Button */}
       {formData.paymentMethod === 'paypal' && (
-        <div className="form-floating mb-3">
-          <input
-            type="email"
-            className="form-control"
-            id="paypalEmail"
-            name="paypalEmail"
-            placeholder="E-mail do PayPal"
-            value={formData.paypalEmail || ''}
-            onChange={handleChange}
-          />
-          <label htmlFor="paypalEmail">E-mail do PayPal</label>
+        <div className="mt-3">
+          <PayPalButton amount={parseFloat(formData.amount) || 0} />
         </div>
       )}
 
+      {/* MB Way */}
       {formData.paymentMethod === 'mbway' && (
         <div className="form-floating mb-3">
           <input
@@ -146,9 +193,12 @@ const PaymentForm = ({ formData, setFormData }) => {
         </div>
       )}
 
+      {/* Multibanco */}
       {formData.paymentMethod === 'multibanco' && (
         <div className="alert alert-info mt-3">
-          Após a finalização do pedido, receberá as instruções para pagamento via Multibanco (Entidade, Referência, e Montante).
+          <p><strong>Entidade:</strong> {mbData.entidade}</p>
+          <p><strong>Referência:</strong> {mbData.referencia}</p>
+          <p><strong>Montante:</strong> {(formData.amount || 'XX.XX')} €</p>
         </div>
       )}
     </div>
