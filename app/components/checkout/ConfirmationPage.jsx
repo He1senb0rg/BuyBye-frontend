@@ -1,4 +1,3 @@
-// components/checkout/ConfirmationPage.js
 import React from 'react';
 
 const ConfirmationPage = ({ formData }) => {

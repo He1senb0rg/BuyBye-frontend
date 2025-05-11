@@ -14,20 +14,22 @@ const generateMultibancoReference = () => {
 const PayPalButton = ({ amount }) => {
   const handleClick = () => {
     alert(`Pagamento simulado concluído! ${amount.toFixed(2)}€ pago via PayPal.`);
-    // Here you can call an API or redirect to a confirmation page
   };
 
   return (
-    <div className="paypal-button">
-      <button className="btn btn-primary w-100" onClick={handleClick}>
-        <img
-          src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg"
-          alt="PayPal"
-          className="paypal-logo"
-        />
-        Pagar com PayPal
-      </button>
-    </div>
+    <button
+      type="button"
+      className="btn btn-warning d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm"
+      onClick={handleClick}
+      style={{ border: '1px solid #ffc107', maxWidth: '260px' }}
+    >
+      <img
+        src="https://cdn-icons-png.flaticon.com/512/196/196566.png"
+        alt="PayPal Logo"
+        style={{ width: '28px', height: '28px', objectFit: 'contain' }}
+      />
+      <span className="fw-semibold text-primary">Pagar com PayPal</span>
+    </button>
   );
 };
 
@@ -51,10 +53,10 @@ const PaymentForm = ({ formData, setFormData }) => {
 
   return (
     <div>
-      <h4 className="mb-3">Pagamento</h4>
+      <h4 className="mb-4">Pagamento</h4>
 
       {/* Payment Method */}
-      <div className="form-floating mb-3">
+      <div className="form-floating mb-4">
         <select
           className="form-select"
           id="paymentMethod"
@@ -71,7 +73,7 @@ const PaymentForm = ({ formData, setFormData }) => {
         <label htmlFor="paymentMethod">Método de Pagamento</label>
       </div>
 
-      {/* Card Payment */}
+      {/* Cartão de Crédito/Débito */}
       {formData.paymentMethod === 'ccdb' && (
         <>
           <div className="mb-4">
@@ -147,7 +149,7 @@ const PaymentForm = ({ formData, setFormData }) => {
         </>
       )}
 
-      {/* PayPal Button */}
+      {/* PayPal */}
       {formData.paymentMethod === 'paypal' && (
         <div className="mt-3">
           <PayPalButton amount={parseFloat(formData.amount) || 0} />
