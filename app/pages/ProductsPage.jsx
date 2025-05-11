@@ -1,24 +1,24 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getCategories, deleteCategory } from "../services/api";
+import { getProducts, deleteProduct } from "../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
-const CategoriesPage = () => {
+const ProductsPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [categories, setCategories] = useState([]);
-  const [totalCategories, setTotalCategories] = useState(0);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 10;
   const sort = searchParams.get("sort") || "mais_recente";
   const search = searchParams.get("search") || "";
 
-  const totalPages = Math.ceil(totalCategories / limit);
-  
+  const totalPages = Math.ceil(totalProducts / limit);
+
   const [searchValue, setSearchValue] = useState(search);
 
   const handleSearchChange = (e) => {
@@ -34,7 +34,7 @@ const CategoriesPage = () => {
         search: searchValue,
       });
     }, 300);
-  
+
     return () => clearTimeout(delayDebounceFn);
   }, [searchValue]);
 
@@ -60,42 +60,42 @@ const CategoriesPage = () => {
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchProducts = async () => {
       try {
-        const response = await getCategories(page, limit, sort, searchValue);
-        setCategories(response.categories);
-        setTotalCategories(response.totalCategories);
+        const response = await getProducts(page, limit, sort, searchValue);
+        setProducts(response.products);
+        setTotalProducts(response.totalProducts);
       } catch (error) {
         console.error("Erro:", error.message);
-        toast.error("Erro ao buscar as categorias.");
+        toast.error("Erro ao buscar os produtos.");
       }
     };
 
-    fetchCategories();
+    fetchProducts();
   }, [searchParams]);
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteProduct = async () => {
     try {
-      await deleteCategory(categoryToDelete._id);
-      setCategories((prevCategories) =>
-        prevCategories.filter((category) => category._id !== categoryToDelete._id)
+      await deleteProduct(productToDelete._id);
+      setProducts((prevProducts) =>
+        prevProducts.filter((product) => product._id !== productToDelete._id)
       );
-      
-      toast.success("Categoria apagada com sucesso.");
+
+      toast.success("Produto apagado com sucesso.");
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao apagar a categoria.");
+      toast.error("Erro ao apagar o produto.");
     } finally {
-      setCategoryToDelete(null);
+      setProductToDelete(null);
     }
-  }
+  };
 
   return (
     <main>
       <section className="container py-4">
         <div className="d-flex align-items-center">
-          <p className="h1 mb-2">Categorias</p>
-          <a href="/category/create" className="text-decoration-none">
+          <p className="h1 mb-2">Produtos</p>
+          <a href="/product/create" className="text-decoration-none">
             <button className="btn btn-primary ms-2 my-2 py-0">
               <i className="bi bi-plus fs-4"></i>
             </button>
@@ -168,23 +168,67 @@ const CategoriesPage = () => {
                   <thead>
                     <tr>
                       <th scope="col">#</th>
+                      <th scope="col">Imagem</th>
                       <th scope="col">Nome</th>
-                      <th scope="col">Descrição</th>
+                      <th scope="col">Categoria</th>
+                      <th scope="col">Preço</th>
+                      <th scope="col">Desconto</th>
+                      <th scope="col">Preço Final</th>
+                      <th scope="col">Stock</th>
+                      <th scope="col">Avaliação</th>
                       <th scope="col">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories.map((category) => (
-                      <tr key={category._id}>
-                        <td>{category._id}</td>
-                        <td>{category.name}</td>
-                        <td>{category.description}</td>
+                    {products.map((product) => (
+                      <tr key={product._id}>
+                        <td>{product._id}</td>
+                        <td>
+                          <img
+                            src={product.images[0] || "/assets/images/cao.gif"}
+                            alt={product.name}
+                            className="img-fluid rounded"
+                            style={{ width: "50px", height: "50px" }}
+                          />
+                        </td>
+                        <td>{product.name}</td>
+                        <td>{product.category.name}</td>
+                        <td>{product.price}€</td>
+                        <td>
+                          {product.discount
+                            ? product.discount.type === "percentage"
+                              ? `${product.discount.value * 100}%`
+                              : `-${product.discount.value}€`
+                            : "-"}
+                        </td>
+                        <td>
+                          {product.discount
+                            ? product.discount.type === "percentage"
+                              ? `${(
+                                  product.price *
+                                  (1 - product.discount.value)
+                                ).toFixed(2)}€`
+                              : `${(
+                                  product.price - product.discount.value
+                                ).toFixed(2)}€`
+                            : `${product.price}€`}
+                        </td>
+                        <td>{product.stock}</td>
+                        <td>{product.averageRating}</td>
                         <td>
                           <div className="btn-group" role="group">
                             <a
+                              href={`/product/${product._id}`}
+                              className="btn btn-success"
+                                target="_blank"
+                                type="button"
+                            >
+                              <i className="bi bi-file-earmark-text" />
+                            </a>
+                            <a
                               type="button"
                               className="btn btn-primary"
-                              href={`/category/edit/${category._id}`}
+                                href={`/product/edit/${product._id}`}
                             >
                               <i className="bi bi-pencil-square" />
                             </a>
@@ -193,7 +237,7 @@ const CategoriesPage = () => {
                               data-bs-target="#deleteModal"
                               type="button"
                               className="btn btn-danger"
-                              onClick={() => setCategoryToDelete(category)}
+                              onClick={() => setProductToDelete(product)}
                             >
                               <i className="bi bi-trash" />
                             </button>
@@ -206,14 +250,20 @@ const CategoriesPage = () => {
                 <nav>
                   <ul className="pagination justify-content-center">
                     <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
-                      <button className="page-link" tabIndex="-1" onClick={() => handlePageChange(Number(page) - 1)}>
+                      <button
+                        className="page-link"
+                        tabIndex="-1"
+                        onClick={() => handlePageChange(Number(page) - 1)}
+                      >
                         Anterior
                       </button>
                     </li>
                     {Array.from({ length: totalPages }, (_, index) => (
                       <li
                         key={index}
-                        className={`page-item ${Number(page) === index + 1 ? "active" : ""}`}
+                        className={`page-item ${
+                          Number(page) === index + 1 ? "active" : ""
+                        }`}
                       >
                         <button
                           className="page-link"
@@ -223,8 +273,15 @@ const CategoriesPage = () => {
                         </button>
                       </li>
                     ))}
-                    <li className={`page-item ${Number(page) >= totalPages ? "disabled" : ""}`}>
-                      <button className="page-link" onClick={() => handlePageChange(Number(page) + 1)}>
+                    <li
+                      className={`page-item ${
+                        Number(page) >= totalPages ? "disabled" : ""
+                      }`}
+                    >
+                      <button
+                        className="page-link"
+                        onClick={() => handlePageChange(Number(page) + 1)}
+                      >
                         Próximo
                       </button>
                     </li>
@@ -239,7 +296,7 @@ const CategoriesPage = () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Apagar {categoryToDelete?.name}</h5>
+              <h5 className="modal-title">Apagar {productToDelete?.name}</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -248,7 +305,8 @@ const CategoriesPage = () => {
               ></button>
             </div>
             <div className="modal-body">
-              Tens a certeza que queres apagar a categoria {categoryToDelete?.name}? Esta ação não pode ser revertida.
+              Tens a certeza que queres apagar a categoria{" "}
+              {productToDelete?.name}? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
               <button
@@ -258,7 +316,12 @@ const CategoriesPage = () => {
               >
                 Cancelar
               </button>
-              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteCategory}>
+              <button
+                type="button"
+                data-bs-dismiss="modal"
+                className="btn btn-danger"
+                onClick={handleDeleteProduct}
+              >
                 Apagar
               </button>
             </div>
@@ -268,4 +331,4 @@ const CategoriesPage = () => {
     </main>
   );
 };
-export default CategoriesPage;
+export default ProductsPage;

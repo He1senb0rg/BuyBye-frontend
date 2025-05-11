@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
-    toast.success(`Até à próxima, ${user.name}!`);
+    localStorage.setItem("logoutMessage", `Até à próxima, ${user.name}!`);
   };
 
   const isAuthenticated = !!user;
