@@ -215,3 +215,16 @@ export const updateCartItem = async (productId, updatedData) => {
   });
   return response.json();
 };
+
+// Checkout
+export const createOrder = async (orderData) => {
+  const response = await fetch(`${BASE_URL}/checkout`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(orderData),
+  });
+  return response.json();
+};

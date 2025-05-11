@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
@@ -12,50 +12,33 @@ const generateMultibancoReference = () => {
 };
 
 const PayPalButton = ({ amount }) => {
-  const paypalRef = useRef();
+  const handleClick = () => {
+    alert(`Pagamento simulado concluído! ${amount.toFixed(2)}€ pago via PayPal.`);
+    // Here you can call an API or redirect to a confirmation page
+  };
 
-  useEffect(() => {
-    if (!window.paypal) return;
-
-    window.paypal.Buttons({
-      style: {
-        layout: 'vertical',
-        color: 'blue',
-        shape: 'rect',
-        label: 'paypal',
-      },
-      createOrder: (data, actions) => {
-        return actions.order.create({
-          purchase_units: [{
-            amount: {
-              value: amount.toFixed(2),
-            },
-          }],
-        });
-      },
-      onApprove: async (data, actions) => {
-        const details = await actions.order.capture();
-        alert(`Pagamento concluído por ${details.payer.name.given_name}`);
-        // Handle confirmation or pass to backend here
-      },
-      onError: (err) => {
-        console.error('PayPal Checkout Error:', err);
-      },
-    }).render(paypalRef.current);
-  }, [amount]);
-
-  return <div ref={paypalRef} />;
+  return (
+    <div className="paypal-button">
+      <button className="btn btn-primary w-100" onClick={handleClick}>
+        <img
+          src="https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_111x69.jpg"
+          alt="PayPal"
+          className="paypal-logo"
+        />
+        Pagar com PayPal
+      </button>
+    </div>
+  );
 };
 
 const PaymentForm = ({ formData, setFormData }) => {
   const [mbData, setMbData] = useState({ entidade: '', referencia: '' });
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID&currency=EUR';
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
+    if (formData.paymentMethod === 'multibanco') {
+      setMbData(generateMultibancoReference());
+    }
+  }, [formData.paymentMethod]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,12 +48,6 @@ const PaymentForm = ({ formData, setFormData }) => {
   const handleFocus = (e) => {
     setFormData((prev) => ({ ...prev, focus: e.target.name }));
   };
-
-  useEffect(() => {
-    if (formData.paymentMethod === 'multibanco') {
-      setMbData(generateMultibancoReference());
-    }
-  }, [formData.paymentMethod]);
 
   return (
     <div>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import BillingForm from '../components/checkout/BillingForm';
 import PaymentForm from '../components/checkout/PaymentForm';
 import OrderSummary from '../components/checkout/OrderSummary';
+import CheckoutForm from '../components/checkout/CheckoutForm';  // Import the CheckoutForm component
 
 const Checkout = () => {
   const [step, setStep] = useState(0);
@@ -20,6 +21,8 @@ const Checkout = () => {
         return <BillingForm formData={formData} setFormData={setFormData} />;
       case 1:
         return <PaymentForm formData={formData} setFormData={setFormData} />;
+      case 2:
+        return <CheckoutForm />; // Integrate CheckoutForm as the final step
       default:
         return null;
     }
@@ -36,7 +39,7 @@ const Checkout = () => {
                 Back
               </button>
             )}
-            {step < 1 && (
+            {step < 2 && ( // Allow next step until the final step
               <button className="btn btn-primary ms-auto" onClick={handleNext}>
                 Next
               </button>
