@@ -72,7 +72,7 @@ const Footer = () => (
       </div>
       <div className="col-12 col-md-3 mb-3">
         <div className="nav d-flex flex-column align-items-center align-items-md-start gap-1">
-          <p className="h4">Conecta-te Conosco</p>
+          <p className="h4">Conecta-te Connosco</p>
           <div className="d-flex justify-content-center justify-content-md-start">
             <a href="#" className="text-decoration-none text-body-secondary me-3">
               <i className="bi bi-facebook fs-4 icon-color" />

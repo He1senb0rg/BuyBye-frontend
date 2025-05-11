@@ -1,9 +1,15 @@
 import React from 'react';
+import Cards from 'react-credit-cards-2';
+import 'react-credit-cards-2/dist/es/styles-compiled.css';
 
 const PaymentForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFocus = (e) => {
+    setFormData((prev) => ({ ...prev, focus: e.target.name }));
   };
 
   return (
@@ -20,8 +26,7 @@ const PaymentForm = ({ formData, setFormData }) => {
           onChange={handleChange}
         >
           <option value="">Selecione o método de pagamento</option>
-          <option value="visa">Visa</option>
-          <option value="mastercard">Mastercard</option>
+          <option value="ccdb">Cartão de Crédito/Débito</option>
           <option value="paypal">PayPal</option>
           <option value="multibanco">Multibanco</option>
           <option value="mbway">MB Way</option>
@@ -29,53 +34,123 @@ const PaymentForm = ({ formData, setFormData }) => {
         <label htmlFor="paymentMethod">Método de Pagamento</label>
       </div>
 
-      {/* Card Number */}
-      <div className="form-floating mb-3">
-        <input
-          type="text"
-          className="form-control"
-          id="cardNumber"
-          name="cardNumber"
-          placeholder="Número do Cartão"
-          value={formData.cardNumber || ''}
-          onChange={handleChange}
-        />
-        <label htmlFor="cardNumber">Número do Cartão</label>
-      </div>
+      {/* Conditional Forms */}
+      {(formData.paymentMethod === 'ccdb') && (
+        <>
+          {/* Credit Card Preview */}
+          <div className="mb-4">
+            <Cards
+              number={formData.cardNumber || ''}
+              name={formData.cardName || ''}
+              expiry={formData.expiry || ''}
+              cvc={formData.cvv || ''}
+              focused={formData.focus || ''}
+            />
+          </div>
 
-      <div className="row">
-        {/* Expiry */}
-        <div className="col-md-6 mb-3">
-          <div className="form-floating">
+          {/* Cardholder Name */}
+          <div className="form-floating mb-3">
             <input
               type="text"
               className="form-control"
-              id="expiry"
-              name="expiry"
-              placeholder="MM/AA"
-              value={formData.expiry || ''}
+              id="cardName"
+              name="cardName"
+              placeholder="Nome no Cartão"
+              value={formData.cardName || ''}
               onChange={handleChange}
+              onFocus={handleFocus}
             />
-            <label htmlFor="expiry">Validade (MM/AA)</label>
+            <label htmlFor="cardName">Nome no Cartão</label>
           </div>
-        </div>
 
-        {/* CVV */}
-        <div className="col-md-6 mb-3">
-          <div className="form-floating">
+          {/* Card Number */}
+          <div className="form-floating mb-3">
             <input
               type="text"
               className="form-control"
-              id="cvv"
-              name="cvv"
-              placeholder="CVV"
-              value={formData.cvv || ''}
+              id="cardNumber"
+              name="cardNumber"
+              placeholder="Número do Cartão"
+              value={formData.cardNumber || ''}
               onChange={handleChange}
+              onFocus={handleFocus}
             />
-            <label htmlFor="cvv">CVV</label>
+            <label htmlFor="cardNumber">Número do Cartão</label>
           </div>
+
+          <div className="row">
+            {/* Expiry */}
+            <div className="col-md-6 mb-3">
+              <div className="form-floating">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="expiry"
+                  name="expiry"
+                  placeholder="MM/AA"
+                  value={formData.expiry || ''}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                />
+                <label htmlFor="expiry">Validade (MM/AA)</label>
+              </div>
+            </div>
+
+            {/* CVV */}
+            <div className="col-md-6 mb-3">
+              <div className="form-floating">
+                <input
+                  type="text"
+                  className="form-control"
+                  id="cvv"
+                  name="cvv"
+                  placeholder="CVV"
+                  value={formData.cvv || ''}
+                  onChange={handleChange}
+                  onFocus={handleFocus}
+                />
+                <label htmlFor="cvv">CVV</label>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {formData.paymentMethod === 'paypal' && (
+        <div className="form-floating mb-3">
+          <input
+            type="email"
+            className="form-control"
+            id="paypalEmail"
+            name="paypalEmail"
+            placeholder="E-mail do PayPal"
+            value={formData.paypalEmail || ''}
+            onChange={handleChange}
+          />
+          <label htmlFor="paypalEmail">E-mail do PayPal</label>
         </div>
-      </div>
+      )}
+
+      {formData.paymentMethod === 'mbway' && (
+        <div className="form-floating mb-3">
+          <input
+            type="tel"
+            className="form-control"
+            id="mbwayPhone"
+            name="mbwayPhone"
+            placeholder="Número de Telefone MB Way"
+            value={formData.mbwayPhone || ''}
+            onChange={handleChange}
+          />
+          <label htmlFor="mbwayPhone">Telefone MB Way</label>
+        </div>
+      )}
+
+      {formData.paymentMethod === 'multibanco' && (
+        <div className="alert alert-info mt-3">
+          Após a finalização do pedido, receberá as instruções para pagamento via Multibanco (Entidade, Referência, e Montante).
+        </div>
+      )}
     </div>
   );
 };

@@ -44,7 +44,7 @@ const OrderSummary = () => {
       style={{ backgroundColor: '#f8f9fa' }}
     >
       <div className="card-body">
-        <h5 className="card-title text-dark fw-semibold mb-4">Resumo do Pedido</h5>
+        <h5 className="card-title fw-semibold mb-4">Resumo do Pedido</h5>
 
         <ul className="list-unstyled mb-3">
           <li className="d-flex justify-content-between text-muted mb-2">
@@ -59,7 +59,7 @@ const OrderSummary = () => {
 
         <hr className="my-3" />
 
-        <div className="d-flex justify-content-between fw-bold fs-5 text-dark">
+        <div className="d-flex justify-content-between fw-bold fs-5">
           <span>Total</span>
           <span>${total.toFixed(2)}</span>
         </div>
