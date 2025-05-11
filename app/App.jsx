@@ -14,6 +14,8 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import ProductsPage from "./pages/ProductsPage.jsx";
+import ProductEdit from "./pages/ProductEdit.jsx";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
@@ -46,6 +48,8 @@ function App() {
           <Route path="/category" element={<CategoriesPage />} />
           <Route path="/category/create" element={<CreateCategory />} />
           <Route path="/category/edit/:id" element={<EditCategory />} />
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/product/edit/:id" element={<ProductEdit />} />
         </Routes>
         <Footer />
       </Router>

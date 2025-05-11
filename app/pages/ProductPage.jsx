@@ -261,7 +261,8 @@ const ProductPage = () => {
                           <i className="bi bi-heart"></i>
                         </button>
                       </div>
-                      <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
+                      {product.stock > 0 ? (
+                        <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
                         <button
                           className="btn btn-primary w-100 h-100 fw-bold"
                           type="button"
@@ -269,6 +270,18 @@ const ProductPage = () => {
                           Adicionar ao Carrinho
                         </button>
                       </div>
+                      ) : (
+                        <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
+                        <button
+                        disabled
+                          className="btn btn-secondary w-100 h-100 fw-bold"
+                          type="button"
+                        >
+                          Sem Stock
+                        </button>
+                      </div>
+                      )}
+                      
                     </div>
                   </div>
                 </div>

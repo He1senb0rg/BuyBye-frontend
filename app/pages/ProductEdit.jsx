@@ -1,67 +1,17 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getProductById, getCategories, editProduct } from "../services/api";
 import { useState, useEffect, useRef } from "react";
-import { createProduct, getCategories } from "../services/api";
 import FloatingInput from "../components/FloatingInput";
 import FloatingSelect from "../components/FloatingSelect";
 import Checkbox from "../components/Checkbox";
 import ProductImagesSwiper from "../components/ProductImagesSwiper";
 
-const CreateProduct = () => {
+const ProductEdit = () => {
   const navigate = useNavigate();
   const formRef = useRef();
-  const [step, setStep] = useState(1);
-
-  const nextStep = (e) => {
-    if (e) e.preventDefault();
-  
-    if (formRef.current.checkValidity()) {
-      setStep((prev) => prev + 1);
-    } else {
-      formRef.current.reportValidity();
-    }
-  };
-  const prevStep = () => setStep((prev) => prev - 1);
-
-  const [useDiscount, setUseDiscount] = useState(false);
-  const [discountType, setDiscountType] = useState("percentage");
-  const [discountValue, setDiscountValue] = useState("");
-
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await getCategories();
-        const formatted = response.map((cat) => ({
-          value: cat._id,
-          label: cat.name,
-        }));
-        setCategories(formatted);
-      } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        setError("Failed to fetch categories");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
-  const [imageFiles, setImageFiles] = useState([]);
-
-  const handleCheckboxChange = () => {
-    setUseDiscount(!useDiscount);
-    if (useDiscount) {
-      setDiscountType("percentage");
-      setDiscountValue("");
-    }
-  };
-
+  const { id } = useParams();
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -75,6 +25,80 @@ const CreateProduct = () => {
     images: [],
   });
 
+  const [useDiscount, setUseDiscount] = useState(false);
+  const [discountType, setDiscountType] = useState("percentage");
+  const [discountValue, setDiscountValue] = useState("");
+
+  const [imageFiles, setImageFiles] = useState([]);
+
+  const [categories, setCategories] = useState([]);
+
+  const [step, setStep] = useState(1);
+
+  const nextStep = (e) => {
+    if (e) e.preventDefault();
+
+    if (formRef.current.checkValidity()) {
+      setStep((prev) => prev + 1);
+    } else {
+      formRef.current.reportValidity();
+    }
+  };
+  const prevStep = () => setStep((prev) => prev - 1);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await getProductById(id);
+        console.log("Produto:", response);
+        setProductData({
+          ...response,
+          euros: Math.floor(response.price),
+          centimos: Math.round((response.price % 1) * 100),
+          images: response.images,
+        });
+        setImageFiles(response.images);
+
+        if (response.discount) {
+            setUseDiscount(response.discount);
+            setDiscountType(response.discount.type || "percentage");
+            setDiscountValue(response.discount.value || "");
+        }
+        
+      } catch (error) {
+        console.error("Erro:", error.message);
+        toast.error("Erro ao buscar o produto.");
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await getCategories();
+        const formatted = response.categories.map((cat) => ({
+          value: cat._id,
+          label: cat.name,
+        }));
+        setCategories(formatted);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+        setError("Failed to fetch categories");
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCheckboxChange = () => {
+    setUseDiscount(!useDiscount);
+    if (useDiscount) {
+      setDiscountType("percentage");
+      setDiscountValue("");
+    }
+  };
+
   const handleChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
   };
@@ -85,7 +109,7 @@ const CreateProduct = () => {
     const euros = parseInt(productData.euros || "0", 10);
     const centimos = parseInt(productData.centimos || "0", 10);
     const price = euros + centimos / 100;
-  
+
     const finalProductData = {
       ...productData,
       price: Number(price.toFixed(2)),
@@ -93,13 +117,18 @@ const CreateProduct = () => {
     };
 
     try {
-      const response = await createProduct(finalProductData);
+      const response = await editProduct(finalProductData);
 
-      toast.success("Produto criado com sucesso!");
-      setTimeout(() => navigate("/"), 100);
+      if (response.error) {
+        toast.error("Erro ao editar o produto.");
+        return;
+      }
+
+      toast.success("Produto editado com sucesso!");
+      setTimeout(() => navigate("/products"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao criar o produto.");
+      toast.error("Erro ao editar o produto.");
     }
   };
 
@@ -202,6 +231,7 @@ const CreateProduct = () => {
             <div className="row g-2">
               <div className="col-md-3 col-sm-12 col-lg-2">
                 <Checkbox
+                  checked={useDiscount}
                   id="isDiscounted"
                   label="Produto com Desconto?"
                   onChange={handleCheckboxChange}
@@ -216,7 +246,7 @@ const CreateProduct = () => {
                     { value: "percentage", label: "Percentagem" },
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
-                  value={productData.discount_type}
+                  value={discountType}
                   onChange={(e) => {
                     setDiscountType(e.target.value);
                     handleChange;
@@ -235,7 +265,7 @@ const CreateProduct = () => {
                   label="Valor do Desconto"
                   disabled={!useDiscount}
                   required={useDiscount}
-                  value={productData.discount_value}
+                  value={discountValue}
                   maxLength={6}
                   onChange={(e) => {
                     setDiscountValue(e.target.value);
@@ -274,7 +304,7 @@ const CreateProduct = () => {
   return (
     <main>
       <section className="container py-4">
-        <p className="h1">Criar Novo Produto</p>
+        <p className="h1">Editar Produto - {productData.name}</p>
         <div className="row">
           <div className="col">
             <div className="card bg-body-tertiary">
@@ -307,7 +337,7 @@ const CreateProduct = () => {
                       </button>
                     ) : (
                       <button type="submit" className="btn btn-primary ms-auto">
-                        Criar Produto
+                        Editar Produto
                       </button>
                     )}
                   </div>
@@ -320,4 +350,4 @@ const CreateProduct = () => {
     </main>
   );
 };
-export default CreateProduct;
+export default ProductEdit;

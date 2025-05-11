@@ -1,14 +1,24 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const Header = () => {
   const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    logout(); 
+    logout();
     window.location.reload();
   };
+
+  useEffect(() => {
+    const message = localStorage.getItem("logoutMessage");
+    if (message) {
+      toast.success(message);
+      localStorage.removeItem("logoutMessage");
+    }
+  }, []);
 
   return (
     <header>
@@ -101,9 +111,7 @@ const Header = () => {
               >
                 <li>
                   <h6 className="dropdown-header bg-primary text-light fw-bold py-2 rounded-top">
-                    {user
-                      ? `Olá, ${user.name}!`
-                      : "Junta-te à BuyBye!"}
+                    {user ? `Olá, ${user.name}!` : "Junta-te à BuyBye!"}
                   </h6>
                 </li>
                 {user ? (
