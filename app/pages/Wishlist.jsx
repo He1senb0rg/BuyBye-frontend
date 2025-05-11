@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import WishlistTable from '../components/wishlist/WishlistTable';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);

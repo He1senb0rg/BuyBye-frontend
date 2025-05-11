@@ -14,10 +14,12 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import Wishlist from "./pages/Wishlist.jsx";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import "./assets/css/style.css";
 
@@ -34,15 +36,29 @@ function App() {
           <Route path="/perfil" element={<Perfil />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/cart" element={<Cart />} />
+          
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/product/create" element={<CreateProduct />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
           <Route path="/account/billing" element={<AccountDetailsBilling />} />
-          <Route
-            path="/account/security"
-            element={<AccountDetailsSecurity />}
-          />
+          <Route path="/account/security" element={<AccountDetailsSecurity />} />
           <Route path="/category" element={<CategoriesPage />} />
           <Route path="/category/create" element={<CreateCategory />} />
           <Route path="/category/edit/:id" element={<EditCategory />} />
@@ -52,4 +68,5 @@ function App() {
     </AuthProvider>
   );
 }
+
 export default App;

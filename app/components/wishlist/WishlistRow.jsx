@@ -1,9 +1,9 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { useAuth } from '../context/AuthContext'; // Import AuthContext
+import { useAuth } from '../../contexts/AuthContext'
 
 const WishlistRow = ({ item }) => {
-  const { user } = useAuth(); // Get user from AuthContext
+  const { user } = useAuth();
 
   const handleRemove = () => {
     // Check if the user is authenticated

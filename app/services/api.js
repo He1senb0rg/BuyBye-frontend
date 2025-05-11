@@ -44,6 +44,16 @@ export const getProductById = async (id) => {
   return response.json();
 };
 
+export const getProductReviewsStats = async (id) => {
+  const response = await fetch(`${BASE_URL}/reviews/product/${id}/stats`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
 export const createProduct = async (product) => {
   const response = await fetch(`${BASE_URL}/products`, {
     method: "POST",
@@ -183,6 +193,8 @@ export const createReview = async (review) => {
   });
   return response.json();
 };
+
+
 
 export const deleteReview = async (id) => {
   const response = await fetch(`${BASE_URL}/reviews/${id}`, {

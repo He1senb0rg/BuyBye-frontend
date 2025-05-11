@@ -76,16 +76,42 @@ const Header = () => {
             </form>
           </div>
           <div className="d-flex align-items-center">
+            {/* Wishlist Icon (only available if user is logged in) */}
             <div className="pe-3">
-              <NavLink to="/wishlist" className="nav-link">
-                <i className="bi bi-heart icon-color fs-2" />
-              </NavLink>
+              {user ? (
+                <NavLink to="/wishlist" className="nav-link" title="Ver Wishlist">
+                  <i className="bi bi-heart icon-color fs-2" />
+                </NavLink>
+              ) : (
+                <span
+                  role="button"
+                  className="nav-link"
+                  title="Inicie sessão para ver a sua wishlist"
+                  onClick={() => window.location.href = "/login"}
+                >
+                  <i className="bi bi-heart icon-color fs-2" />
+                </span>
+              )}
             </div>
+
+            {/* Cart Icon (only available if user is logged in) */}
             <div className="pe-3">
-              <NavLink to="/cart" className="nav-link">
-                <i className="bi bi-cart icon-color fs-2" />
-              </NavLink>
+              {user ? (
+                <NavLink to="/cart" className="nav-link" title="Ver Carrinho">
+                  <i className="bi bi-cart icon-color fs-2" />
+                </NavLink>
+              ) : (
+                <span
+                  role="button"
+                  className="nav-link"
+                  title="Inicie sessão para aceder ao carrinho"
+                  onClick={() => window.location.href = "/login"}
+                >
+                  <i className="bi bi-cart icon-color fs-2" />
+                </span>
+              )}
             </div>
+
             <div className="dropdown">
               <a
                 href="#"

@@ -27,7 +27,7 @@ const Navbar = () => (
         </ul>
         <form className="d-flex">
           <input className="form-control me-2" type="search" placeholder="Buscar" />
-          <button className="btn btn-outline-light" type="submit">Buscar</button>
+          <button className="btn btn-outline-light" type="submit">Procurar</button>
         </form>
       </div>
     </div>
