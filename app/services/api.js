@@ -228,3 +228,13 @@ export const createOrder = async (orderData) => {
   });
   return response.json();
 };
+
+export const fetchBillingHistory = async () => {
+  const res = await fetch('/api/checkout/billing-history', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`, // or however you store auth
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch billing history');
+  return res.json();
+};
