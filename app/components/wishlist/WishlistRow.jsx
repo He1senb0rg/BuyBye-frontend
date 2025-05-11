@@ -1,31 +1,36 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
+import { useAuth } from '../context/AuthContext'; // Import AuthContext
 
 const WishlistRow = ({ item }) => {
+  const { user } = useAuth(); // Get user from AuthContext
+
+  const handleRemove = () => {
+    // Check if the user is authenticated
+    if (!user) {
+      alert('You must be logged in to remove items from your wishlist.');
+      return;
+    }
+
+    // Call the remove from wishlist API
+    fetch('/api/wishlist/remove', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+      body: JSON.stringify({ userId: user._id, productId: item.product._id }),
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error('Error removing from wishlist:', error));
+  };
+
   return (
     <tr>
+      <td>{item.product.name}</td>
+      <td>${item.product.price}</td>
+      <td>{item.product.stock > 0 ? 'In Stock' : 'Out of Stock'}</td>
       <td>
-        <div className="d-flex align-items-center">
-          <div className="img-product">
-            <img src={item.imageUrl} alt={item.name} className="img-fluid" width="60" />
-          </div>
-          <div className="name-product ms-3">{item.name}</div>
-        </div>
-      </td>
-      <td>${item.price.toFixed(2)}</td>
-      <td>
-        {item.inStock ? (
-          <span className="badge bg-success">In Stock</span>
-        ) : (
-          <span className="badge bg-danger">Out of Stock</span>
-        )}
-      </td>
-      <td>
-        <Button variant="primary" disabled={!item.inStock}>Add to Cart</Button>
-      </td>
-      <td className="text-center">
-        <Button variant="danger">
-          <i className="far fa-trash-alt"></i> Remove
+        <Button variant="danger" onClick={handleRemove}>
+          Remove from Wishlist
         </Button>
       </td>
     </tr>
