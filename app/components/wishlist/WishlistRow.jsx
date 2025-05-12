@@ -30,7 +30,7 @@ const WishlistRow = ({ item }) => {
       <td>{item.product.stock > 0 ? 'In Stock' : 'Out of Stock'}</td>
       <td>
         <Button variant="danger" onClick={handleRemove}>
-          Remove from Wishlist
+          Remover
         </Button>
       </td>
     </tr>
