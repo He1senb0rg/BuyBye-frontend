@@ -1,33 +1,44 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '../../contexts/AuthContext';
 
-const WishlistRow = ({ item }) => {
+const WishlistRow = ({ item, onRemoved }) => {
   const { user } = useAuth();
 
   const handleRemove = () => {
-    // Check if the user is authenticated
     if (!user) {
       alert('You must be logged in to remove items from your wishlist.');
       return;
     }
 
-    // Call the remove from wishlist API
     fetch('/api/wishlist/remove', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
-      body: JSON.stringify({ userId: user._id, productId: item.product._id }),
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        userId: user._id,
+        productId: item.product._id,
+      }),
     })
-      .then((response) => response.json())
-      .then((data) => console.log(data))
-      .catch((error) => console.error('Error removing from wishlist:', error));
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('Removed from wishlist:', data);
+        alert('Produto removido da lista de desejos.');
+        if (onRemoved) onRemoved(item.product._id); // trigger a reload or update
+      })
+      .catch((err) => {
+        console.error('Error removing from wishlist:', err);
+        alert('Erro ao remover o item.');
+      });
   };
 
   return (
     <tr>
       <td>{item.product.name}</td>
-      <td>${item.product.price}</td>
-      <td>{item.product.stock > 0 ? 'In Stock' : 'Out of Stock'}</td>
+      <td>€{item.product.price}</td>
+      <td>{item.product.stock > 0 ? 'Em stock' : 'Esgotado'}</td>
       <td>
         <Button variant="danger" onClick={handleRemove}>
           Remover

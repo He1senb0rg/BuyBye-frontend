@@ -10,7 +10,7 @@ const WishlistTable = ({ wishlistItems }) => {
             <th>Nome do Produto</th>
             <th>Preço por Unidade</th>
             <th>Estado do Stock</th>
-            <th>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+            <th class="col-sm-4"></th>
           </tr>
         </thead>
         <tbody>
