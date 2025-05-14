@@ -121,6 +121,13 @@ const Header = () => {
                         Perfil do Utilizador
                       </a>
                     </li>
+                    {user.role === "admin" && (
+                      <li>
+                        <a className="dropdown-item" href="/admin/dashboard">
+                          Painel de Controlo
+                        </a>
+                      </li>
+                    )}
                     <li>
                       <button className="dropdown-item" onClick={handleLogout}>
                         Terminar Sessão

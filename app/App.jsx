@@ -24,34 +24,46 @@ import Navbar from "./components/Navbar.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+import MainLayout from "./layouts/MainLayout.jsx";
+import AdminLayout from "./layouts/AdminLayout.jsx";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
         <Toaster position="bottom-right" toastOptions={{ duration: 8000 }} />
-        <Header />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/perfil" element={<Perfil />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/product/:id" element={<ProductPage />} />
-          <Route path="/product/create" element={<CreateProduct />} />
-          <Route path="/account/profile" element={<AccountDetailsProfile />} />
-          <Route path="/account/billing" element={<AccountDetailsBilling />} />
-          <Route
-            path="/account/security"
-            element={<AccountDetailsSecurity />}
-          />
-          <Route path="/category" element={<CategoriesPage />} />
-          <Route path="/category/create" element={<CreateCategory />} />
-          <Route path="/category/edit/:id" element={<EditCategory />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/product/edit/:id" element={<ProductEdit />} />
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/perfil" element={<Perfil />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/product/:id" element={<ProductPage />} />
+            
+            <Route
+              path="/account/profile"
+              element={<AccountDetailsProfile />}
+            />
+            <Route
+              path="/account/billing"
+              element={<AccountDetailsBilling />}
+            />
+            <Route
+              path="/account/security"
+              element={<AccountDetailsSecurity />}
+            />
+          </Route>
+
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="category" element={<CategoriesPage />} />
+            <Route path="category/create" element={<CreateCategory />} />
+            <Route path="category/edit/:id" element={<EditCategory />} />
+            <Route path="products" element={<ProductsPage />} />
+            <Route path="product/edit/:id" element={<ProductEdit />} />
+            <Route path="product/create" element={<CreateProduct />} />
+          </Route>
         </Routes>
-        <Footer />
       </Router>
     </AuthProvider>
   );
