@@ -24,6 +24,7 @@ import Navbar from "./components/Navbar.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+import ShopEditor from "./pages/ShopEditor.jsx";
 
 function App() {
   return (
@@ -37,14 +38,12 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/shop/edit" element={<ShopEditor />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/product/create" element={<CreateProduct />} />
           <Route path="/account/profile" element={<AccountDetailsProfile />} />
           <Route path="/account/billing" element={<AccountDetailsBilling />} />
-          <Route
-            path="/account/security"
-            element={<AccountDetailsSecurity />}
-          />
+          <Route path="/account/security" element={<AccountDetailsSecurity />}/>
           <Route path="/category" element={<CategoriesPage />} />
           <Route path="/category/create" element={<CreateCategory />} />
           <Route path="/category/edit/:id" element={<EditCategory />} />
