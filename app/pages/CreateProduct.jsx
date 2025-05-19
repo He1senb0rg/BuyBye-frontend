@@ -12,6 +12,7 @@ const CreateProduct = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const [step, setStep] = useState(1);
+  let imgNum = 0;
 
   const nextStep = (e) => {
     if (e) e.preventDefault();
@@ -36,7 +37,7 @@ const CreateProduct = () => {
     const fetchCategories = async () => {
       try {
         const response = await getCategories();
-        const formatted = response.map((cat) => ({
+        const formatted = response.categories.map((cat) => ({
           value: cat._id,
           label: cat.name,
         }));
@@ -96,12 +97,26 @@ const CreateProduct = () => {
       const response = await createProduct(finalProductData);
 
       toast.success("Produto criado com sucesso!");
-      setTimeout(() => navigate("/"), 100);
+      setTimeout(() => navigate("/admin/products"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
       toast.error("Erro ao criar o produto.");
     }
   };
+
+  const addImage = (e) => {
+    setImageFiles((prev) => [...prev, `https://picsum.photos/seed/${productData.name + imgNum}/800/900`]);
+    setProductData({ ...productData, images: imageFiles });
+    imgNum++;
+  };
+  
+  const removeImage = (e) => {
+    const newImageFiles = imageFiles.filter((_, index) => index !== imgNum);
+    setImageFiles(newImageFiles);
+    setProductData({ ...productData, images: newImageFiles });
+    if (imgNum > 0) imgNum--;
+  };
+
 
   const renderStep = () => {
     switch (step) {
@@ -259,8 +274,11 @@ const CreateProduct = () => {
                   Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
                   Tamanho máximo: 150 mb
                 </p>
-                <button type="button" className="btn btn-primary">
+                <button type="button" className="btn btn-primary" onClick={addImage}>
                   Adicionar Imagem
+                </button>
+                <button type="button" className="btn btn-danger ms-3" onClick={removeImage}>
+                  Remover Imagem
                 </button>
               </div>
             </div>

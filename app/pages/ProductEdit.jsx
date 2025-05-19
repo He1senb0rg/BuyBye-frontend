@@ -12,6 +12,7 @@ const ProductEdit = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const { id } = useParams();
+  let imgNum = 0;
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -50,7 +51,6 @@ const ProductEdit = () => {
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
-        console.log("Produto:", response);
         setProductData({
           ...response,
           euros: Math.floor(response.price),
@@ -99,6 +99,19 @@ const ProductEdit = () => {
     }
   };
 
+  const addImage = (e) => {
+    setImageFiles((prev) => [...prev, `https://picsum.photos/seed/${productData.name + imgNum}/800/900`]);
+    setProductData({ ...productData, images: imageFiles });
+    imgNum++;
+  };
+  
+  const removeImage = (e) => {
+    const newImageFiles = imageFiles.filter((_, index) => index !== imgNum);
+    setImageFiles(newImageFiles);
+    setProductData({ ...productData, images: newImageFiles });
+    if (imgNum > 0) imgNum--;
+  };
+
   const handleChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
   };
@@ -125,7 +138,7 @@ const ProductEdit = () => {
       }
 
       toast.success("Produto editado com sucesso!");
-      setTimeout(() => navigate("/products"), 100);
+      setTimeout(() => navigate("/admin/products"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
       toast.error("Erro ao editar o produto.");
@@ -279,7 +292,7 @@ const ProductEdit = () => {
       case 2:
         return (
           <>
-            <div className="row">
+            <div className="row mb-3">
               <div className="col-12 col-md-8">
                 <ProductImagesSwiper imageFiles={imageFiles} />
               </div>
@@ -289,8 +302,11 @@ const ProductEdit = () => {
                   Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
                   Tamanho máximo: 150 mb
                 </p>
-                <button type="button" className="btn btn-primary">
+                <button type="button" className="btn btn-primary" onClick={addImage}>
                   Adicionar Imagem
+                </button>
+                <button type="button" className="btn btn-danger ms-3" onClick={removeImage}>
+                  Remover Imagem
                 </button>
               </div>
             </div>

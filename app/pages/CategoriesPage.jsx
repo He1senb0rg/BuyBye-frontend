@@ -95,7 +95,7 @@ const CategoriesPage = () => {
       <section className="container py-4">
         <div className="d-flex align-items-center">
           <p className="h1 mb-2">Categorias</p>
-          <a href="/category/create" className="text-decoration-none">
+          <a href="/admin/category/create" className="text-decoration-none">
             <button className="btn btn-primary ms-2 my-2 py-0">
               <i className="bi bi-plus fs-4"></i>
             </button>
@@ -184,7 +184,7 @@ const CategoriesPage = () => {
                             <a
                               type="button"
                               className="btn btn-primary"
-                              href={`/category/edit/${category._id}`}
+                              href={`/admin/category/edit/${category._id}`}
                             >
                               <i className="bi bi-pencil-square" />
                             </a>
