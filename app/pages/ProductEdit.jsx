@@ -51,6 +51,11 @@ const ProductEdit = () => {
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
+
+        if (!response || response.error) {
+          throw new Error("Produto não encontrado");
+        }
+
         setProductData({
           ...response,
           euros: Math.floor(response.price),
@@ -60,14 +65,13 @@ const ProductEdit = () => {
         setImageFiles(response.images);
 
         if (response.discount) {
-            setUseDiscount(response.discount);
-            setDiscountType(response.discount.type || "percentage");
-            setDiscountValue(response.discount.value || "");
+          setUseDiscount(response.discount);
+          setDiscountType(response.discount.type || "percentage");
+          setDiscountValue(response.discount.value || "");
         }
-        
       } catch (error) {
-        console.error("Erro:", error.message);
         toast.error("Erro ao buscar o produto.");
+        navigate("/404");
       }
     };
     fetchProduct();
@@ -99,16 +103,24 @@ const ProductEdit = () => {
     }
   };
 
-  const addImage = (e) => {
-    setImageFiles((prev) => [...prev, `https://picsum.photos/seed/${productData.name + imgNum}/800/900`]);
-    setProductData({ ...productData, images: imageFiles });
+  const addImage = () => {
+    const newImage = `https://picsum.photos/seed/${
+      productData.name + imgNum
+    }/800/900`;
+    setImageFiles((prev) => {
+      const updated = [...prev, newImage];
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
     imgNum++;
   };
-  
-  const removeImage = (e) => {
-    const newImageFiles = imageFiles.filter((_, index) => index !== imgNum);
-    setImageFiles(newImageFiles);
-    setProductData({ ...productData, images: newImageFiles });
+
+  const removeImage = () => {
+    setImageFiles((prev) => {
+      const updated = prev.slice(0, -1);
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
     if (imgNum > 0) imgNum--;
   };
 
@@ -262,7 +274,7 @@ const ProductEdit = () => {
                   value={discountType}
                   onChange={(e) => {
                     setDiscountType(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                   disabled={!useDiscount}
                   required={useDiscount}
@@ -282,7 +294,7 @@ const ProductEdit = () => {
                   maxLength={6}
                   onChange={(e) => {
                     setDiscountValue(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                 />
               </div>
@@ -302,10 +314,18 @@ const ProductEdit = () => {
                   Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
                   Tamanho máximo: 150 mb
                 </p>
-                <button type="button" className="btn btn-primary" onClick={addImage}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={addImage}
+                >
                   Adicionar Imagem
                 </button>
-                <button type="button" className="btn btn-danger ms-3" onClick={removeImage}>
+                <button
+                  type="button"
+                  className="btn btn-danger ms-3"
+                  onClick={removeImage}
+                >
                   Remover Imagem
                 </button>
               </div>

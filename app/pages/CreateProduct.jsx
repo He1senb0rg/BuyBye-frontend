@@ -16,7 +16,7 @@ const CreateProduct = () => {
 
   const nextStep = (e) => {
     if (e) e.preventDefault();
-  
+
     if (formRef.current.checkValidity()) {
       setStep((prev) => prev + 1);
     } else {
@@ -29,7 +29,7 @@ const CreateProduct = () => {
   const [discountType, setDiscountType] = useState("percentage");
   const [discountValue, setDiscountValue] = useState("");
 
-  const [categories, setCategories] = useState([])
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -86,7 +86,7 @@ const CreateProduct = () => {
     const euros = parseInt(productData.euros || "0", 10);
     const centimos = parseInt(productData.centimos || "0", 10);
     const price = euros + centimos / 100;
-  
+
     const finalProductData = {
       ...productData,
       price: Number(price.toFixed(2)),
@@ -104,19 +104,26 @@ const CreateProduct = () => {
     }
   };
 
-  const addImage = (e) => {
-    setImageFiles((prev) => [...prev, `https://picsum.photos/seed/${productData.name + imgNum}/800/900`]);
-    setProductData({ ...productData, images: imageFiles });
+  const addImage = () => {
+    const newImage = `https://picsum.photos/seed/${
+      productData.name + imgNum
+    }/800/900`;
+    setImageFiles((prev) => {
+      const updated = [...prev, newImage];
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
     imgNum++;
   };
-  
-  const removeImage = (e) => {
-    const newImageFiles = imageFiles.filter((_, index) => index !== imgNum);
-    setImageFiles(newImageFiles);
-    setProductData({ ...productData, images: newImageFiles });
+
+  const removeImage = () => {
+    setImageFiles((prev) => {
+      const updated = prev.slice(0, -1);
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
     if (imgNum > 0) imgNum--;
   };
-
 
   const renderStep = () => {
     switch (step) {
@@ -234,7 +241,7 @@ const CreateProduct = () => {
                   value={productData.discount_type}
                   onChange={(e) => {
                     setDiscountType(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                   disabled={!useDiscount}
                   required={useDiscount}
@@ -254,7 +261,7 @@ const CreateProduct = () => {
                   maxLength={6}
                   onChange={(e) => {
                     setDiscountValue(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                 />
               </div>
@@ -274,10 +281,18 @@ const CreateProduct = () => {
                   Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
                   Tamanho máximo: 150 mb
                 </p>
-                <button type="button" className="btn btn-primary" onClick={addImage}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={addImage}
+                >
                   Adicionar Imagem
                 </button>
-                <button type="button" className="btn btn-danger ms-3" onClick={removeImage}>
+                <button
+                  type="button"
+                  className="btn btn-danger ms-3"
+                  onClick={removeImage}
+                >
                   Remover Imagem
                 </button>
               </div>

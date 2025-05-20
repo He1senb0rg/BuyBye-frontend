@@ -94,3 +94,10 @@ input::-webkit-inner-spin-button {
 .btn-hover-red:hover i {
   color: rgb(220, 53, 69);
 }
+
+.sidebar-link-home:hover,
+.sidebar-link-home:hover i,
+.sidebar-link-home:hover p {
+  color: #00adef !important;
+  transition: color 0.3s ease;
+}

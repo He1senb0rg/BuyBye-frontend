@@ -214,7 +214,10 @@ const ProductsPage = () => {
                             : `${product.price}€`}
                         </td>
                         <td>{product.stock}</td>
-                        <td>{product.averageRating}</td>
+                        <td>
+                          {product.averageRating}
+                          <i className="bi bi-star-fill text-warning ms-1" />
+                          </td>
                         <td>
                           <div className="btn-group" role="group">
                             <a
