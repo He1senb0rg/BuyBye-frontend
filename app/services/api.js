@@ -228,3 +228,49 @@ export const editProduct = async (updatedData) => {
   return response.json();
 }
 
+export const getUsers = async (page, limit, sort, search) => {
+  const response = await fetch(`${BASE_URL}/users?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+}
+
+export const getUser = async (id) => {
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+export const updateUser = async (user) => {
+  const response = await fetch(`${BASE_URL}/users/${user._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(user),
+  });
+  return response.json();
+};
+
+export const deleteUser = async (id) => {
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+

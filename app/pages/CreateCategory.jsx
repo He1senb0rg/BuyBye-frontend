@@ -25,7 +25,7 @@ const CreateCategory = () => {
         return;
       }
       toast.success("Categoria criada com sucesso!");
-      setTimeout(() => navigate("/admin/category"), 100);
+      setTimeout(() => navigate("/admin/categories"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
       toast.error("Erro ao criar a categoria.");

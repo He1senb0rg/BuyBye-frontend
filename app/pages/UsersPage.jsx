@@ -1,24 +1,24 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getProducts, deleteProduct } from "../services/api";
+import { getUsers, deleteUser } from "../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
-const ProductsPage = () => {
+const UsersPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [products, setProducts] = useState([]);
-  const [totalProducts, setTotalProducts] = useState(0);
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 10;
   const sort = searchParams.get("sort") || "mais_recente";
   const search = searchParams.get("search") || "";
 
-  const totalPages = Math.ceil(totalProducts / limit);
-
+  const totalPages = Math.ceil(totalUsers / limit);
+  
   const [searchValue, setSearchValue] = useState(search);
 
   const handleSearchChange = (e) => {
@@ -34,7 +34,7 @@ const ProductsPage = () => {
         search: searchValue,
       });
     }, 300);
-
+  
     return () => clearTimeout(delayDebounceFn);
   }, [searchValue]);
 
@@ -60,46 +60,41 @@ const ProductsPage = () => {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await getProducts(page, limit, sort, searchValue);
-        setProducts(response.products);
-        setTotalProducts(response.totalProducts);
+        const response = await getUsers(page, limit, sort, searchValue);
+        setUsers(response.users);
+        setTotalUsers(response.totalUsers);
       } catch (error) {
         console.error("Erro:", error.message);
-        toast.error("Erro ao buscar os produtos.");
+        toast.error("Erro ao buscar os utilizadores.");
       }
     };
 
-    fetchProducts();
+    fetchUsers();
   }, [searchParams]);
 
-  const handleDeleteProduct = async () => {
+  const handleDeleteUser = async () => {
     try {
-      await deleteProduct(productToDelete._id);
-      setProducts((prevProducts) =>
-        prevProducts.filter((product) => product._id !== productToDelete._id)
+      await deleteUser(userToDelete._id);
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user._id !== userToDelete._id)
       );
-
-      toast.success("Produto apagado com sucesso.");
+      
+      toast.success("Utilizador apagado com sucesso.");
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao apagar o produto.");
+      toast.error("Erro ao apagar o utilizador.");
     } finally {
-      setProductToDelete(null);
+      setUserToDelete(null);
     }
-  };
+  }
 
   return (
     <main>
       <section className="container py-4">
         <div className="d-flex align-items-center">
-          <p className="h1 mb-2">Produtos</p>
-          <a href="/admin/products/create" className="text-decoration-none">
-            <button className="btn btn-primary ms-2 my-2 py-0">
-              <i className="bi bi-plus fs-4"></i>
-            </button>
-          </a>
+          <p className="h1 mb-2">Utilizadores</p>
         </div>
         <div className="row">
           <div className="col">
@@ -168,62 +163,24 @@ const ProductsPage = () => {
                   <thead>
                     <tr>
                       <th scope="col">#</th>
-                      <th scope="col">Imagem</th>
                       <th scope="col">Nome</th>
-                      <th scope="col">Categoria</th>
-                      <th scope="col">Preço</th>
-                      <th scope="col">Desconto</th>
-                      <th scope="col">Preço Final</th>
-                      <th scope="col">Stock</th>
-                      <th scope="col">Avaliação</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Role</th>
                       <th scope="col">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {products.map((product) => (
-                      <tr key={product._id}>
-                        <td>{product._id}</td>
-                        <td>
-                          <img
-                            src={product.images[0] || "/assets/images/cao.gif"}
-                            alt={product.name}
-                            className="img-fluid rounded"
-                            style={{ width: "50px", height: "50px" }}
-                          />
-                        </td>
-                        <td>{product.name}</td>
-                        <td>{product.category.name}</td>
-                        <td>{product.price}€</td>
-                        <td>
-                          {product.discount
-                            ? product.discount.type === "percentage"
-                              ? `${product.discount.value * 100}%`
-                              : `-${product.discount.value}€`
-                            : "-"}
-                        </td>
-                        <td>
-                          {product.discount
-                            ? product.discount.type === "percentage"
-                              ? `${(
-                                  product.price *
-                                  (1 - product.discount.value)
-                                ).toFixed(2)}€`
-                              : `${(
-                                  product.price - product.discount.value
-                                ).toFixed(2)}€`
-                            : `${product.price}€`}
-                        </td>
-                        <td>{product.stock}</td>
-                        <td>
-                          {product.averageRating}
-                          <i className="bi bi-star-fill text-warning ms-1" />
-                          </td>
+                    {users.map((user) => (
+                      <tr key={user._id}>
+                        <td>{user._id}</td>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
                         <td>
                           <div className="btn-group" role="group">
                             <a
-                              href={`/product/${product._id}`}
+                              href={`/admin/users/${user._id}`}
                               className="btn btn-success"
-                                target="_blank"
                                 type="button"
                             >
                               <i className="bi bi-file-earmark-text" />
@@ -231,7 +188,7 @@ const ProductsPage = () => {
                             <a
                               type="button"
                               className="btn btn-primary"
-                                href={`/admin/products/edit/${product._id}`}
+                              href={`/admin/users/edit/${user._id}`}
                             >
                               <i className="bi bi-pencil-square" />
                             </a>
@@ -240,7 +197,7 @@ const ProductsPage = () => {
                               data-bs-target="#deleteModal"
                               type="button"
                               className="btn btn-danger"
-                              onClick={() => setProductToDelete(product)}
+                              onClick={() => setUserToDelete(user)}
                             >
                               <i className="bi bi-trash" />
                             </button>
@@ -253,20 +210,14 @@ const ProductsPage = () => {
                 <nav>
                   <ul className="pagination justify-content-center">
                     <li className={`page-item ${page <= 1 ? "disabled" : ""}`}>
-                      <button
-                        className="page-link"
-                        tabIndex="-1"
-                        onClick={() => handlePageChange(Number(page) - 1)}
-                      >
+                      <button className="page-link" tabIndex="-1" onClick={() => handlePageChange(Number(page) - 1)}>
                         Anterior
                       </button>
                     </li>
                     {Array.from({ length: totalPages }, (_, index) => (
                       <li
                         key={index}
-                        className={`page-item ${
-                          Number(page) === index + 1 ? "active" : ""
-                        }`}
+                        className={`page-item ${Number(page) === index + 1 ? "active" : ""}`}
                       >
                         <button
                           className="page-link"
@@ -276,15 +227,8 @@ const ProductsPage = () => {
                         </button>
                       </li>
                     ))}
-                    <li
-                      className={`page-item ${
-                        Number(page) >= totalPages ? "disabled" : ""
-                      }`}
-                    >
-                      <button
-                        className="page-link"
-                        onClick={() => handlePageChange(Number(page) + 1)}
-                      >
+                    <li className={`page-item ${Number(page) >= totalPages ? "disabled" : ""}`}>
+                      <button className="page-link" onClick={() => handlePageChange(Number(page) + 1)}>
                         Próximo
                       </button>
                     </li>
@@ -299,7 +243,7 @@ const ProductsPage = () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Apagar {productToDelete?.name}</h5>
+              <h5 className="modal-title">Apagar {userToDelete?.name}</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -308,8 +252,7 @@ const ProductsPage = () => {
               ></button>
             </div>
             <div className="modal-body">
-              Tens a certeza que queres apagar a categoria{" "}
-              {productToDelete?.name}? Esta ação não pode ser revertida.
+              Tens a certeza que queres apagar o utilizador {userToDelete?.name}? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
               <button
@@ -319,12 +262,7 @@ const ProductsPage = () => {
               >
                 Cancelar
               </button>
-              <button
-                type="button"
-                data-bs-dismiss="modal"
-                className="btn btn-danger"
-                onClick={handleDeleteProduct}
-              >
+              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteUser}>
                 Apagar
               </button>
             </div>
@@ -334,4 +272,4 @@ const ProductsPage = () => {
     </main>
   );
 };
-export default ProductsPage;
+export default UsersPage;
