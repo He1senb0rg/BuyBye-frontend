@@ -49,6 +49,16 @@ const SideBarAdmin = () => {
           </NavLink>
         </li>
       </ul>
+      <hr />
+      <div className="d-flex align-items-center ">
+        <a
+          href="/"
+          className="d-flex align-items-center text-white text-decoration-none sidebar-link-home"
+        >
+          <i className="bi bi-house-door-fill fs-2 me-2"></i>
+          <p className="h5 mt-1">Voltar à loja</p>
+        </a>
+      </div>
     </aside>
   );
 };

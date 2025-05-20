@@ -26,6 +26,7 @@ import "./assets/css/style.css";
 import { AuthProvider } from "./contexts/AuthContext.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
+import NotFound from "./pages/404.jsx";
 
 function App() {
   return (
@@ -63,7 +64,11 @@ function App() {
             <Route path="product/edit/:id" element={<ProductEdit />} />
             <Route path="product/create" element={<CreateProduct />} />
           </Route>
+          
+          <Route path="*" element={<NotFound />} />
         </Routes>
+
+
       </Router>
     </AuthProvider>
   );
