@@ -7,7 +7,7 @@ const ShopPictureCard = () => {
       <div className="card-body text-center">
         <img
           className="img-account-profile rounded-circle mb-3"
-          src="https://media.tenor.com/bfY0E54u2IcAAAAM/dog-swinging.gif"
+          src="/assets/images/account-profile.png"
           alt="profile"
           width="40%"
         />
