@@ -41,11 +41,9 @@ const ShopDetailsCard = () => {
             </div>
           </div>
           <div className='row'>
-            <div className='col'>
               <button className="btn btn-primary" type="submit">
                 Guardar
               </button>
-            </div>
           </div>
         </form>
       </div>
