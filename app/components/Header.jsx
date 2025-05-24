@@ -3,22 +3,16 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    window.location.reload();
+    setTimeout(() => navigate("/"), 100);
   };
-
-  useEffect(() => {
-    const message = localStorage.getItem("logoutMessage");
-    if (message) {
-      toast.success(message);
-      localStorage.removeItem("logoutMessage");
-    }
-  }, []);
 
   return (
     <header>
@@ -121,6 +115,13 @@ const Header = () => {
                         Perfil do Utilizador
                       </a>
                     </li>
+                    {user.role === "admin" && (
+                      <li>
+                        <a className="dropdown-item" href="/admin/dashboard">
+                          Painel de Controlo
+                        </a>
+                      </li>
+                    )}
                     <li>
                       <button className="dropdown-item" onClick={handleLogout}>
                         Terminar Sessão

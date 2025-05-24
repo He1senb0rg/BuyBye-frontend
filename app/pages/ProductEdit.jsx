@@ -12,6 +12,7 @@ const ProductEdit = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const { id } = useParams();
+  let imgNum = 0;
   const [productData, setProductData] = useState({
     name: "",
     description: "",
@@ -50,7 +51,11 @@ const ProductEdit = () => {
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
-        console.log("Produto:", response);
+
+        if (!response || response.error) {
+          throw new Error("Produto não encontrado");
+        }
+
         setProductData({
           ...response,
           euros: Math.floor(response.price),
@@ -60,14 +65,13 @@ const ProductEdit = () => {
         setImageFiles(response.images);
 
         if (response.discount) {
-            setUseDiscount(response.discount);
-            setDiscountType(response.discount.type || "percentage");
-            setDiscountValue(response.discount.value || "");
+          setUseDiscount(response.discount);
+          setDiscountType(response.discount.type || "percentage");
+          setDiscountValue(response.discount.value || "");
         }
-        
       } catch (error) {
-        console.error("Erro:", error.message);
         toast.error("Erro ao buscar o produto.");
+        navigate("/404");
       }
     };
     fetchProduct();
@@ -99,6 +103,27 @@ const ProductEdit = () => {
     }
   };
 
+  const addImage = () => {
+    const newImage = `https://picsum.photos/seed/${
+      productData.name + imgNum
+    }/800/900`;
+    setImageFiles((prev) => {
+      const updated = [...prev, newImage];
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
+    imgNum++;
+  };
+
+  const removeImage = () => {
+    setImageFiles((prev) => {
+      const updated = prev.slice(0, -1);
+      setProductData((prevData) => ({ ...prevData, images: updated }));
+      return updated;
+    });
+    if (imgNum > 0) imgNum--;
+  };
+
   const handleChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
   };
@@ -125,7 +150,7 @@ const ProductEdit = () => {
       }
 
       toast.success("Produto editado com sucesso!");
-      setTimeout(() => navigate("/products"), 100);
+      setTimeout(() => navigate("/admin/products"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
       toast.error("Erro ao editar o produto.");
@@ -249,7 +274,7 @@ const ProductEdit = () => {
                   value={discountType}
                   onChange={(e) => {
                     setDiscountType(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                   disabled={!useDiscount}
                   required={useDiscount}
@@ -269,7 +294,7 @@ const ProductEdit = () => {
                   maxLength={6}
                   onChange={(e) => {
                     setDiscountValue(e.target.value);
-                    handleChange;
+                    handleChange(e);
                   }}
                 />
               </div>
@@ -279,7 +304,7 @@ const ProductEdit = () => {
       case 2:
         return (
           <>
-            <div className="row">
+            <div className="row mb-3">
               <div className="col-12 col-md-8">
                 <ProductImagesSwiper imageFiles={imageFiles} />
               </div>
@@ -289,8 +314,19 @@ const ProductEdit = () => {
                   Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
                   Tamanho máximo: 150 mb
                 </p>
-                <button type="button" className="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={addImage}
+                >
                   Adicionar Imagem
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger ms-3"
+                  onClick={removeImage}
+                >
+                  Remover Imagem
                 </button>
               </div>
             </div>
