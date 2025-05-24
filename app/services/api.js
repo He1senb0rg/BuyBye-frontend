@@ -113,14 +113,20 @@ export const removeFromWishlist = async (userId, productId) => {
   return response.json();
 };
 
-export const getWishlist = async (userId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/${userId}`, {
+export const getWishlist = async () => {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Failed to fetch wishlist: ${response.status} - ${text}`);
+  }
+
   return response.json();
 };
 

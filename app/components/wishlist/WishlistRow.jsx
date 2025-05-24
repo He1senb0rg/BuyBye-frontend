@@ -1,50 +1,41 @@
-import React from 'react';
-import { Button } from 'react-bootstrap';
-import { useAuth } from '../../contexts/AuthContext';
+import React from "react";
+import { Button } from "react-bootstrap";
+import { useAuth } from "../../contexts/AuthContext";
+import toast from "react-hot-toast";
+import { removeFromWishlist } from "../../services/api";
 
-const WishlistRow = ({ item, onRemoved }) => {
+const WishlistRow = ({ product }) => {
   const { user } = useAuth();
 
-  const handleRemove = () => {
-    if (!user) {
-      alert('You must be logged in to remove items from your wishlist.');
-      return;
+  const handleRemove = async () => {
+    try {
+      await removeFromWishlist(user._id, product._id);
+      toast.success("Removed from wishlist");
+      window.location.reload(); // or trigger a refresh via props/state
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      toast.error("Failed to remove item.");
     }
-
-    fetch('/api/wishlist/remove', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-        userId: user._id,
-        productId: item.product._id,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('Removed from wishlist:', data);
-        alert('Produto removido da lista de desejos.');
-        if (onRemoved) onRemoved(item.product._id); // trigger a reload or update
-      })
-      .catch((err) => {
-        console.error('Error removing from wishlist:', err);
-        alert('Erro ao remover o item.');
-      });
   };
 
   return (
-    <tr>
-      <td>{item.product.name}</td>
-      <td>€{item.product.price}</td>
-      <td>{item.product.stock > 0 ? 'Em stock' : 'Esgotado'}</td>
-      <td>
-        <Button variant="danger" onClick={handleRemove}>
-          Remover
-        </Button>
-      </td>
-    </tr>
+    <div className="col-md-4 mb-4">
+      <div className="card h-100">
+        <img
+          src={product.images?.[0] || "/assets/images/cao.gif"}
+          className="card-img-top"
+          alt={product.name}
+        />
+        <div className="card-body">
+          <h5 className="card-title">{product.name}</h5>
+          <p className="card-text">{product.description}</p>
+          <p className="h5">{product.price}€</p>
+          <button className="btn btn-danger mt-2" onClick={handleRemove}>
+            Remove
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 
