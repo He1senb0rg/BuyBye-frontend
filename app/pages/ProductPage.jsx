@@ -9,10 +9,12 @@ import ProductOptions from "../components/ProductOptions";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
 import StarSelector from "../components/StarSelector";
+import { useNavigate } from "react-router-dom";
 
 const ProductPage = () => {
   const { user } = useAuth();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
   const [errorProduct, setErrorProduct] = useState(null);
@@ -61,11 +63,15 @@ const ProductPage = () => {
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
+
+        if (!response || response.error) {
+          throw new Error("Produto não encontrado");
+        }
+
         setProduct(response);
-        console.log("Product response:", response);
       } catch (error) {
-        console.errorProduct("Failed to fetch product:", error);
         setErrorProduct("Failed to fetch product");
+        navigate("/404");
       } finally {
         setLoadingProduct(false);
       }
@@ -261,7 +267,8 @@ const ProductPage = () => {
                           <i className="bi bi-heart"></i>
                         </button>
                       </div>
-                      <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
+                      {product.stock > 0 ? (
+                        <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
                         <button
                           className="btn btn-primary w-100 h-100 fw-bold"
                           type="button"
@@ -269,6 +276,18 @@ const ProductPage = () => {
                           Adicionar ao Carrinho
                         </button>
                       </div>
+                      ) : (
+                        <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
+                        <button
+                        disabled
+                          className="btn btn-secondary w-100 h-100 fw-bold"
+                          type="button"
+                        >
+                          Sem Stock
+                        </button>
+                      </div>
+                      )}
+                      
                     </div>
                   </div>
                 </div>
