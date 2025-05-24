@@ -154,7 +154,7 @@ const ProductPage = () => {
 
   const toggleWishlist = async () => {
     if (!user) {
-      toast.error("Inicie sessão para adicionar à lista de desejos.");
+      toast.error("Inicie sessão para adicionar à wishlist.");
       return;
     }
 
@@ -162,14 +162,14 @@ const ProductPage = () => {
       if (isWishlisted) {
         await removeFromWishlist(product._id);
         setIsWishlisted(false);
-        toast("Removido da lista de desejos.");
+        toast("Removido da lista wishlist.");
       } else {
         await addToWishlist(product._id);
         setIsWishlisted(true);
-        toast.success("Adicionado à lista de desejos!");
+        toast.success("Adicionado à wishlist!");
       }
     } catch (err) {
-      toast.error("Erro ao atualizar lista de desejos.");
+      toast.error("Erro ao atualizar wishlist.");
     }
   };
 
@@ -321,11 +321,39 @@ const ProductPage = () => {
               </div>
             </div>
           </section>
-
-          {/* ...rest of the component remains unchanged (reviews, etc.) */}
-
-        </>
+ </>
       )}
+
+      <div className="modal fade" id="deleteModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Apagar Comentário</h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Fechar"
+              ></button>
+            </div>
+            <div className="modal-body">
+              Tens a certeza que queres apagar este comentário? Esta ação não pode ser revertida.
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button
+                className="btn btn-danger"
+                data-bs-dismiss="modal"
+                onClick={() => handleDeleteReview(deleteReviewId)}
+              >
+                Apagar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 };
