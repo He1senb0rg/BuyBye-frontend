@@ -256,11 +256,32 @@ export const updateCartItem = async (productId, updatedData) => {
 export const editProduct = async (updatedData) => {
   const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
     method: "PUT",
+
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
+
+    body: JSON.stringify(orderData),
+  });
+  return response.json();
+};
+
+// Checkout
+export const createOrder = async (orderData) => {
+  const response = await fetch(`${BASE_URL}/checkout`, {
+    method: "POST",
     body: JSON.stringify(updatedData),
   });
   return response.json();
 }
+
+export const fetchBillingHistory = async () => {
+  const res = await fetch('/api/checkout/billing-history', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`, // or however you store auth
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch billing history');
+  return res.json();
+};

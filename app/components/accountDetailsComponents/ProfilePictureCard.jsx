@@ -9,7 +9,7 @@ const ProfilePictureCard = () => {
           className="img-account-profile rounded-circle mb-3"
           src="/assets/images/account-profile.png"
           alt="profile"
-          width="40%"
+          width="29%"
         />
         <div className="small font-italic text-muted mb-3">
           JPG ou PNG menor que 5 MB

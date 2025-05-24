@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Home from "./pages/Home.jsx";
-import Perfil from "./pages/Perfil.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Cart from "./pages/Cart.jsx";
@@ -14,6 +13,7 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import Checkout from './pages/Checkout';
 import Wishlist from "./pages/Wishlist.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ProductEdit from "./pages/ProductEdit.jsx";
@@ -47,6 +47,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/shop/edit" element={<ShopEditor />} />
+            <Route path="/checkout" element={<Checkout />} />
             
             <Route
               path="/account/profile"
