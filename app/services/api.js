@@ -1,18 +1,18 @@
 const BASE_URL = "http://localhost:3000/api";
 
+// User Authentication
 export const userLogin = async (credentials) => {
-    const response = await fetch(`${BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-    });
-    return response.json();
+  const response = await fetch(`${BASE_URL}/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+  });
+  return response.json();
+};
 
-}
-
-export const userRegister = async(user) => {
+export const userRegister = async (user) => {
   const response = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers: {
@@ -21,9 +21,7 @@ export const userRegister = async(user) => {
     body: JSON.stringify(user),
   });
   return response.json();
-}
-
-//Product
+};
 
 export const getProducts = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/products?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
@@ -60,7 +58,7 @@ export const createProduct = async (product) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify(product),
   });
@@ -72,7 +70,7 @@ export const updateProduct = async (id, product) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify(product),
   });
@@ -84,13 +82,49 @@ export const deleteProduct = async (id) => {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
   return response.json();
 };
 
-//Category
+// Wishlist
+export const addToWishlist = async (userId, productId) => {
+  const response = await fetch(`${BASE_URL}/wishlist/add`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ userId, productId }),
+  });
+  return response.json();
+};
+
+export const removeFromWishlist = async (userId, productId) => {
+  const response = await fetch(`${BASE_URL}/wishlist/remove`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ userId, productId }),
+  });
+  return response.json();
+};
+
+export const getWishlist = async (userId) => {
+  const response = await fetch(`${BASE_URL}/wishlist/${userId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+// Category
 export const getCategories = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/categories?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
@@ -99,7 +133,7 @@ export const getCategories = async (page, limit, sort, search) => {
     },
   });
   return response.json();
-}
+};
 
 export const getCategoryById = async (id) => {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
@@ -116,7 +150,7 @@ export const createCategory = async (category) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify(category),
   });
@@ -128,7 +162,7 @@ export const updateCategory = async (id, category) => {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify(category),
   });
@@ -140,36 +174,39 @@ export const deleteCategory = async (id) => {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
   return response.json();
 };
 
+// Review
 export const createReview = async (review) => {
   const response = await fetch(`${BASE_URL}/reviews`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
     body: JSON.stringify(review),
   });
   return response.json();
-}
+};
+
+
 
 export const deleteReview = async (id) => {
   const response = await fetch(`${BASE_URL}/reviews/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
   return response.json();
-}
+};
 
-
+// Cart
 export const getCart = async () => {
   const response = await fetch(`${BASE_URL}/cart`, {
     method: "GET",
@@ -227,4 +264,3 @@ export const editProduct = async (updatedData) => {
   });
   return response.json();
 }
-

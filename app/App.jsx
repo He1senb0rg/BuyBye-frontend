@@ -14,12 +14,14 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import Wishlist from "./pages/Wishlist.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ProductEdit from "./pages/ProductEdit.jsx";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import "./assets/css/style.css";
 
@@ -58,6 +60,23 @@ function App() {
               path="/account/security"
               element={<AccountDetailsSecurity />}
             />
+                
+            <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            }
+          />
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
@@ -77,4 +96,5 @@ function App() {
     </AuthProvider>
   );
 }
+
 export default App;
