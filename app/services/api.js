@@ -23,6 +23,8 @@ export const userRegister = async (user) => {
   return response.json();
 };
 
+//Products
+
 export const getProducts = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/products?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
@@ -101,20 +103,21 @@ export const addToWishlist = async (userId, productId) => {
   return response.json();
 };
 
-export const removeFromWishlist = async (userId, productId) => {
+export const removeFromWishlist = async (productId) => {
   const response = await fetch(`${BASE_URL}/wishlist/remove`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
   return response.json();
 };
 
-export const getWishlist = async () => {
-  const response = await fetch(`${BASE_URL}/wishlist`, {
+
+export const getWishlist = async (userId) => {
+  const response = await fetch(`${BASE_URL}/wishlist/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -123,12 +126,14 @@ export const getWishlist = async () => {
   });
 
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Failed to fetch wishlist: ${response.status} - ${text}`);
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch wishlist: ${errorText}`);
   }
 
   return response.json();
 };
+
+
 
 // Category
 export const getCategories = async (page, limit, sort, search) => {

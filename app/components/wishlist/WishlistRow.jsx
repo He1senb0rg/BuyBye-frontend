@@ -1,17 +1,13 @@
 import React from "react";
-import { Button } from "react-bootstrap";
-import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
 import { removeFromWishlist } from "../../services/api";
 
-const WishlistRow = ({ product }) => {
-  const { user } = useAuth();
-
+const WishlistRow = ({ product, onRemove }) => {
   const handleRemove = async () => {
     try {
-      await removeFromWishlist(user._id, product._id);
+      await removeFromWishlist(product._id);
       toast.success("Removed from wishlist");
-      window.location.reload(); // or trigger a refresh via props/state
+      onRemove(product._id);
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       toast.error("Failed to remove item.");

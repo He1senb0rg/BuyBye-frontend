@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import WishlistRow from "./WishlistRow";
 import { useAuth } from "../../contexts/AuthContext";
 import { getWishlist } from "../../services/api";
@@ -10,34 +10,37 @@ const WishlistTable = () => {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-  const fetchWishlist = async () => {
-    console.log("Fetching wishlist for user:", user);
+  const fetchWishlist = useCallback(async () => {
+  try {
+    const res = await getWishlist(user.id);
+    console.log("Wishlist response:", res);
 
-    const userId = user?.id || user?._id;
-    if (!userId) {
-      console.warn("No valid user ID found:", user);
-      return;
-    }
-
-    try {
-      const res = await getWishlist(userId);
-      console.log("Wishlist response:", res);
-
-      if (!res || !res.items) {
-        toast.error("Failed to load wishlist.");
-        return;
-      }
-
+    if (!res || !res.items) {
+      toast.error("Failed to load wishlist.");
+    } else {
       setWishlistItems(res.items);
-    } catch (err) {
-      console.error("Error fetching wishlist:", err);
-      toast.error("Error fetching wishlist.");
     }
-  };
-
-  fetchWishlist();
+  } catch (err) {
+    console.error("Error fetching wishlist:", err);
+    toast.error("Error fetching wishlist.");
+  } finally {
+    setLoading(false);
+  }
 }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchWishlist();
+    } else {
+      setLoading(false);
+    }
+  }, [user, fetchWishlist]);
+
+  const handleItemRemoved = (productId) => {
+    setWishlistItems((prevItems) =>
+      prevItems.filter((item) => item.product?._id !== productId)
+    );
+  };
 
   if (!user) {
     return <p className="text-center mt-4">Please log in to view your wishlist.</p>;
@@ -60,7 +63,11 @@ const WishlistTable = () => {
         <div className="row">
           {wishlistItems.map((item) =>
             item.product ? (
-              <WishlistRow key={item.product._id} product={item.product} />
+              <WishlistRow
+                key={item.product._id}
+                product={item.product}
+                onRemove={handleItemRemoved}
+              />
             ) : null
           )}
         </div>
