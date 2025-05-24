@@ -91,8 +91,10 @@ export const deleteProduct = async (id) => {
 };
 
 // Wishlist
+// services/api.js
+
 export const addToWishlist = async (userId, productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/add`, {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -100,27 +102,37 @@ export const addToWishlist = async (userId, productId) => {
     },
     body: JSON.stringify({ userId, productId }),
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to add to wishlist: ${errorText}`);
+  }
+
   return response.json();
 };
 
-export const removeFromWishlist = async (productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/remove`, {
-    method: "POST",
+export const removeFromWishlist = async (userId, productId) => {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ productId }),
+    body: JSON.stringify({ userId, productId }),
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to remove from wishlist: ${errorText}`);
+  }
+
   return response.json();
 };
 
-
-export const getWishlist = async (userId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/`, {
+export const getWishlist = async () => {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
