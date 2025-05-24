@@ -27,7 +27,7 @@ const EditCategory = () => {
         return;
       }
       toast.success("Categoria editada com sucesso!");
-      setTimeout(() => navigate("/"), 100);
+      setTimeout(() => navigate("/admin/category"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
       toast.error("Erro ao editar a categoria.");
@@ -38,10 +38,15 @@ const EditCategory = () => {
     const fetchCategory = async () => {
       try {
         const response = await getCategoryById(id);
+
+        if (!response || response.error) {
+          throw new Error("Categoria não encontrada");
+        }
+
         setCategory(response);
       } catch (error) {
-        console.error("Erro:", error.message);
         toast.error("Erro ao buscar a categoria.");
+        navigate("/404");
       }
     };
 

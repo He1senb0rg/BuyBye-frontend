@@ -1,13 +1,17 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout(); 
-    window.location.reload();
+    logout();
+    setTimeout(() => navigate("/"), 100);
   };
 
   return (
@@ -127,9 +131,7 @@ const Header = () => {
               >
                 <li>
                   <h6 className="dropdown-header bg-primary text-light fw-bold py-2 rounded-top">
-                    {user
-                      ? `Olá, ${user.name}!`
-                      : "Junta-te à BuyBye!"}
+                    {user ? `Olá, ${user.name}!` : "Junta-te à BuyBye!"}
                   </h6>
                 </li>
                 {user ? (
@@ -139,6 +141,13 @@ const Header = () => {
                         Perfil do Utilizador
                       </a>
                     </li>
+                    {user.role === "admin" && (
+                      <li>
+                        <a className="dropdown-item" href="/admin/dashboard">
+                          Painel de Controlo
+                        </a>
+                      </li>
+                    )}
                     <li>
                       <button className="dropdown-item" onClick={handleLogout}>
                         Terminar Sessão

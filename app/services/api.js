@@ -23,9 +23,8 @@ export const userRegister = async (user) => {
   return response.json();
 };
 
-// Product
-export const getProducts = async () => {
-  const response = await fetch(`${BASE_URL}/products`, {
+export const getProducts = async (page, limit, sort, search) => {
+  const response = await fetch(`${BASE_URL}/products?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -253,3 +252,15 @@ export const updateCartItem = async (productId, updatedData) => {
   });
   return response.json();
 };
+
+export const editProduct = async (updatedData) => {
+  const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(updatedData),
+  });
+  return response.json();
+}
