@@ -24,6 +24,9 @@ import Navbar from "./components/Navbar.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+
+import ShopEditor from "./pages/ShopEditor.jsx";
+
 import MainLayout from "./layouts/MainLayout.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import NotFound from "./pages/404.jsx";
@@ -41,6 +44,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/shop/edit" element={<ShopEditor />} />
             
             <Route
               path="/account/profile"
