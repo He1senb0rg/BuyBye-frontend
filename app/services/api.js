@@ -91,39 +91,43 @@ export const deleteProduct = async (id) => {
 };
 
 // Wishlist
-// services/api.js
+export const addToWishlist = async (productId) => {
+  console.log("Sending addToWishlist request with:", productId);
+  console.log("Token being sent:", localStorage.getItem("token"));
 
-export const addToWishlist = async (userId, productId) => {
   const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
 
+  console.log("Raw response:", response);
+
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to add to wishlist: ${errorText}`);
+    const errorData = await response.json();
+    console.error("Failed response data:", errorData);
+    throw new Error(`Failed to add to wishlist: ${JSON.stringify(errorData)}`);
   }
 
   return response.json();
 };
 
-export const removeFromWishlist = async (userId, productId) => {
+export const removeFromWishlist = async (productId) => {
   const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to remove from wishlist: ${errorText}`);
+    const errorData = await response.json();
+    throw new Error(`Failed to remove from wishlist: ${JSON.stringify(errorData)}`);
   }
 
   return response.json();
@@ -144,7 +148,6 @@ export const getWishlist = async () => {
 
   return response.json();
 };
-
 
 
 // Category

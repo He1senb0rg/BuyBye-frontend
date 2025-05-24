@@ -12,7 +12,7 @@ const WishlistTable = () => {
 
   const fetchWishlist = useCallback(async () => {
   try {
-    const res = await getWishlist(user.id);
+    const res = await getWishlist();
     console.log("Wishlist response:", res);
 
     if (!res || !res.items) {
