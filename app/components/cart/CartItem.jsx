@@ -1,64 +1,85 @@
 import React, { useState } from 'react';
+import { updateCartItem, removeFromCart } from '../../services/api';
 
-const CartItem = ({ item, onRemove }) => {
-  const [quantity, setQuantity] = useState(item.quantity || 1);
-  const [wishlisted, setWishlisted] = useState(false);
+const CartItem = ({ item, onUpdate, onRemove }) => {
+  const [loading, setLoading] = useState(false);
 
-  const toggleWishlist = () => setWishlisted(!wishlisted);
-  const increaseQty = () => setQuantity((prev) => prev + 1);
-  const decreaseQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
+  const handleQuantityChange = async (newQty) => {
+    if (newQty < 1) return; // prevent 0 quantity
+    setLoading(true);
+    try {
+      await updateCartItem(item.product._id, {
+        quantity: newQty,
+        selectedColor: item.selectedColor,
+        selectedSize: item.selectedSize
+      });
+      onUpdate(); // tells parent to refetch or sync
+    } catch (err) {
+      console.error('Erro ao atualizar quantidade:', err);
+    }
+    setLoading(false);
+  };
+
+  const handleRemove = async () => {
+    setLoading(true);
+    try {
+      await removeFromCart(item.product._id, {
+        selectedColor: item.selectedColor,
+        selectedSize: item.selectedSize
+      });
+      onUpdate(); // same: refetch or sync
+    } catch (err) {
+      console.error('Erro ao remover item:', err);
+    }
+    setLoading(false);
+  };
 
   return (
-  <div className="card mb-3 w-100 position-relative">
-    {/* Wishlist + Remove buttons */}
-    <div className="d-inline-flex gap-2 position-absolute top-0 end-0 mx-2 my-2">
-      <button
-        type="button"
-        className="btn btn-link p-0"
-        onClick={toggleWishlist}
-        aria-label="Toggle Wishlist"
-      >
-        <i className={`bi ${wishlisted ? 'bi-heart-fill text-danger' : 'bi-heart'}`} />
-      </button>
-      <button
-        type="button"
-        className="btn btn-outline-danger btn-sm"
-        onClick={() => onRemove(item.id)}
-        aria-label="Remover do Carrinho"
-      >
-        <i className="bi bi-x"></i>
-      </button>
-    </div>
-
-    {/* Flex layout instead of grid */}
-    <div className="d-flex flex-row">
-      {/* Image on the left, stays left always */}
-      <div className="p-2" style={{ flex: '0 0 120px' }}>
-        <img
-          src={item.image}
-          className="img-fluid rounded-start"
-          alt={item.name}
-          style={{ maxWidth: '100px', height: 'auto' }}
-        />
+    <div className="card mb-3 w-100 position-relative">
+      {/* Remove button */}
+      <div className="position-absolute top-0 end-0 p-2">
+        <button
+          className="btn btn-outline-danger btn-sm"
+          onClick={handleRemove}
+          disabled={loading}
+        >
+          <i className="bi bi-x"></i>
+        </button>
       </div>
 
-      {/* Info on the right */}
-      <div className="flex-grow-1 p-3">
-        <h5 className="card-title">{item.name}</h5>
-
-        <div className="d-flex align-items-center mb-2">
-          <button className="btn btn-outline-secondary btn-sm me-2" onClick={decreaseQty}>-</button>
-          <span>{quantity}</span>
-          <button className="btn btn-outline-secondary btn-sm ms-2" onClick={increaseQty}>+</button>
+      <div className="d-flex flex-row">
+        <div className="p-2" style={{ flex: '0 0 120px' }}>
+          <img
+            src={item.product.image}
+            className="img-fluid rounded-start"
+            alt={item.product.name}
+            style={{ maxWidth: '100px', height: 'auto' }}
+          />
         </div>
-
-        <p className="card-text fw-bold mb-0">
-          €{(item.price * quantity).toFixed(2)}
-        </p>
-        <div className="text-muted">€{item.price.toFixed(2)} cada</div>
+        <div className="flex-grow-1 p-3">
+          <h5>{item.product.name}</h5>
+          <div className="d-flex align-items-center mb-2">
+            <button
+              className="btn btn-outline-secondary btn-sm me-2"
+              onClick={() => handleQuantityChange(item.quantity - 1)}
+              disabled={loading || item.quantity <= 1}
+            >
+              -
+            </button>
+            <span>{item.quantity}</span>
+            <button
+              className="btn btn-outline-secondary btn-sm ms-2"
+              onClick={() => handleQuantityChange(item.quantity + 1)}
+              disabled={loading}
+            >
+              +
+            </button>
+          </div>
+          <p className="fw-bold mb-0">€{(item.product.price * item.quantity).toFixed(2)}</p>
+          <div className="text-muted">€{item.product.price.toFixed(2)} cada</div>
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 

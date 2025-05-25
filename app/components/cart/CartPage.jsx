@@ -1,18 +1,21 @@
 import React from 'react';
+import CartItemsList from './CartItemList';
+import CartSummary from './CartSummary';
+import CartHeader from './CartHeader';
 
-const CartPage = ({ children }) => {
+const CartPage = () => {
   return (
     <main className="container-fluid">
       <div className="row">
-        {/* Make left column take more space on large screens */}
-        <div className="col-md-10 offset-md-1">
-          {children[0] /* CartHeader */}
-          {children[1] /* CartItemsList */}
+        {/* Left side: header + items */}
+        <div className="col-md-8 offset-md-1">
+          <CartHeader />
+          <CartItemsList />
         </div>
 
-        {/* CartSummary stays on the right, smaller */}
-        <div className="col-md-4">
-          {children[2] /* CartSummary */}
+        {/* Right side: summary */}
+        <div className="col-md-3">
+          <CartSummary />
         </div>
       </div>
     </main>

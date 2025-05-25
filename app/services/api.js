@@ -279,6 +279,8 @@ export const updateCartItem = async (productId, updatedData) => {
   return response.json();
 };
 
+//Product Management
+
 export const editProduct = async (updatedData) => {
   const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
     method: "PUT",

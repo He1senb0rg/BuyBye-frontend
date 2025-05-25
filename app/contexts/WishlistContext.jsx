@@ -1,6 +1,10 @@
 // context/WishlistContext.jsx
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getWishlist, addToWishlist, removeFromWishlist } from "../services/api";
+import {
+  getWishlist,
+  addToWishlist,
+  removeFromWishlist,
+} from "../services/api";
 import { useAuth } from "./AuthContext";
 
 const WishlistContext = createContext();
@@ -16,7 +20,11 @@ export const WishlistProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await getWishlist();
-      setWishlist(data.wishlist || []);
+      // Normalize wishlist to be a flat array of product objects
+      const normalized = (data.wishlist || []).map((item) =>
+        item.product ? item.product : item
+      );
+      setWishlist(normalized);
     } catch (err) {
       console.error("Error fetching wishlist:", err);
     } finally {
@@ -41,7 +49,9 @@ export const WishlistProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   return (
-    <WishlistContext.Provider value={{ wishlist, loading, addItem, removeItem }}>
+    <WishlistContext.Provider
+      value={{ wishlist, loading, addItem, removeItem }}
+    >
       {children}
     </WishlistContext.Provider>
   );
