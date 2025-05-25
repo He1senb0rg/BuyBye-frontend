@@ -9,15 +9,15 @@ import {
   addToWishlist,
   removeFromWishlist,
   addToCart, // <-- Added import
-} from "../services/api";
-import ProductImagesSwiper from "../components/ProductImagesSwiper";
-import Review from "../components/Review";
-import StarRating from "../components/StarRating";
-import StarBar from "../components/StarBar";
-import ProductOptions from "../components/ProductOptions";
-import { useAuth } from "../contexts/AuthContext";
+} from "../../services/api";
+import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
+import Review from "../../components/reviews/Review";
+import StarRating from "../../components/reviews/StarRating";
+import StarBar from "../../components/reviews/StarBar";
+import ProductOptions from "../../components/products/ProductOptions";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import StarSelector from "../components/StarSelector";
+import StarSelector from "../../components/reviews/StarSelector";
 import { useNavigate } from "react-router-dom";
 
 const ProductPage = () => {

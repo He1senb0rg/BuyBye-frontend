@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getProducts, deleteProduct } from "../services/api";
+import { getProducts, deleteProduct } from "../../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 

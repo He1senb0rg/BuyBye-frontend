@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import StarRating from "./StarRating";
-import { addToWishlist } from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
+import StarRating from "../reviews/StarRating";
+import { addToWishlist } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
 
 const Product = ({

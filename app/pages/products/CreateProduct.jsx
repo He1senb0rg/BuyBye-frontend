@@ -2,11 +2,11 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useState, useEffect, useRef } from "react";
-import { createProduct, getCategories } from "../services/api";
-import FloatingInput from "../components/FloatingInput";
-import FloatingSelect from "../components/FloatingSelect";
-import Checkbox from "../components/Checkbox";
-import ProductImagesSwiper from "../components/ProductImagesSwiper";
+import { createProduct, getCategories } from "../../services/api";
+import FloatingInput from "../../components/FloatingInput";
+import FloatingSelect from "../../components/FloatingSelect";
+import Checkbox from "../../components/Checkbox";
+import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 
 const CreateProduct = () => {
   const navigate = useNavigate();
