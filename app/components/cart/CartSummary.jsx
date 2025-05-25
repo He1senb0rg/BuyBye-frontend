@@ -1,11 +1,14 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-const CartSummary = () => {
+const CartSummary = ({ items }) => {
   const navigate = useNavigate();
 
+  const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const shipping = items.length > 0 ? 5 : 0;
+  const total = subtotal + shipping;
+
   const handleCheckout = () => {
-    // You could add validations here
     navigate('/checkout');
   };
 
@@ -14,9 +17,10 @@ const CartSummary = () => {
       <div className="card">
         <div className="card-body">
           <h5 className="card-title">Resumo da Compra</h5>
-          <p className="card-text">Subtotal: €100.00</p>
-          <p className="card-text">Envio: €5.00</p>
+          <p className="card-text">Subtotal: €{subtotal.toFixed(2)}</p>
+          <p className="card-text">Envio: €{shipping.toFixed(2)}</p>
           <hr />
+          <p className="fw-bold">Total: €{total.toFixed(2)}</p>
           <button onClick={handleCheckout} className="btn btn-primary w-100 mt-3">
             Finalizar Compra
           </button>

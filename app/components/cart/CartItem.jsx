@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { updateCartItem, removeFromCart } from '../../services/api';
 
-const CartItem = ({ item, onUpdate, onRemove }) => {
+const CartItem = ({ item, onUpdate }) => {
   const [loading, setLoading] = useState(false);
 
   const handleQuantityChange = async (newQty) => {
-    if (newQty < 1) return; // prevent 0 quantity
+    if (newQty < 1) return;
     setLoading(true);
     try {
       await updateCartItem(item.product._id, {
@@ -13,7 +13,7 @@ const CartItem = ({ item, onUpdate, onRemove }) => {
         selectedColor: item.selectedColor,
         selectedSize: item.selectedSize
       });
-      onUpdate(); // tells parent to refetch or sync
+      onUpdate();
     } catch (err) {
       console.error('Erro ao atualizar quantidade:', err);
     }
@@ -23,11 +23,8 @@ const CartItem = ({ item, onUpdate, onRemove }) => {
   const handleRemove = async () => {
     setLoading(true);
     try {
-      await removeFromCart(item.product._id, {
-        selectedColor: item.selectedColor,
-        selectedSize: item.selectedSize
-      });
-      onUpdate(); // same: refetch or sync
+      await removeFromCart(item.product._id);
+      onUpdate();
     } catch (err) {
       console.error('Erro ao remover item:', err);
     }
@@ -36,7 +33,6 @@ const CartItem = ({ item, onUpdate, onRemove }) => {
 
   return (
     <div className="card mb-3 w-100 position-relative">
-      {/* Remove button */}
       <div className="position-absolute top-0 end-0 p-2">
         <button
           className="btn btn-outline-danger btn-sm"

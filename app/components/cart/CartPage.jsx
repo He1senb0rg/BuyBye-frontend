@@ -1,21 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getCart } from '../../services/api';
 import CartItemsList from './CartItemList';
 import CartSummary from './CartSummary';
-import CartHeader from './CartHeader';
 
 const CartPage = () => {
+  const [items, setItems] = useState([]);
+
+  const fetchCart = async () => {
+    try {
+      const cart = await getCart();
+      setItems(cart.items || []);
+    } catch (err) {
+      console.error('Erro ao carregar carrinho:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   return (
     <main className="container-fluid">
       <div className="row">
-        {/* Left side: header + items */}
         <div className="col-md-8 offset-md-1">
-          <CartHeader />
-          <CartItemsList />
+          <CartItemsList items={items} onUpdate={fetchCart} />
         </div>
-
-        {/* Right side: summary */}
         <div className="col-md-3">
-          <CartSummary />
+          <CartSummary items={items} />
         </div>
       </div>
     </main>
