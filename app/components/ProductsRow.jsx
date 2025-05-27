@@ -9,7 +9,7 @@ const ProductsRow = ({ products, title, error, loading }) => {
     <div className="container border-bottom pb-3">
       <div className="d-flex align-items-center">
         <p className="h1">{title}</p>
-        {isAdmin && (<a href="/admin/product/create" className="text-decoration-none">
+        {isAdmin && (<a href="/admin/products/create" className="text-decoration-none">
           <button className="btn btn-primary ms-2 my-2 py-0">
             <i className="bi bi-plus fs-4"></i>
           </button>

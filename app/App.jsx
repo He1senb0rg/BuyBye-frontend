@@ -32,6 +32,9 @@ import ShopEditor from "./pages/ShopEditor.jsx";
 import MainLayout from "./layouts/MainLayout.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import NotFound from "./pages/404.jsx";
+import UsersPage from "./pages/UsersPage.jsx";
+import UserPage from "./pages/UserPage.jsx";
+import UserEdit from "./pages/UserEdit.jsx";
 
 function App() {
   return (
@@ -80,12 +83,15 @@ function App() {
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
-            <Route path="category" element={<CategoriesPage />} />
-            <Route path="category/create" element={<CreateCategory />} />
-            <Route path="category/edit/:id" element={<EditCategory />} />
+            <Route path="categories" element={<CategoriesPage />} />
+            <Route path="categories/create" element={<CreateCategory />} />
+            <Route path="categories/edit/:id" element={<EditCategory />} />
             <Route path="products" element={<ProductsPage />} />
-            <Route path="product/edit/:id" element={<ProductEdit />} />
-            <Route path="product/create" element={<CreateProduct />} />
+            <Route path="products/edit/:id" element={<ProductEdit />} />
+            <Route path="products/create" element={<CreateProduct />} />
+            <Route path="users" element={<UsersPage />} />
+            <Route path="users/edit/:id" element={<UserEdit />} />
+            <Route path="users/:id" element={<UserPage />} />
           </Route>
           
           <Route path="*" element={<NotFound />} />

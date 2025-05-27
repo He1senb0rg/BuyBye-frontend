@@ -30,7 +30,7 @@ const SideBarAdmin = () => {
           </NavLink>
         </li>
         <li>
-          <NavLink to="/admin/category" className="nav-link text-white">
+          <NavLink to="/admin/categories" className="nav-link text-white">
             <i className="bi bi-tag me-2" />
             Categorias
           </NavLink>
