@@ -2,7 +2,7 @@ import React from 'react';
 
 const ShopPictureCard = () => {
   return (
-    <div className="card mb-3">
+    <div className="card mb-3 h-100">
       <div className="card-header">Foto da Loja</div>
       <div className="card-body text-center">
         <img
