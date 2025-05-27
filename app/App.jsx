@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
 import Home from "./pages/Home.jsx";
-import Perfil from "./pages/Perfil.jsx";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import Cart from "./pages/Cart.jsx";
@@ -14,16 +13,22 @@ import CreateProduct from "./pages/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
+import Checkout from './pages/Checkout';
+import Wishlist from "./pages/Wishlist.jsx";
 import ProductsPage from "./pages/ProductsPage.jsx";
 import ProductEdit from "./pages/ProductEdit.jsx";
 
 import Header from "./components/Header.jsx";
 import Footer from "./components/Footer.jsx";
 import Navbar from "./components/Navbar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
+
+import ShopEditor from "./pages/ShopEditor.jsx";
+
 import MainLayout from "./layouts/MainLayout.jsx";
 import AdminLayout from "./layouts/AdminLayout.jsx";
 import NotFound from "./pages/404.jsx";
@@ -39,11 +44,12 @@ function App() {
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/perfil" element={<Perfil />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/product/:id" element={<ProductPage />} />
+            <Route path="/shop/edit" element={<ShopEditor />} />
+            <Route path="/checkout" element={<Checkout />} />
             
             <Route
               path="/account/profile"
@@ -57,6 +63,23 @@ function App() {
               path="/account/security"
               element={<AccountDetailsSecurity />}
             />
+                
+            <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <ProtectedRoute>
+                <Wishlist />
+              </ProtectedRoute>
+            }
+          />
           </Route>
 
           <Route path="/admin" element={<AdminLayout />}>
@@ -79,4 +102,5 @@ function App() {
     </AuthProvider>
   );
 }
+
 export default App;

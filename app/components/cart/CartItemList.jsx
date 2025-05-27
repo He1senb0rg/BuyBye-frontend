@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import CartItem from './CartItem';
 
 const CartItemsList = () => {
-  const [items, setItems] = useState([
-    { id: 1, name: 'Produto 1', price: 25, image: '../../assets/images/cao.gif' },
-    { id: 2, name: 'Produto 2', price: 40, image: '../../assets/images/cao.gif' },
-  ]);
+  const [items, setItems] = useState([]);
 
   const handleRemove = (id) => {
     setItems((prevItems) => prevItems.filter(item => item.id !== id));
