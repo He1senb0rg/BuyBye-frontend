@@ -11,22 +11,22 @@ const WishlistTable = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchWishlist = useCallback(async () => {
-  try {
-    const res = await getWishlist();
-    console.log("Wishlist response:", res);
+    try {
+      const res = await getWishlist();
+      console.log("Resposta da lista de desejos:", res);
 
-    if (!res || !res.items) {
-      toast.error("Failed to load wishlist.");
-    } else {
-      setWishlistItems(res.items);
+      if (!res || !res.items) {
+        toast.error("Falha ao carregar a lista de desejos.");
+      } else {
+        setWishlistItems(res.items);
+      }
+    } catch (err) {
+      console.error("Erro ao obter a lista de desejos:", err);
+      toast.error("Erro ao carregar a lista de desejos.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error fetching wishlist:", err);
-    toast.error("Error fetching wishlist.");
-  } finally {
-    setLoading(false);
-  }
-}, [user]);
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -43,7 +43,7 @@ const WishlistTable = () => {
   };
 
   if (!user) {
-    return <p className="text-center mt-4">Please log in to view your wishlist.</p>;
+    return <p className="text-center mt-4">Por favor, inicie sessão para ver a sua lista de desejos.</p>;
   }
 
   if (loading) {
@@ -56,9 +56,11 @@ const WishlistTable = () => {
 
   return (
     <div className="container mt-4">
-      <h2>Your Wishlist</h2>
+      <h2>A sua Lista de Desejos</h2>
       {wishlistItems.length === 0 ? (
-        <p>No items in your wishlist.</p>
+        <div className="alert alert-info text-center mt-4">
+          A sua lista de desejos está vazia.
+        </div>
       ) : (
         <div className="row">
           {wishlistItems.map((item) =>
