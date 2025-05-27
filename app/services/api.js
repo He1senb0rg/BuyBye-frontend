@@ -273,4 +273,13 @@ export const deleteUser = async (id) => {
   return response.json();
 };
 
-
+export const removeImage = async (id) => {
+  const response = await fetch(`${BASE_URL}/users/${id}/image`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    }
+  });
+  return response.json();
+};

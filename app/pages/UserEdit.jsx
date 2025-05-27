@@ -1,15 +1,20 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { getUser, deleteUser } from "../services/api";
+import { getUser, updateUser, removeImage } from "../services/api";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import FloatingSelect from "../components/FloatingSelect";
 
-const UserPage = () => {
+const UserEdit = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({
+    name: "",
+    email: "",
+    role: "",
+    image: "",
+  });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,28 +32,48 @@ const UserPage = () => {
     fetchUser();
   }, [id]);
 
-  const handleDeleteUser = async () => {
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    console.log("Atualizando utilizador:", user);
     try {
-      await deleteUser(user._id);
-      toast.success("Utilizador apagado com sucesso.");
-      setTimeout(() => {navigate("/admin/users");}, 100);   
+      await updateUser(user);
+      toast.success("Utilizador atualizado com sucesso.");
+      setTimeout(() => {
+        navigate("/admin/users");
+      }, 100);
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao apagar o utilizador.");
+      toast.error("Erro ao atualizar o utilizador.");
     }
   }
+
+  const handleRemoveImage = async () => {
+    try {
+      await removeImage(user._id);
+      setUser({ ...user, image: "/assets/images/account-profile.png" });
+      toast.success("Imagem removida com sucesso.");
+    } catch (error) {
+      console.error("Erro:", error.message);
+      toast.error("Erro ao remover a imagem.");
+    }
+  }
+
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
   return (
     <main>
       <section className="container py-4">
-        <p className="h1">Utilizador - {user?.name}</p>
+        <p className="h1">Editar utilizador - {user?.name}</p>
         <div className="row">
           <div className="col">
             <div className="card bg-body-tertiary">
               <div className="card-header">
                 <h5 className="card-title mb-1">Informações Básicas</h5>
               </div>
-              <div className="card-body">
+              <form onSubmit={handleUpdateUser}>
+                <div className="card-body">
                 <div className="row">
                   <div className="col">
                     <div className="row">
@@ -60,7 +85,7 @@ const UserPage = () => {
                           placeholder="Nome do Utilizador"
                           label="Nome do Utilizador"
                           value={user?.name || ""}
-                          disabled={true}
+                          onChange={handleChange}
                         />
                       </div>
                     </div>
@@ -73,7 +98,7 @@ const UserPage = () => {
                           placeholder="Email do Utilizador"
                           label="Email do Utilizador"
                           value={user?.email || ""}
-                          disabled={true}
+                          onChange={handleChange}
                         />
                       </div>
                     </div>
@@ -86,11 +111,11 @@ const UserPage = () => {
                           placeholder="Role do Utilizador"
                           label="Role do Utilizador"
                           value={user?.role || ""}
-                          disabled={true}
                           options={[
                             { value: "admin", label: "Administrador" },
                             { value: "user", label: "Utilizador" },
                           ]}
+                          onChange={handleChange}
                         />
                       </div>
                     </div>
@@ -115,58 +140,26 @@ const UserPage = () => {
                     </div>
                   </div>
                 </div>
-
-                <a
-                  type="button"
-                  className="btn btn-primary"
-                  href={`/admin/users/edit/${user?._id}`}
-                >
-                  Editar Utilizador
-                </a>
                 <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#deleteModal"
+                  type="submit"
+                  className="btn btn-primary"
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={handleRemoveImage}
                   type="button"
                   className="btn btn-danger ms-2"
                 >
-                  Apagar Utilizador
+                  Remover Imagem
                 </button>
               </div>
+              </form>  
             </div>
           </div>
         </div>
       </section>
-      <div className="modal fade" id="deleteModal" tabIndex="-1">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Apagar {user?.name}</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Fechar"
-              ></button>
-            </div>
-            <div className="modal-body">
-              Tens a certeza que queres apagar o utilizador {user?.name}? Esta ação não pode ser revertida.
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancelar
-              </button>
-              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteUser}>
-                Apagar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
     </main>
   );
 };
-export default UserPage;
+export default UserEdit;

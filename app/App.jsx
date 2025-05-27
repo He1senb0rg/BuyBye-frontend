@@ -29,6 +29,7 @@ import AdminLayout from "./layouts/AdminLayout.jsx";
 import NotFound from "./pages/404.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import UserPage from "./pages/UserPage.jsx";
+import UserEdit from "./pages/UserEdit.jsx";
 
 function App() {
   return (
@@ -66,7 +67,7 @@ function App() {
             <Route path="products/edit/:id" element={<ProductEdit />} />
             <Route path="products/create" element={<CreateProduct />} />
             <Route path="users" element={<UsersPage />} />
-            <Route path="users/edit/:id" element={<UserPage />} />
+            <Route path="users/edit/:id" element={<UserEdit />} />
             <Route path="users/:id" element={<UserPage />} />
           </Route>
           

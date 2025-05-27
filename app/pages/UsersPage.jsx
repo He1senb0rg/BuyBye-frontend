@@ -175,7 +175,7 @@ const UsersPage = () => {
                         <td>{user._id}</td>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
-                        <td>{user.role}</td>
+                        <td>{user.role === "admin" ? "Administrador" : "Utilizador"}</td>
                         <td>
                           <div className="btn-group" role="group">
                             <a
