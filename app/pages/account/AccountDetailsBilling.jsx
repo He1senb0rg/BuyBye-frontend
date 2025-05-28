@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AccountNavigation from '../../components/accountDetailsComponents/AccountNavigation';
 import BillingTable from '../../components/accountDetailsComponents/BillingTable';
 import { useAuth } from '../../contexts/AuthContext';
+import { fetchBillingHistory } from '../../services/api';
 
 const BillingPage = () => {
   const { isAuthenticated } = useAuth();
@@ -10,15 +11,12 @@ const BillingPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchBillingHistory = async () => {
+    const loadBillingHistory = async () => {
       try {
-        const response = await fetch('/api/checkout/history');
-        if (!response.ok) {
-          throw new Error('Erro ao buscar o histórico');
-        }
-        const data = await response.json();
+        const data = await fetchBillingHistory();
         setTransactions(data);
       } catch (err) {
+        console.error("Billing fetch error:", err);
         setError('Erro ao carregar o histórico de encomendas.');
       } finally {
         setLoading(false);
@@ -26,14 +24,14 @@ const BillingPage = () => {
     };
 
     if (isAuthenticated) {
-      fetchBillingHistory();
+      loadBillingHistory();
     }
   }, [isAuthenticated]);
 
   return (
     <main>
       <div className="container-xl px-4 mt-4">
-        <AccountNavigation activePage="billing" />
+        <AccountNavigation />
         <hr className="mt-0 mb-3" />
         <div className="card mb-4">
           <div className="card-header">Histórico de Encomendas</div>
