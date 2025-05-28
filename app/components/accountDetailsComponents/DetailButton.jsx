@@ -29,7 +29,7 @@ const DetailButton = ({ transaction }) => {
           <ul>
             {(Array.isArray(transaction.items) ? transaction.items : []).map((item, index) => (
               <li key={index}>
-                {item.product?.name ?? item.name ?? 'Produto'} - {item.quantity}x ({item.selectedColor || '-'}, {item.selectedSize || '-'}) @ €{(item.price || 0).toFixed(2)}
+                {item.product?.name ?? item.name ?? 'Produto'} - x{item.quantity} ({item.selectedColor || '-'}, {item.selectedSize || '-'}) @ €{(item.price || 0).toFixed(2)}
               </li>
             ))}
           </ul>
