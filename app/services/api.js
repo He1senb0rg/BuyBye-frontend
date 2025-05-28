@@ -297,17 +297,29 @@ export const editProduct = async (updatedData) => {
 
 // Checkout
 export const createOrder = async (orderData) => {
+  const token = localStorage.getItem('token');
+
   const response = await fetch(`${BASE_URL}/checkout`, {
     method: "POST",
-    body: JSON.stringify(updatedData),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
   });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Erro ao criar pedido");
+  }
+
   return response.json();
-}
+};
 
 export const fetchBillingHistory = async () => {
   const res = await fetch('/api/checkout/billing-history', {
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`, // or however you store auth
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
     },
   });
   if (!res.ok) throw new Error('Failed to fetch billing history');

@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import BillingForm from '../components/checkout/BillingForm';
 import PaymentForm from '../components/checkout/PaymentForm';
 import OrderSummary from '../components/checkout/OrderSummary';
 import ConfirmationPage from '../components/checkout/ConfirmationPage';
 import { useAuth } from '../contexts/AuthContext';
-import { createOrder } from '../services/api';
+import { createOrder, getCart } from '../services/api';
 
 const Checkout = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({ delivery: 'standard' });
+  const [formData, setFormData] = useState({ delivery: 'standard', items: [] });
   const [isLoading, setIsLoading] = useState(false);
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [error, setError] = useState('');
+  const [orderPlaced, setOrderPlaced] = useState(false);
   const { user } = useAuth();
 
   const handleNext = () => setStep((prev) => prev + 1);
@@ -21,32 +22,82 @@ const Checkout = () => {
     setFormData((prev) => ({ ...prev, amount: total }));
   };
 
-  const handleCheckout = async () => {
-    const orderData = {
-      userId: user._id,
-      shippingAddress: formData.address,
-      paymentMethod: formData.paymentMethod,
-      items: formData.items || [],
-      amount: formData.amount || 0,
+const handleCheckout = async () => {
+  const {
+    address,
+    city,
+    state,
+    zip,
+    firstName,
+    lastName,
+    email,
+    paymentMethod,
+    items,
+    amount,
+  } = formData;
+
+  const shippingAddress = { address, city, state, zip };
+
+  if (!address || !city || !state || !zip || !paymentMethod || !items?.length) {
+    setError('Por favor preencha todos os campos antes de confirmar.');
+    return;
+  }
+
+  const orderData = {
+    userId: user._id,
+    shippingAddress,
+    paymentMethod,
+    items,
+    amount,
+    customer: {
+      firstName,
+      lastName,
+      email,
+    },
+  };
+
+  setIsLoading(true);
+  setError('');
+
+  try {
+    const response = await createOrder(orderData);
+    console.log('Order response:', response);
+
+    const isSuccess =
+      response?.success === true ||
+      response?.status === 200 ||
+      /sucesso|successfully/i.test(response?.message);
+
+    if (isSuccess) {
+      setOrderPlaced(true);
+    } else {
+      setError('A criação do pedido falhou: ' + (response.message || 'Erro desconhecido.'));
+    }
+  } catch (err) {
+    setError('Erro: ' + err.message);
+  }
+
+  setIsLoading(false);
+};
+
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      try {
+        const cart = await getCart();
+        setFormData((prev) => ({
+          ...prev,
+          items: cart.items || [],
+        }));
+      } catch (err) {
+        console.error('Erro ao obter o carrinho:', err);
+      }
     };
 
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const response = await createOrder(orderData);
-
-      if (response.message === 'Order created successfully') {
-        setOrderPlaced(true);
-      } else {
-        setError('Failed to create order: ' + response.message);
-      }
-    } catch (err) {
-      setError('Error: ' + err.message);
+    if (user) {
+      fetchCartItems();
     }
-
-    setIsLoading(false);
-  };
+  }, [user]);
 
   const renderStep = () => {
     switch (step) {
@@ -72,12 +123,12 @@ const Checkout = () => {
           <div className="d-flex justify-content-between mt-4">
             {step > 0 && (
               <button className="btn btn-outline-secondary" onClick={handleBack}>
-                Back
+                Voltar
               </button>
             )}
             {step === 0 && (
               <button className="btn btn-primary ms-auto" onClick={handleNext}>
-                Next
+                Próximo
               </button>
             )}
             {step === 1 && (
@@ -92,7 +143,7 @@ const Checkout = () => {
           </div>
         </div>
         <div className="col-md-5">
-          <OrderSummary onTotalChange={handleTotalChange} />
+          <OrderSummary items={formData.items || []} onTotalChange={handleTotalChange} />
         </div>
       </div>
     </div>

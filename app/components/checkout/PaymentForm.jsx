@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
+import PayPalButton from './PaypalButton';
 
 const generateMultibancoReference = () => {
   const entidade = '12345';
@@ -11,36 +12,19 @@ const generateMultibancoReference = () => {
   };
 };
 
-const PayPalButton = ({ amount }) => {
-  const handleClick = () => {
-    alert(`Pagamento simulado concluído! ${amount.toFixed(2)}€ pago via PayPal.`);
-  };
-
-  return (
-    <button
-      type="button"
-      className="btn btn-warning d-flex align-items-center gap-2 px-4 py-2 rounded-3 shadow-sm"
-      onClick={handleClick}
-      style={{ border: '1px solid #ffc107', maxWidth: '260px' }}
-    >
-      <img
-        src="https://cdn-icons-png.flaticon.com/512/196/196566.png"
-        alt="PayPal Logo"
-        style={{ width: '28px', height: '28px', objectFit: 'contain' }}
-      />
-      <span className="fw-semibold text-primary">Pagar com PayPal</span>
-    </button>
-  );
-};
-
 const PaymentForm = ({ formData, setFormData }) => {
   const [mbData, setMbData] = useState({ entidade: '', referencia: '' });
 
   useEffect(() => {
     if (formData.paymentMethod === 'multibanco') {
-      setMbData(generateMultibancoReference());
+      const generated = generateMultibancoReference();
+      setMbData(generated);
+      setFormData((prev) => ({
+        ...prev,
+        mbReferencia: generated.referencia,
+      }));
     }
-  }, [formData.paymentMethod]);
+  }, [formData.paymentMethod, setFormData]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,7 +39,6 @@ const PaymentForm = ({ formData, setFormData }) => {
     <div>
       <h4 className="mb-4">Pagamento</h4>
 
-      {/* Payment Method */}
       <div className="form-floating mb-4">
         <select
           className="form-select"
@@ -73,7 +56,6 @@ const PaymentForm = ({ formData, setFormData }) => {
         <label htmlFor="paymentMethod">Método de Pagamento</label>
       </div>
 
-      {/* Cartão de Crédito/Débito */}
       {formData.paymentMethod === 'ccdb' && (
         <>
           <div className="mb-4">
@@ -149,14 +131,12 @@ const PaymentForm = ({ formData, setFormData }) => {
         </>
       )}
 
-      {/* PayPal */}
       {formData.paymentMethod === 'paypal' && (
         <div className="mt-3">
           <PayPalButton amount={parseFloat(formData.amount) || 0} />
         </div>
       )}
 
-      {/* MB Way */}
       {formData.paymentMethod === 'mbway' && (
         <div className="form-floating mb-3">
           <input
@@ -172,12 +152,11 @@ const PaymentForm = ({ formData, setFormData }) => {
         </div>
       )}
 
-      {/* Multibanco */}
       {formData.paymentMethod === 'multibanco' && (
         <div className="alert alert-info mt-3">
           <p><strong>Entidade:</strong> {mbData.entidade}</p>
           <p><strong>Referência:</strong> {mbData.referencia}</p>
-          <p><strong>Montante:</strong> {(formData.amount || 'XX.XX')} €</p>
+          <p><strong>Montante:</strong> {formData.amount || 'XX.XX'} €</p>
         </div>
       )}
     </div>

@@ -1,11 +1,15 @@
 import React from 'react';
 
 const ConfirmationPage = ({ formData }) => {
+  const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
+
   return (
     <div className="text-center p-5">
       <h2 className="mb-4">✅ Payment Successful</h2>
-      <p className="lead">Thank you for your purchase, {formData.fullName || 'Valued Customer'}!</p>
-      <p className="mt-3">We’ve received your order and will send a confirmation email to <strong>{formData.email || '[email]'}</strong>.</p>
+      <p className="lead">Thank you for your purchase, {fullName || 'Valued Customer'}!</p>
+      <p className="mt-3">
+        We’ve received your order and will send a confirmation email to <strong>{formData.email || '[email]'}</strong>.
+      </p>
 
       <div className="mt-4">
         <h5 className="mb-3">Order Summary</h5>
