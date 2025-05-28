@@ -25,7 +25,7 @@ const DetailButton = ({ transaction }) => {
           <div><strong>Data:</strong> {formattedDate}</div>
           <div><strong>Montante:</strong> {formattedAmount}</div>
           <div><strong>Estado:</strong> {transaction.orderStatus}</div>
-          <div><strong>Items:</strong></div>
+          <div><strong>Itens:</strong></div>
           <ul>
             {(Array.isArray(transaction.items) ? transaction.items : []).map((item, index) => (
               <li key={index}>
