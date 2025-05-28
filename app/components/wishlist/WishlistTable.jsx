@@ -56,7 +56,6 @@ const WishlistTable = () => {
 
   return (
     <div className="container mt-4">
-      <h2>A sua Lista de Desejos</h2>
       {wishlistItems.length === 0 ? (
         <div className="alert alert-info text-center mt-4">
           A sua lista de desejos está vazia.
