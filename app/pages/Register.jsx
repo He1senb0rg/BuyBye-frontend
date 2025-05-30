@@ -202,7 +202,7 @@ const Register = () => {
 										<p className="h5 pt-2 pb-1">
 											Então clica abaixo para iniciar sessão!
 										</p>
-										<a className="btn btn-primary" type="button" href="login.html">
+										<a className="btn btn-primary" type="button" href="/login">
 											Iniciar Sessão
 										</a>
 									</div>

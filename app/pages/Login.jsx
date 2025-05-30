@@ -118,7 +118,7 @@ const Login = () => {
 										<a
 											className="btn btn-primary"
 											type="button"
-											href="register.html"
+											href="/register"
 										>
 											Criar Conta
 										</a>
