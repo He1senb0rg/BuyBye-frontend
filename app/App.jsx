@@ -35,6 +35,7 @@ import NotFound from "./pages/404.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import UserPage from "./pages/UserPage.jsx";
 import UserEdit from "./pages/UserEdit.jsx";
+import Search from "./pages/Search.jsx"
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
             <Route path="/product/:id" element={<ProductPage />} />
             <Route path="/shop/edit" element={<ShopEditor />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/search" element={<Search />} />
             
             <Route
               path="/account/profile"
