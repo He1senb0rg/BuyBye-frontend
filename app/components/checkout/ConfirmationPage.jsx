@@ -40,17 +40,21 @@ const ConfirmationPage = ({ formData }) => {
 
         <hr />
 
-        <h6 className="mt-4 mb-2">Items Comprados:</h6>
+        <h6 className="mt-4 mb-2">Itens Comprados:</h6>
         <ul className="list-group text-start">
-          {(formData.items || []).map((item, idx) => (
-            <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
-              <div>
-                <strong>{item.name}</strong> <br />
-                <small>Qtd: {item.quantity}</small>
-              </div>
-              <span>{(item.price * item.quantity).toFixed(2)}€</span>
-            </li>
-          ))}
+          {(formData.items || []).map((item, idx) => {
+            const product = item.product || {};
+            return (
+              <li key={idx} className="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <strong>{product.name || 'Produto'}</strong> <br />
+                  <small>Qtd: {item.quantity}</small>
+                </div>
+                <span>{((product.price || 0) * item.quantity).toFixed(2)}€</span>
+              </li>
+            );
+          })}
+
           {formData.amount && (
             <li className="list-group-item d-flex justify-content-between align-items-center fw-bold">
               Total:
