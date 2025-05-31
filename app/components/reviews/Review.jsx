@@ -1,6 +1,6 @@
 import React from "react";
 import StarRating from "./StarRating";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const Review = ({ user, reviewId, comment, rating, createdAt, userId, setReviewDelete }) => {
   const formatDate = (date) => {

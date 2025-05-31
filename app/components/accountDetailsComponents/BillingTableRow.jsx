@@ -1,18 +1,24 @@
 import React from 'react';
-import StatusBadge from './StatusBadge'; // Assuming it's in the same directory
-import DetailButton from './DetailButton'; // Make sure this is also imported
+import StatusBadge from './StatusBadge';
+import DetailButton from './DetailButton';
 
-const BillingTableRow = ({ id, date, amount, status, paymentMethod }) => {
+const BillingTableRow = ({ _id, createdAt, totalAmount, orderStatus, paymentMethod, items }) => {
+  const transaction = { _id, createdAt, totalAmount, orderStatus, paymentMethod, items };
+
   return (
     <tr>
-      <td>{id}</td>
-      <td>{new Date(date).toLocaleDateString()}</td> {/* Convert date to a readable format */}
-      <td>€{amount.toFixed(2)}</td> {/* Format the amount to 2 decimal places */}
+      <td>{_id.slice(0, 8)}...</td>
+      <td>{new Date(createdAt).toLocaleDateString('pt-PT')}</td>
+      <td>€{totalAmount.toFixed(2)}</td>
       <td>
-        <StatusBadge status={status} totalAmount={amount} paymentMethod={paymentMethod} />
+        <StatusBadge
+          status={orderStatus}
+          totalAmount={totalAmount}
+          paymentMethod={paymentMethod}
+        />
       </td>
       <td>
-        <DetailButton transactionId={id} />
+        <DetailButton transaction={transaction} />
       </td>
     </tr>
   );

@@ -23,6 +23,8 @@ export const userRegister = async (user) => {
   return response.json();
 };
 
+//Products
+
 export const getProducts = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/products?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
@@ -89,40 +91,64 @@ export const deleteProduct = async (id) => {
 };
 
 // Wishlist
-export const addToWishlist = async (userId, productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/add`, {
+export const addToWishlist = async (productId) => {
+  console.log("Sending addToWishlist request with:", productId);
+  console.log("Token being sent:", localStorage.getItem("token"));
+
+  const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
+
+  console.log("Raw response:", response);
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error("Failed response data:", errorData);
+    throw new Error(`Failed to add to wishlist: ${JSON.stringify(errorData)}`);
+  }
+
   return response.json();
 };
 
-export const removeFromWishlist = async (userId, productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/remove`, {
-    method: "POST",
+export const removeFromWishlist = async (productId) => {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
+    method: "DELETE",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify({ userId, productId }),
+    body: JSON.stringify({ productId }),
   });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(`Failed to remove from wishlist: ${JSON.stringify(errorData)}`);
+  }
+
   return response.json();
 };
 
-export const getWishlist = async (userId) => {
-  const response = await fetch(`${BASE_URL}/wishlist/${userId}`, {
+export const getWishlist = async () => {
+  const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Failed to fetch wishlist: ${errorText}`);
+  }
+
   return response.json();
 };
+
 
 // Category
 export const getCategories = async (page, limit, sort, search) => {
@@ -253,6 +279,8 @@ export const updateCartItem = async (productId, updatedData) => {
   return response.json();
 };
 
+//Product Management
+
 export const editProduct = async (updatedData) => {
   const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
     method: "PUT",
@@ -269,12 +297,24 @@ export const editProduct = async (updatedData) => {
 
 // Checkout
 export const createOrder = async (orderData) => {
+  const token = localStorage.getItem('token');
+
   const response = await fetch(`${BASE_URL}/checkout`, {
     method: "POST",
-    body: JSON.stringify(updatedData),
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(orderData),
   });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || "Erro ao criar pedido");
+  }
+
   return response.json();
-}
+};
 
 export const getUsers = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/users?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
@@ -333,11 +373,19 @@ export const removeImage = async (id) => {
 };
 
 export const fetchBillingHistory = async () => {
-  const res = await fetch('/api/checkout/billing-history', {
+  const response = await fetch(`${BASE_URL}/checkout/history`, {
+    method: "GET",
     headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`, // or however you store auth
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
   });
-  if (!res.ok) throw new Error('Failed to fetch billing history');
-  return res.json();
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Billing fetch failed. Server response:", errorText);
+    throw new Error("Failed to fetch billing history");
+  }
+
+  return response.json();
 };

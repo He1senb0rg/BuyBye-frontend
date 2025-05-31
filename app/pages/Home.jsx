@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import Product from "../components/Product";
+import Product from "../components/products/Product";
 import { getProducts } from "../services/api";
-import ProductsRow from "../components/ProductsRow";
+import ProductsRow from "../components/products/ProductsRow";
 import ShopBanner from "../components/ShopBanner";
 import toast from "react-hot-toast";
 

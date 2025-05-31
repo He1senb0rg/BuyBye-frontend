@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { getCart } from '../../services/api';
+import CartItemsList from './CartItemList';
+import CartSummary from './CartSummary';
 
-const CartPage = ({ children }) => {
+const CartPage = () => {
+  const [items, setItems] = useState([]);
+
+  const fetchCart = async () => {
+    try {
+      const cart = await getCart();
+      setItems(cart.items || []);
+    } catch (err) {
+      console.error('Erro ao carregar carrinho:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
   return (
     <main className="container-fluid">
       <div className="row">
-        {/* Make left column take more space on large screens */}
-        <div className="col-md-10 offset-md-1">
-          {children[0] /* CartHeader */}
-          {children[1] /* CartItemsList */}
+        <div className="col-md-8 offset-md-1">
+          <CartItemsList items={items} onUpdate={fetchCart} />
         </div>
-
-        {/* CartSummary stays on the right, smaller */}
-        <div className="col-md-4">
-          {children[2] /* CartSummary */}
+        <div className="col-md-3">
+          <CartSummary items={items} />
         </div>
       </div>
     </main>
