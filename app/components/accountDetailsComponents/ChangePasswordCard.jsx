@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { changePassword } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 
-const ChangePasswordCard = ({ userId }) => {
+const ChangePasswordCard = () => {
+  const { user } = useAuth();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -14,13 +16,18 @@ const ChangePasswordCard = ({ userId }) => {
     setMessage(null);
     setError(null);
 
+    if (!user?.id) {
+      console.log("User ID:", user?.id);
+      return setError("ID do utilizador não encontrado.");
+    }
+
     if (newPassword !== confirmPassword) {
       return setError("As novas palavras-passe não coincidem.");
     }
 
     try {
       setLoading(true);
-      const res = await changePassword(userId, currentPassword, newPassword);
+      const res = await changePassword(user.id, currentPassword, newPassword);
 
       if (res.error) {
         setError(res.error);

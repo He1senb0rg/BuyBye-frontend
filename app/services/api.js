@@ -358,14 +358,14 @@ export const getUser = async (id) => {
   return response.json();
 };
 
-export const updateUser = async (user) => {
-  const response = await fetch(`${BASE_URL}/users/${user._id}`, {
+export const updateUser = async (id, userData) => {
+  const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify(user),
+    body: JSON.stringify(userData),
   });
   return response.json();
 };
