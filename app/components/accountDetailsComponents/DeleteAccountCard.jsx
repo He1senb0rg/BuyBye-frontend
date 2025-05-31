@@ -1,7 +1,26 @@
 import React, { useState } from 'react';
+import { deleteUser } from '../../services/api';
+import { useAuth } from "../../contexts/AuthContext.jsx";
+import toast from "react-hot-toast";
+import { useNavigate } from 'react-router-dom';
 
 const DeleteAccountCard = () => {
   const [showModal, setShowModal] = useState(false);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
+
+   const handleDeleteUser = async () => {
+    try {
+      await deleteUser(user.id);
+      
+      toast.success("A sua conta foi apagada, esperemos vê-lo novamente!");
+      logout();
+      setTimeout(() => navigate("/"), 100);
+    } catch (error) {
+      console.error("Erro:", error.message);
+      toast.error("Erro ao apagar a sua conta.");
+    }
+  }
 
   return (
     <div className="card mb-4">
@@ -18,15 +37,7 @@ const DeleteAccountCard = () => {
             <div className="modal-dialog modal-dialog-centered" role="document">
               <div className="modal-content">
               <div className="modal-header">
-                  <h5 className="modal-title">Tem a certeza?</h5>
-                  <button
-                    type="button"
-                    className="btn btn-md ms-auto"
-                    onClick={() => setShowModal(false)}
-                    aria-label="Fechar"
-                  >
-                    <i className="bi bi-x"></i>
-                  </button>
+                  <h5 className="modal-title">Tem a certeza que quer realizar esta ação?</h5>
                 </div>
                 <div className="modal-body">
                   <p>A eliminação da sua conta é uma ação permanente e não pode ser anulada.
@@ -40,7 +51,7 @@ const DeleteAccountCard = () => {
                   >
                     Cancelar
                   </button>
-                  <button type="button" className="btn btn-danger">
+                  <button type="button" className="btn btn-danger" onClick={handleDeleteUser}>
                     Apagar
                   </button>
                 </div>

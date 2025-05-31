@@ -95,7 +95,7 @@ const ProductsPage = () => {
       <section className="container py-4">
         <div className="d-flex align-items-center">
           <p className="h1 mb-2">Produtos</p>
-          <a href="/admin/product/create" className="text-decoration-none">
+          <a href="/admin/products/create" className="text-decoration-none">
             <button className="btn btn-primary ms-2 my-2 py-0">
               <i className="bi bi-plus fs-4"></i>
             </button>
@@ -231,7 +231,7 @@ const ProductsPage = () => {
                             <a
                               type="button"
                               className="btn btn-primary"
-                                href={`/admin/product/edit/${product._id}`}
+                                href={`/admin/products/edit/${product._id}`}
                             >
                               <i className="bi bi-pencil-square" />
                             </a>

@@ -1,23 +1,23 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getCategories, deleteCategory } from "../services/api";
+import { getUsers, deleteUser } from "../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
-const CategoriesPage = () => {
+const UsersPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [categories, setCategories] = useState([]);
-  const [totalCategories, setTotalCategories] = useState(0);
-  const [categoryToDelete, setCategoryToDelete] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 10;
   const sort = searchParams.get("sort") || "mais_recente";
   const search = searchParams.get("search") || "";
 
-  const totalPages = Math.ceil(totalCategories / limit);
+  const totalPages = Math.ceil(totalUsers / limit);
   
   const [searchValue, setSearchValue] = useState(search);
 
@@ -60,33 +60,33 @@ const CategoriesPage = () => {
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await getCategories(page, limit, sort, searchValue);
-        setCategories(response.categories);
-        setTotalCategories(response.totalCategories);
+        const response = await getUsers(page, limit, sort, searchValue);
+        setUsers(response.users);
+        setTotalUsers(response.totalUsers);
       } catch (error) {
         console.error("Erro:", error.message);
-        toast.error("Erro ao buscar as categorias.");
+        toast.error("Erro ao buscar os utilizadores.");
       }
     };
 
-    fetchCategories();
+    fetchUsers();
   }, [searchParams]);
 
-  const handleDeleteCategory = async () => {
+  const handleDeleteUser = async () => {
     try {
-      await deleteCategory(categoryToDelete._id);
-      setCategories((prevCategories) =>
-        prevCategories.filter((category) => category._id !== categoryToDelete._id)
+      await deleteUser(userToDelete._id);
+      setUsers((prevUsers) =>
+        prevUsers.filter((user) => user._id !== userToDelete._id)
       );
       
-      toast.success("Categoria apagada com sucesso.");
+      toast.success("Utilizador apagado com sucesso.");
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao apagar a categoria.");
+      toast.error("Erro ao apagar o utilizador.");
     } finally {
-      setCategoryToDelete(null);
+      setUserToDelete(null);
     }
   }
 
@@ -94,12 +94,7 @@ const CategoriesPage = () => {
     <main>
       <section className="container py-4">
         <div className="d-flex align-items-center">
-          <p className="h1 mb-2">Categorias</p>
-          <a href="/admin/categories/create" className="text-decoration-none">
-            <button className="btn btn-primary ms-2 my-2 py-0">
-              <i className="bi bi-plus fs-4"></i>
-            </button>
-          </a>
+          <p className="h1 mb-2">Utilizadores</p>
         </div>
         <div className="row">
           <div className="col">
@@ -169,22 +164,31 @@ const CategoriesPage = () => {
                     <tr>
                       <th scope="col">#</th>
                       <th scope="col">Nome</th>
-                      <th scope="col">Descrição</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Role</th>
                       <th scope="col">Ações</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {categories.map((category) => (
-                      <tr key={category._id}>
-                        <td>{category._id}</td>
-                        <td>{category.name}</td>
-                        <td>{category.description}</td>
+                    {users.map((user) => (
+                      <tr key={user._id}>
+                        <td>{user._id}</td>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role === "admin" ? "Administrador" : "Utilizador"}</td>
                         <td>
                           <div className="btn-group" role="group">
                             <a
+                              href={`/admin/users/${user._id}`}
+                              className="btn btn-success"
+                                type="button"
+                            >
+                              <i className="bi bi-file-earmark-text" />
+                            </a>
+                            <a
                               type="button"
                               className="btn btn-primary"
-                              href={`/admin/categories/edit/${category._id}`}
+                              href={`/admin/users/edit/${user._id}`}
                             >
                               <i className="bi bi-pencil-square" />
                             </a>
@@ -193,7 +197,7 @@ const CategoriesPage = () => {
                               data-bs-target="#deleteModal"
                               type="button"
                               className="btn btn-danger"
-                              onClick={() => setCategoryToDelete(category)}
+                              onClick={() => setUserToDelete(user)}
                             >
                               <i className="bi bi-trash" />
                             </button>
@@ -239,7 +243,7 @@ const CategoriesPage = () => {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Apagar {categoryToDelete?.name}</h5>
+              <h5 className="modal-title">Apagar {userToDelete?.name}</h5>
               <button
                 type="button"
                 className="btn-close"
@@ -248,7 +252,7 @@ const CategoriesPage = () => {
               ></button>
             </div>
             <div className="modal-body">
-              Tens a certeza que queres apagar a categoria {categoryToDelete?.name}? Esta ação não pode ser revertida.
+              Tens a certeza que queres apagar o utilizador {userToDelete?.name}? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
               <button
@@ -258,7 +262,7 @@ const CategoriesPage = () => {
               >
                 Cancelar
               </button>
-              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteCategory}>
+              <button type="button" data-bs-dismiss="modal" className="btn btn-danger" onClick={handleDeleteUser}>
                 Apagar
               </button>
             </div>
@@ -268,4 +272,4 @@ const CategoriesPage = () => {
     </main>
   );
 };
-export default CategoriesPage;
+export default UsersPage;
