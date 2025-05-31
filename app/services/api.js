@@ -316,6 +316,26 @@ export const createOrder = async (orderData) => {
   return response.json();
 };
 
+export const fetchBillingHistory = async () => {
+  const response = await fetch(`${BASE_URL}/checkout/history`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Billing fetch failed. Server response:", errorText);
+    throw new Error("Failed to fetch billing history");
+  }
+
+  return response.json();
+};
+
+// User Management
+
 export const getUsers = async (page, limit, sort, search) => {
   const response = await fetch(`${BASE_URL}/users?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
     method: "GET",
@@ -372,20 +392,16 @@ export const removeImage = async (id) => {
   return response.json();
 };
 
-export const fetchBillingHistory = async () => {
-  const response = await fetch(`${BASE_URL}/checkout/history`, {
-    method: "GET",
+// Change Password
+export const changePassword = async (id, currentPassword, newPassword) => {
+  const response = await fetch(`${BASE_URL}/users/${id}/password`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
+    body: JSON.stringify({ currentPassword, newPassword }),
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Billing fetch failed. Server response:", errorText);
-    throw new Error("Failed to fetch billing history");
-  }
 
   return response.json();
 };
