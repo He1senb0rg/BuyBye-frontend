@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from "../../contexts/AuthContext";
+import { updateUser } from '../../services/api';
+import toast from "react-hot-toast";
 
 const AccountDetailsCard = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -12,11 +14,16 @@ const AccountDetailsCard = () => {
 
   useEffect(() => {
     if (user) {
+      const fullName = user.name || '';
+      const firstSpaceIndex = fullName.indexOf(' ');
+      const firstName = firstSpaceIndex !== -1 ? fullName.substring(0, firstSpaceIndex) : fullName;
+      const lastName = firstSpaceIndex !== -1 ? fullName.substring(firstSpaceIndex + 1) : '';
+
       setFormData({
         email: user.email || '',
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phone: user.phone || ''
+        firstName,
+        lastName,
+        phone: user.phone ?? ''
       });
     }
   }, [user]);
@@ -26,11 +33,48 @@ const AccountDetailsCard = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Submitted user info:", formData);
-    // Optional: implement update logic here (e.g., call API)
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!user?.id) {
+    console.error("User ID:", user?.id);
+    return toast.error("ID do utilizador não encontrado.");
+  }
+
+  const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
+  const updatedUserData = {
+    email: formData.email,
+    phone: formData.phone,
+    name: fullName,
   };
+
+  console.log("Submitting updated user data:", updatedUserData);
+
+  try {
+    const result = await updateUser(user.id, updatedUserData);
+    console.log("API result:", result);
+
+      if (result.error) {
+    toast.error(result.error);
+  } else {
+    toast.success("Informações atualizadas com sucesso!");
+
+    const normalizedUser = {
+      ...result.user,
+      id: result.user._id,
+      phone: result.user.phone ?? '',
+    };
+
+  setUser?.(normalizedUser);
+  localStorage.setItem("user", JSON.stringify(normalizedUser));
+}
+
+  } catch (err) {
+    console.error("Erro ao atualizar:", err);
+    toast.error("Erro ao atualizar os dados.");
+  }
+};
 
   return (
     <div className="card mb-3">

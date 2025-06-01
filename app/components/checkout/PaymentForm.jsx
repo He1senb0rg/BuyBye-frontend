@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
-import PayPalButton from './PaypalButton';
+import PayPalButton from './PayPalButton';
 
 const generateMultibancoReference = () => {
   const entidade = '12345';
