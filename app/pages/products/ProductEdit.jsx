@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getProductById, getCategories, editProduct } from "../../services/api";
+import { getProductById, getCategories, updateProduct } from "../../services/api";
 import { useState, useEffect, useRef } from "react";
 import FloatingInput from "../../components/FloatingInput";
 import FloatingSelect from "../../components/FloatingSelect";
@@ -27,8 +27,6 @@ const ProductEdit = () => {
   });
 
   const [useDiscount, setUseDiscount] = useState(false);
-  const [discountType, setDiscountType] = useState("percentage");
-  const [discountValue, setDiscountValue] = useState("");
 
   const [imageFiles, setImageFiles] = useState([]);
 
@@ -66,8 +64,11 @@ const ProductEdit = () => {
 
         if (response.discount) {
           setUseDiscount(response.discount);
-          setDiscountType(response.discount.type || "percentage");
-          setDiscountValue(response.discount.value || "");
+          setProductData((prevData) => ({
+            ...prevData,
+            discount_type: response.discount.type,
+            discount_value: response.discount.value,
+          }));
         }
       } catch (error) {
         toast.error("Erro ao buscar o produto.");
@@ -97,10 +98,6 @@ const ProductEdit = () => {
 
   const handleCheckboxChange = () => {
     setUseDiscount(!useDiscount);
-    if (useDiscount) {
-      setDiscountType("percentage");
-      setDiscountValue("");
-    }
   };
 
   const addImage = () => {
@@ -139,10 +136,16 @@ const ProductEdit = () => {
       ...productData,
       price: Number(price.toFixed(2)),
       stock: Number(productData.stock),
+      discount: useDiscount
+        ? {
+            type: productData.discount_type,
+            value: productData.discount_value,
+          }
+        : null,
     };
 
     try {
-      const response = await editProduct(finalProductData);
+      const response = await updateProduct(id, finalProductData);
 
       if (response.error) {
         toast.error("Erro ao editar o produto.");
@@ -271,9 +274,8 @@ const ProductEdit = () => {
                     { value: "percentage", label: "Percentagem" },
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
-                  value={discountType}
+                  value={productData.discount_type}
                   onChange={(e) => {
-                    setDiscountType(e.target.value);
                     handleChange(e);
                   }}
                   disabled={!useDiscount}
@@ -290,10 +292,9 @@ const ProductEdit = () => {
                   label="Valor do Desconto"
                   disabled={!useDiscount}
                   required={useDiscount}
-                  value={discountValue}
+                  value={productData.discount_value}
                   maxLength={6}
                   onChange={(e) => {
-                    setDiscountValue(e.target.value);
                     handleChange(e);
                   }}
                 />
