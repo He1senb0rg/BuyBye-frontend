@@ -89,10 +89,11 @@ const PaymentForm = ({ formData, setFormData }) => {
               id="cardNumber"
               name="cardNumber"
               placeholder="Número do Cartão"
-              maxLength="16"
+              maxLength="19"
               value={formData.cardNumber || ''}
               onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, ''); // Allow only numbers
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(.{4})/g, '$1 ').trim(); // Add spacing every 4 digits
                 setFormData((prev) => ({ ...prev, cardNumber: value }));
               }}
               onFocus={handleFocus}
@@ -120,7 +121,6 @@ const PaymentForm = ({ formData, setFormData }) => {
                   }}
                   onFocus={handleFocus}
                 />
-
                 <label htmlFor="expiry">Validade (MM/AA)</label>
               </div>
             </div>
@@ -135,12 +135,11 @@ const PaymentForm = ({ formData, setFormData }) => {
                   maxLength="4"
                   value={formData.cvv || ''}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, ''); // Allow only numbers
+                    const value = e.target.value.replace(/\D/g, '');
                     setFormData((prev) => ({ ...prev, cvv: value }));
                   }}
                   onFocus={handleFocus}
                 />
-
                 <label htmlFor="cvv">CVV</label>
               </div>
             </div>

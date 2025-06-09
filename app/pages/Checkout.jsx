@@ -28,32 +28,29 @@ const handleCheckout = async () => {
     city,
     state,
     zip,
-    firstName,
-    lastName,
-    email,
     paymentMethod,
-    items,
-    amount,
+    phoneNumber,
+    amount, // ✅ The subtotal without delivery fee
+    items, // ✅ We need to pass this too
   } = formData;
 
   const shippingAddress = { address, city, state, zip };
 
-  if (!address || !city || !state || !zip || !paymentMethod || !items?.length) {
+  if (!address || !city || !state || !zip || !paymentMethod || !phoneNumber) {
     setError('Por favor preencha todos os campos antes de confirmar.');
     return;
   }
 
+  const DELIVERY_FEE = 5; // ✅ Fixed delivery fee
+  const finalAmount = amount + DELIVERY_FEE; // ✅ Add delivery fee to total
+
   const orderData = {
-    userId: user._id,
     shippingAddress,
     paymentMethod,
-    items,
-    amount,
-    customer: {
-      firstName,
-      lastName,
-      email,
-    },
+    phoneNumber,
+    amount: finalAmount, // ✅ Save the final amount with delivery fee
+    deliveryFee: DELIVERY_FEE, // Optional: If you want to save it separately
+    items, // ✅ Save the purchased items
   };
 
   setIsLoading(true);
@@ -70,6 +67,11 @@ const handleCheckout = async () => {
 
     if (isSuccess) {
       setOrderPlaced(true);
+      // ✅ Update local formData to include final amount (so ConfirmationPage shows the correct amount)
+      setFormData((prev) => ({
+        ...prev,
+        amount: finalAmount,
+      }));
     } else {
       setError('A criação do pedido falhou: ' + (response.message || 'Erro desconhecido.'));
     }
@@ -110,28 +112,31 @@ const handleCheckout = async () => {
     }
   };
 
-  const isBillingFormComplete = () => {
-  const { firstName, lastName, email, address, city, state, zip } = formData;
-  return firstName && lastName && email && address && city && state && zip;
-};
+  console.log('formData:', formData);
 
-const isPaymentFormComplete = () => {
-  if (formData.paymentMethod === 'ccdb') {
-    return (
-      formData.cardName &&
-      /^\d{16}$/.test(formData.cardNumber) && // Exactly 16 digits
-      /^\d{2}\/\d{2}$/.test(formData.expiry) && // Simple MM/YY format
-      /^\d{3,4}$/.test(formData.cvv) // 3 or 4 digits
-    );
-  } else if (formData.paymentMethod === 'paypal') {
-    return true; // Assuming PayPal button handles its own validation
-  } else if (formData.paymentMethod === 'mbway') {
-    return /^\d{9}$/.test(formData.mbwayPhone); // Valid 9-digit phone number
-  } else if (formData.paymentMethod === 'multibanco') {
-    return true; // No extra input required
-  }
-  return false;
-};
+  // Removed email check here
+  const isBillingFormComplete = () => {
+    const { firstName, lastName, address, city, state, zip } = formData;
+    return firstName && lastName && address && city && state && zip;
+  };
+
+  const isPaymentFormComplete = () => {
+    if (formData.paymentMethod === 'ccdb') {
+      return (
+        formData.cardName &&
+        /^\d{16}$/.test(formData.cardNumber.replace(/\s/g, '')) && // Exactly 16 digits
+        /^\d{2}\/\d{2}$/.test(formData.expiry) && // Simple MM/YY format
+        /^\d{3,4}$/.test(formData.cvv) // 3 or 4 digits
+      );
+    } else if (formData.paymentMethod === 'paypal') {
+      return true; // Assuming PayPal button handles its own validation
+    } else if (formData.paymentMethod === 'mbway') {
+      return /^\d{9}$/.test(formData.mbwayPhone); // Valid 9-digit phone number
+    } else if (formData.paymentMethod === 'multibanco') {
+      return true; // No extra input required
+    }
+    return false;
+  };
 
   if (orderPlaced) {
     return <ConfirmationPage formData={formData} />;
@@ -149,12 +154,12 @@ const isPaymentFormComplete = () => {
                 Voltar
               </button>
             )}
-            
+
             {step === 0 && (
               <button
                 className="btn btn-primary ms-auto"
                 onClick={handleNext}
-                disabled={!isBillingFormComplete()} // Disable if incomplete
+                disabled={!isBillingFormComplete()}
               >
                 Próximo
               </button>
@@ -164,13 +169,12 @@ const isPaymentFormComplete = () => {
               <button
                 className="btn btn-success ms-auto"
                 onClick={handleCheckout}
-                disabled={!isPaymentFormComplete() || isLoading} // Disable if incomplete
+                disabled={!isPaymentFormComplete() || isLoading}
               >
                 {isLoading ? 'A processar...' : 'Confirmar'}
               </button>
             )}
           </div>
-
         </div>
         <div className="col-md-5">
           <OrderSummary items={formData.items || []} onTotalChange={handleTotalChange} />

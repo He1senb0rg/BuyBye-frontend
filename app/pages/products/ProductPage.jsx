@@ -404,7 +404,7 @@ return (
               </div>
             </div>
 
-            {product?.reviews?.length > 0 ? (
+            {(product?.reviews?.length ?? 0) > 0 ? (
               product.reviews.map((review, index) => (
                 <Review
                   key={index}

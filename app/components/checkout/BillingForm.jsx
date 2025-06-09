@@ -9,7 +9,7 @@ const BillingForm = ({ formData, setFormData }) => {
   return (
     <div className="card bg-body-tertiary p-3">
       <h4 className="mb-3">Endereço de Faturação</h4>
-      <form>
+      <form onSubmit={(e) => e.preventDefault()}> {/* Prevent accidental form submission */}
         <div className="row">
           <div className="col-md-6 mb-3">
             <div className="form-floating">
