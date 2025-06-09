@@ -2,7 +2,7 @@ import React from "react";
 import { getProducts } from "../services/api";
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'react-router-dom';
-import Product from "../components/Product";
+import Product from "../components/products/Product";
 
 const Search = () => {
     const [searchParams, setSearchParams] = useSearchParams();
