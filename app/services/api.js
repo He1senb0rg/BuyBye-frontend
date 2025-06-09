@@ -149,6 +149,21 @@ export const getWishlist = async () => {
   return response.json();
 };
 
+export const checkIfInWishlist = async (productId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error checking wishlist status:', error);
+    return { isWishlisted: false };
+  }
+};
 
 // Category
 export const getCategories = async (page, limit, sort, search) => {

@@ -81,7 +81,7 @@ const Review = ({
                 value={editComment}
                 onChange={(e) => setEditComment(e.target.value)}
               ></textarea>
-              <button className="btn btn-success me-2" type="submit">
+              <button className="btn btn-primary me-2" type="submit">
                 Guardar
               </button>
               <button className="btn btn-secondary" type="button" onClick={handleCancelEdit}>
