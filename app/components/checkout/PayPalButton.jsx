@@ -1,7 +1,8 @@
+import React from 'react';
+
 const PayPalButton = ({ amount }) => {
   const handleClick = () => {
     alert(`Pagamento simulado concluído! ${amount.toFixed(2)}€ pago via PayPal.`);
-    // Implement any real logic here
   };
 
   return (
@@ -20,3 +21,5 @@ const PayPalButton = ({ amount }) => {
     </button>
   );
 };
+
+export default PayPalButton;

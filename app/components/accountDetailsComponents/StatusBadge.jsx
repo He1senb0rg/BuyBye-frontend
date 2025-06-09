@@ -6,23 +6,23 @@ const StatusBadge = ({ status, totalAmount, paymentMethod }) => {
 
   switch (status) {
     case 'pending':
-      badgeClass = 'badge-warning'; // Yellow for pending
+      badgeClass = 'bg-warning text-dark';
       statusText = 'Aguardando pagamento';
       break;
     case 'paid':
-      badgeClass = 'badge-success'; // Green for paid
+      badgeClass = 'bg-success';
       statusText = 'Pagamento confirmado';
       break;
     case 'shipped':
-      badgeClass = 'badge-info'; // Blue for shipped
+      badgeClass = 'bg-info text-dark';
       statusText = 'Enviado';
       break;
     case 'delivered':
-      badgeClass = 'badge-primary'; // Blue for delivered
+      badgeClass = 'bg-primary';
       statusText = 'Entregue';
       break;
     default:
-      badgeClass = 'badge-secondary'; // Default gray for unknown status
+      badgeClass = 'bg-secondary';
       statusText = 'Status desconhecido';
   }
 
@@ -31,11 +31,10 @@ const StatusBadge = ({ status, totalAmount, paymentMethod }) => {
       <span className={`badge ${badgeClass} p-2`}>
         {statusText}
       </span>
-      {/* Optional details */}
       {status === 'paid' && (
         <div className="ms-3">
           <small>
-            <strong>Total:</strong> €{totalAmount} | <strong>Método de pagamento:</strong> {paymentMethod}
+            <strong>Total:</strong> €{totalAmount.toFixed(2)} | <strong>Método:</strong> {paymentMethod}
           </small>
         </div>
       )}

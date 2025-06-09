@@ -1,6 +1,6 @@
 import React from "react";
 import Product from "./Product";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ProductsRow = ({ products, title, error, loading }) => {
   const { user } = useAuth();

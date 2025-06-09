@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const BillingForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [name]: value };
+      return updated;
+    });
   };
 
   return (
@@ -19,6 +22,7 @@ const BillingForm = ({ formData, setFormData }) => {
             placeholder="Email"
             value={formData.email || ''}
             onChange={handleChange}
+            required
           />
           <label htmlFor="billingEmail">Endereço E-mail</label>
         </div>
@@ -31,9 +35,10 @@ const BillingForm = ({ formData, setFormData }) => {
                 name="firstName"
                 type="text"
                 className="form-control"
-                placeholder="First name"
+                placeholder="Nome"
                 value={formData.firstName || ''}
                 onChange={handleChange}
+                required
               />
               <label htmlFor="billingFirstName">Nome</label>
             </div>
@@ -45,9 +50,10 @@ const BillingForm = ({ formData, setFormData }) => {
                 name="lastName"
                 type="text"
                 className="form-control"
-                placeholder="Last name"
+                placeholder="Apelido"
                 value={formData.lastName || ''}
                 onChange={handleChange}
+                required
               />
               <label htmlFor="billingLastName">Apelido</label>
             </div>
@@ -60,9 +66,10 @@ const BillingForm = ({ formData, setFormData }) => {
             name="address"
             type="text"
             className="form-control"
-            placeholder="Address"
+            placeholder="Morada"
             value={formData.address || ''}
             onChange={handleChange}
+            required
           />
           <label htmlFor="billingAddress">Morada</label>
         </div>
@@ -75,9 +82,10 @@ const BillingForm = ({ formData, setFormData }) => {
                 name="city"
                 type="text"
                 className="form-control"
-                placeholder="City"
+                placeholder="Cidade"
                 value={formData.city || ''}
                 onChange={handleChange}
+                required
               />
               <label htmlFor="billingCity">Cidade</label>
             </div>
@@ -89,9 +97,10 @@ const BillingForm = ({ formData, setFormData }) => {
                 name="state"
                 type="text"
                 className="form-control"
-                placeholder="State"
+                placeholder="Distrito"
                 value={formData.state || ''}
                 onChange={handleChange}
+                required
               />
               <label htmlFor="billingState">Distrito</label>
             </div>
@@ -103,9 +112,10 @@ const BillingForm = ({ formData, setFormData }) => {
                 name="zip"
                 type="text"
                 className="form-control"
-                placeholder="ZIP"
+                placeholder="Código Postal"
                 value={formData.zip || ''}
                 onChange={handleChange}
+                required
               />
               <label htmlFor="billingZip">Código Postal</label>
             </div>
