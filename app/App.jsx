@@ -26,7 +26,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { WishlistProvider } from "./contexts/WishlistContext.jsx";
 
 import ShopEditor from "./pages/ShopEditor.jsx";
 
@@ -41,7 +40,6 @@ import Search from "./pages/Search.jsx"
 function App() {
   return (
     <AuthProvider>
-        <WishlistProvider>
           <Router>
             <Toaster
               position="bottom-right"
@@ -103,7 +101,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
-        </WishlistProvider>
     </AuthProvider>
   );
 }

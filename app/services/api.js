@@ -155,13 +155,23 @@ export const checkIfInWishlist = async (productId) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        "Authorization": `Bearer ${localStorage.getItem('token')}`,
       },
     });
     return await response.json();
   } catch (error) {
     console.error('Error checking wishlist status:', error);
     return { isWishlisted: false };
+  }
+};
+export const getUserReviewForProduct = async (userId, productId) => {
+  try {
+    const response = await fetch(`/api/reviews/${userId}/${productId}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao obter avaliação.');
+    return data;
+  } catch (error) {
+    return { error: error.message };
   }
 };
 
