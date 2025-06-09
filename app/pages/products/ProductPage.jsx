@@ -8,7 +8,7 @@ import {
   getWishlist,
   addToWishlist,
   removeFromWishlist,
-  addToCart, // <-- Added import
+  addToCart,
 } from "../../services/api";
 import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 import Review from "../../components/reviews/Review";
@@ -34,8 +34,11 @@ const ProductPage = () => {
   const [errorProductStats, setErrorProductStats] = useState(null);
 
   const [quantity, setQuantity] = useState(1);
-
   const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [deleteReviewId, setDeleteReviewId] = useState(null);
 
   const decreaseQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
   const increaseQuantity = () => setQuantity((prev) => prev + 1);
@@ -110,10 +113,6 @@ const ProductPage = () => {
     productStats[1] || 0
   );
 
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [deleteReviewId, setDeleteReviewId] = useState(null);
-
   const handleSubmitReview = async (e) => {
     e.preventDefault();
     if (!rating) {
@@ -162,7 +161,7 @@ const ProductPage = () => {
       if (isWishlisted) {
         await removeFromWishlist(product._id);
         setIsWishlisted(false);
-        toast("Removido da lista wishlist.");
+        toast("Removido da wishlist.");
       } else {
         await addToWishlist(product._id);
         setIsWishlisted(true);
@@ -204,6 +203,7 @@ const ProductPage = () => {
         <p>Loading...</p>
       ) : (
         <>
+          {/* Product Info Section */}
           <section className="container pb-3 pt-4">
             <div className="row">
               <div className="col">
@@ -306,9 +306,7 @@ const ProductPage = () => {
 
                       <div className="col-1 col-lg-12 col-xl ps-2 ps-lg-0 w-100 mb-3">
                         <button
-                          className={`btn w-100 h-100 fw-bold ${
-                            product.stock > 0 ? "btn-primary" : "btn-secondary"
-                          }`}
+                          className={`btn w-100 h-100 fw-bold ${product.stock > 0 ? "btn-primary" : "btn-secondary"}`}
                           disabled={product.stock <= 0}
                           onClick={handleAddToCart}
                         >
@@ -321,9 +319,106 @@ const ProductPage = () => {
               </div>
             </div>
           </section>
- </>
+
+          {/* Review Section */}
+          <section className="bg-body-tertiary">
+            <div className="container py-4">
+              <p className="h2">Avaliações</p>
+              <div className="row">
+                <div className="col-md-4 text-center">
+                  <h1 className="display-4 mt-5 mb-4 fw-bold">{product.averageRating}</h1>
+                  <div className="mb-3 fs-4">
+                    <StarRating rating={product.averageRating} />
+                  </div>
+                </div>
+                <div className="col-md-8">
+                  <div className="rating-bars">
+                    {loadingProductStats ? (
+                      <div>Loading...</div>
+                    ) : (
+                      [5, 4, 3, 2, 1].map((star) => (
+                        <StarBar
+                          key={star}
+                          rating={star}
+                          count={productStats[star] || 0}
+                          maxCount={maxCount || 0}
+                        />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mt-4">
+                <div className="col">
+                  <div className="card bg-dark">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-center p-3 pt-3 flex-column">
+                        {user ? (
+                          <form onSubmit={handleSubmitReview}>
+                            <div className="mb-3">
+                              <p className="h4">Diga o que acha deste produto!</p>
+                              <div className="fs-4">
+                                <StarSelector value={rating} onChange={setRating} />
+                              </div>
+                            </div>
+                            <textarea
+                              className="form-control"
+                              rows="3"
+                              placeholder="Escreva aqui a sua avaliação..."
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                            <button className="btn btn-primary mt-2" type="submit">
+                              Enviar Avaliação
+                            </button>
+                          </form>
+                        ) : (
+                          <>
+                            <p className="fs-4 fw-semibold">
+                              Junta-te à conversa e diz o que achaste deste produto
+                            </p>
+                            <p className="fs-5">
+                              <a className="fw-semibold text-decoration-none" href="/register">
+                                Cria uma conta
+                              </a>{" "}
+                              ou{" "}
+                              <a className="fw-semibold text-decoration-none" href="/login">
+                                inicia sessão
+                              </a>{" "}
+                              para poder deixar a sua avaliação!
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {product?.reviews?.length > 0 ? (
+                product.reviews.map((review, index) => (
+                  <Review
+                    key={index}
+                    reviewId={review._id}
+                    userId={review.user._id}
+                    user={review.user.name}
+                    comment={review.comment}
+                    rating={review.rating}
+                    createdAt={review.createdAt}
+                    reviewDelete={handleDeleteReview}
+                    setReviewDelete={setDeleteReviewId}
+                  />
+                ))
+              ) : (
+                <p className="text-muted pt-4">Sem avaliações ainda.</p>
+              )}
+            </div>
+          </section>
+        </>
       )}
 
+      {/* Delete Confirmation Modal */}
       <div className="modal fade" id="deleteModal" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content">

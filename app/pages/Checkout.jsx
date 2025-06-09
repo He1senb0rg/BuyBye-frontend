@@ -110,6 +110,29 @@ const handleCheckout = async () => {
     }
   };
 
+  const isBillingFormComplete = () => {
+  const { firstName, lastName, email, address, city, state, zip } = formData;
+  return firstName && lastName && email && address && city && state && zip;
+};
+
+const isPaymentFormComplete = () => {
+  if (formData.paymentMethod === 'ccdb') {
+    return (
+      formData.cardName &&
+      /^\d{16}$/.test(formData.cardNumber) && // Exactly 16 digits
+      /^\d{2}\/\d{2}$/.test(formData.expiry) && // Simple MM/YY format
+      /^\d{3,4}$/.test(formData.cvv) // 3 or 4 digits
+    );
+  } else if (formData.paymentMethod === 'paypal') {
+    return true; // Assuming PayPal button handles its own validation
+  } else if (formData.paymentMethod === 'mbway') {
+    return /^\d{9}$/.test(formData.mbwayPhone); // Valid 9-digit phone number
+  } else if (formData.paymentMethod === 'multibanco') {
+    return true; // No extra input required
+  }
+  return false;
+};
+
   if (orderPlaced) {
     return <ConfirmationPage formData={formData} />;
   }
@@ -126,21 +149,28 @@ const handleCheckout = async () => {
                 Voltar
               </button>
             )}
+            
             {step === 0 && (
-              <button className="btn btn-primary ms-auto" onClick={handleNext}>
+              <button
+                className="btn btn-primary ms-auto"
+                onClick={handleNext}
+                disabled={!isBillingFormComplete()} // Disable if incomplete
+              >
                 Próximo
               </button>
             )}
+
             {step === 1 && (
               <button
                 className="btn btn-success ms-auto"
                 onClick={handleCheckout}
-                disabled={isLoading}
+                disabled={!isPaymentFormComplete() || isLoading} // Disable if incomplete
               >
                 {isLoading ? 'A processar...' : 'Confirmar'}
               </button>
             )}
           </div>
+
         </div>
         <div className="col-md-5">
           <OrderSummary items={formData.items || []} onTotalChange={handleTotalChange} />

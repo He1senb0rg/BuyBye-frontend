@@ -1,5 +1,13 @@
 import React from 'react';
 
+// Payment method translation map
+const paymentMethodTranslations = {
+  multibanco: 'Multibanco',
+  mbway: 'MB Way',
+  paypal: 'PayPal',
+  ccdb: 'Cartão de Crédito/Débito',
+};
+
 const StatusBadge = ({ status, totalAmount, paymentMethod }) => {
   let badgeClass = '';
   let statusText = '';
@@ -26,6 +34,9 @@ const StatusBadge = ({ status, totalAmount, paymentMethod }) => {
       statusText = 'Status desconhecido';
   }
 
+  // Translate payment method
+  const translatedPaymentMethod = paymentMethodTranslations[paymentMethod] || paymentMethod;
+
   return (
     <div className="d-flex justify-content-between align-items-center">
       <span className={`badge ${badgeClass} p-2`}>
@@ -34,7 +45,7 @@ const StatusBadge = ({ status, totalAmount, paymentMethod }) => {
       {status === 'paid' && (
         <div className="ms-3">
           <small>
-            <strong>Total:</strong> €{totalAmount.toFixed(2)} | <strong>Método:</strong> {paymentMethod}
+            <strong>Total:</strong> €{totalAmount.toFixed(2)} | <strong>Método:</strong> {translatedPaymentMethod}
           </small>
         </div>
       )}

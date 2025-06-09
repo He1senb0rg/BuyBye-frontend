@@ -11,7 +11,7 @@ const BillingForm = ({ formData, setFormData }) => {
 
   return (
     <div className="card bg-body-tertiary p-3">
-      <h4 className="mb-3">Endereço de Faturamento</h4>
+      <h4 className="mb-3">Endereço de Faturação</h4>
       <form>
         <div className="form-floating mb-3">
           <input
@@ -24,7 +24,7 @@ const BillingForm = ({ formData, setFormData }) => {
             onChange={handleChange}
             required
           />
-          <label htmlFor="billingEmail">Endereço E-mail</label>
+          <label htmlFor="billingEmail">Endereço de Envio</label>
         </div>
 
         <div className="row">

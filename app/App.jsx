@@ -26,7 +26,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { CartProvider } from "./contexts/CartContext.jsx";
 import { WishlistProvider } from "./contexts/WishlistContext.jsx";
 
 import ShopEditor from "./pages/ShopEditor.jsx";
@@ -42,7 +41,6 @@ import Search from "./pages/Search.jsx"
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
         <WishlistProvider>
           <Router>
             <Toaster
@@ -106,7 +104,6 @@ function App() {
             </Routes>
           </Router>
         </WishlistProvider>
-      </CartProvider>
     </AuthProvider>
   );
 }
