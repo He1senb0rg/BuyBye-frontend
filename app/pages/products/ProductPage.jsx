@@ -5,10 +5,8 @@ import {
   getProductReviewsStats,
   createReview,
   deleteReview,
-  getWishlist,
-  addToWishlist,
-  removeFromWishlist,
   addToCart,
+  updateReview,
 } from "../../services/api";
 import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 import Review from "../../components/reviews/Review";
@@ -16,6 +14,7 @@ import StarRating from "../../components/reviews/StarRating";
 import StarBar from "../../components/reviews/StarBar";
 import ProductOptions from "../../components/products/ProductOptions";
 import { useAuth } from "../../contexts/AuthContext";
+import { useWishlist } from "../../contexts/WishlistContext";
 import toast from "react-hot-toast";
 import StarSelector from "../../components/reviews/StarSelector";
 import { useNavigate } from "react-router-dom";
@@ -25,17 +24,18 @@ const ProductPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const { addItem, removeItem, checkIsWishlisted } = useWishlist();
+
   const [product, setProduct] = useState(null);
   const [loadingProduct, setLoadingProduct] = useState(true);
-  const [errorProduct, setErrorProduct] = useState(null);
 
   const [productStats, setProductStats] = useState({});
   const [loadingProductStats, setLoadingProductStats] = useState(true);
-  const [errorProductStats, setErrorProductStats] = useState(null);
 
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
-
+  const [editReviewId, setEditReviewId] = useState(null);
+  const [editRating, setEditRating] = useState(0);
+  const [editComment, setEditComment] = useState("");
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [deleteReviewId, setDeleteReviewId] = useState(null);
@@ -71,7 +71,6 @@ const ProductPage = () => {
         if (!response || response.error) throw new Error("Produto não encontrado");
         setProduct(response);
       } catch (error) {
-        setErrorProduct("Failed to fetch product");
         navigate("/404");
       } finally {
         setLoadingProduct(false);
@@ -82,28 +81,14 @@ const ProductPage = () => {
       try {
         const response = await getProductReviewsStats(id);
         setProductStats(response);
-      } catch (error) {
-        setErrorProductStats("Failed to fetch product");
       } finally {
         setLoadingProductStats(false);
       }
     };
 
-    const checkIfWishlisted = async () => {
-      try {
-        if (!user) return;
-        const wishlist = await getWishlist();
-        const found = wishlist.some((item) => item._id === id);
-        setIsWishlisted(found);
-      } catch (err) {
-        console.error("Failed to check wishlist:", err);
-      }
-    };
-
     fetchProduct();
     fetchReviews();
-    checkIfWishlisted();
-  }, [id, user]);
+  }, [id, navigate]);
 
   const maxCount = Math.max(
     productStats[5] || 0,
@@ -136,6 +121,35 @@ const ProductPage = () => {
     }
   };
 
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+
+    if (!editRating) {
+      toast.error("Por favor, atribua uma classificação.");
+      return;
+    }
+
+    try {
+      const response = await updateReview(editReviewId, { rating: editRating, comment: editComment });
+      if (response.error) throw new Error(response.error);
+
+      toast.success("Avaliação atualizada com sucesso!");
+
+      setProduct((prev) => ({
+        ...prev,
+        reviews: prev.reviews.map((review) =>
+          review._id === editReviewId ? { ...review, rating: editRating, comment: editComment } : review
+        ),
+      }));
+
+      setEditReviewId(null);
+      setEditRating(0);
+      setEditComment("");
+    } catch (err) {
+      toast.error(err.message || "Erro ao atualizar avaliação.");
+    }
+  };
+
   const handleDeleteReview = async (reviewId) => {
     try {
       const response = await deleteReview(reviewId);
@@ -158,13 +172,11 @@ const ProductPage = () => {
     }
 
     try {
-      if (isWishlisted) {
-        await removeFromWishlist(product._id);
-        setIsWishlisted(false);
+      if (checkIsWishlisted(product._id)) {
+        await removeItem(product._id);
         toast("Removido da wishlist.");
       } else {
-        await addToWishlist(product._id);
-        setIsWishlisted(true);
+        await addItem(product._id);
         toast.success("Adicionado à wishlist!");
       }
     } catch (err) {
@@ -179,17 +191,9 @@ const ProductPage = () => {
     }
 
     try {
-      const item = {
-        productId: product._id,
-        quantity,
-      };
-
+      const item = { productId: product._id, quantity };
       const response = await addToCart(item);
-
-      if (response.error) {
-        throw new Error(response.error);
-      }
-
+      if (response.error) throw new Error(response.error);
       toast.success("Produto adicionado ao carrinho!");
     } catch (error) {
       console.error("Erro ao adicionar ao carrinho:", error);
@@ -197,13 +201,14 @@ const ProductPage = () => {
     }
   };
 
+  const isWishlisted = product && checkIsWishlisted(product._id);
+
   return (
     <main>
       {loadingProduct ? (
         <p>Loading...</p>
       ) : (
         <>
-          {/* Product Info Section */}
           <section className="container pb-3 pt-4">
             <div className="row">
               <div className="col">
@@ -251,9 +256,7 @@ const ProductPage = () => {
                       )}
                       <div>
                         <StarRating rating={product.averageRating} />
-                        <small className="text-muted">
-                          ({product.averageRating})
-                        </small>
+                        <small className="text-muted">({product.averageRating})</small>
                       </div>
                     </div>
                     <hr />
@@ -274,32 +277,18 @@ const ProductPage = () => {
                     <div className="row mt-5">
                       <div className="col-6 col-lg-6 col-xl-3 pe-0 mb-3">
                         <div className="input-group">
-                          <button
-                            className="btn btn-primary"
-                            onClick={decreaseQuantity}
-                          >
+                          <button className="btn btn-primary" onClick={decreaseQuantity}>
                             <i className="bi bi-dash fw-bold"></i>
                           </button>
-                          <input
-                            className="form-control border-primary"
-                            value={quantity}
-                            readOnly
-                          />
-                          <button
-                            className="btn btn-primary"
-                            onClick={increaseQuantity}
-                          >
+                          <input className="form-control border-primary" value={quantity} readOnly />
+                          <button className="btn btn-primary" onClick={increaseQuantity}>
                             <i className="bi bi-plus-lg fw-bold"></i>
                           </button>
                         </div>
                       </div>
 
                       <div className="col-6 col-lg-6 col-xl-auto d-flex justify-content-end mb-3">
-                        <button
-                          className="btn btn-primary justify-content-end w-100"
-                          type="button"
-                          onClick={toggleWishlist}
-                        >
+                        <button className="btn btn-primary justify-content-end w-100" type="button" onClick={toggleWishlist}>
                           <i className={`bi ${isWishlisted ? "bi-heart-fill" : "bi-heart"}`}></i>
                         </button>
                       </div>
@@ -320,7 +309,6 @@ const ProductPage = () => {
             </div>
           </section>
 
-          {/* Review Section */}
           <section className="bg-body-tertiary">
             <div className="container py-4">
               <p className="h2">Avaliações</p>
@@ -337,12 +325,7 @@ const ProductPage = () => {
                       <div>Loading...</div>
                     ) : (
                       [5, 4, 3, 2, 1].map((star) => (
-                        <StarBar
-                          key={star}
-                          rating={star}
-                          count={productStats[star] || 0}
-                          maxCount={maxCount || 0}
-                        />
+                        <StarBar key={star} rating={star} count={productStats[star] || 0} maxCount={maxCount || 0} />
                       ))
                     )}
                   </div>
@@ -375,9 +358,7 @@ const ProductPage = () => {
                           </form>
                         ) : (
                           <>
-                            <p className="fs-4 fw-semibold">
-                              Junta-te à conversa e diz o que achaste deste produto
-                            </p>
+                            <p className="fs-4 fw-semibold">Junta-te à conversa e diz o que achaste deste produto</p>
                             <p className="fs-5">
                               <a className="fw-semibold text-decoration-none" href="/register">
                                 Cria uma conta
@@ -408,6 +389,13 @@ const ProductPage = () => {
                     createdAt={review.createdAt}
                     reviewDelete={handleDeleteReview}
                     setReviewDelete={setDeleteReviewId}
+                    editReviewId={editReviewId}
+                    setEditReviewId={setEditReviewId}
+                    editRating={editRating}
+                    setEditRating={setEditRating}
+                    editComment={editComment}
+                    setEditComment={setEditComment}
+                    handleUpdateReview={handleUpdateReview}
                   />
                 ))
               ) : (
@@ -418,31 +406,18 @@ const ProductPage = () => {
         </>
       )}
 
-      {/* Delete Confirmation Modal */}
       <div className="modal fade" id="deleteModal" tabIndex="-1">
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Apagar Comentário</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Fechar"
-              ></button>
+              <h5 className="modal-title">Apagar Avaliação</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
             <div className="modal-body">
-              Tens a certeza que queres apagar este comentário? Esta ação não pode ser revertida.
+              Tens a certeza que queres apagar a sua avaliação deste produto? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Cancelar
-              </button>
-              <button
-                className="btn btn-danger"
-                data-bs-dismiss="modal"
-                onClick={() => handleDeleteReview(deleteReviewId)}
-              >
+              <button className="btn btn-danger" data-bs-dismiss="modal" onClick={() => handleDeleteReview(deleteReviewId)}>
                 Apagar
               </button>
             </div>

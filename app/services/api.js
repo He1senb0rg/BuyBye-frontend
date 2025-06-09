@@ -219,8 +219,6 @@ export const createReview = async (review) => {
   return response.json();
 };
 
-
-
 export const deleteReview = async (id) => {
   const response = await fetch(`${BASE_URL}/reviews/${id}`, {
     method: "DELETE",
@@ -231,6 +229,30 @@ export const deleteReview = async (id) => {
   });
   return response.json();
 };
+
+export const updateReview = async (reviewId, data) => {
+  try {
+    const response = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { error: errorData.message || "Erro desconhecido ao atualizar." };
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao atualizar a avaliação:", error);
+    return { error: "Erro de rede" };
+  }
+};
+
 
 // Cart
 export const getCart = async () => {

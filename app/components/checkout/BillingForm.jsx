@@ -1,32 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 const BillingForm = ({ formData, setFormData }) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => {
-      const updated = { ...prev, [name]: value };
-      return updated;
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="card bg-body-tertiary p-3">
       <h4 className="mb-3">Endereço de Faturação</h4>
       <form>
-        <div className="form-floating mb-3">
-          <input
-            id="billingEmail"
-            name="email"
-            type="email"
-            className="form-control"
-            placeholder="Email"
-            value={formData.email || ''}
-            onChange={handleChange}
-            required
-          />
-          <label htmlFor="billingEmail">Endereço de Envio</label>
-        </div>
-
         <div className="row">
           <div className="col-md-6 mb-3">
             <div className="form-floating">
@@ -58,6 +41,20 @@ const BillingForm = ({ formData, setFormData }) => {
               <label htmlFor="billingLastName">Apelido</label>
             </div>
           </div>
+        </div>
+
+        <div className="form-floating mb-3">
+          <input
+            id="billingPhoneNumber"
+            name="phoneNumber"
+            type="tel"
+            className="form-control"
+            placeholder="Número de Telefone"
+            value={formData.phoneNumber || ''}
+            onChange={handleChange}
+            required
+          />
+          <label htmlFor="billingPhoneNumber">Número de Telefone</label>
         </div>
 
         <div className="form-floating mb-3">
