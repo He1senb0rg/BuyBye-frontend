@@ -10,6 +10,7 @@ import AccountDetailsProfile from "./pages/account/AccountDetailsProfile.jsx";
 import AccountDetailsBilling from "./pages/account/AccountDetailsBilling.jsx";
 import AccountDetailsSecurity from "./pages/account/AccountDetailsSecurity.jsx";
 import CreateProduct from "./pages/products/CreateProduct.jsx";
+import Dashboard from './pages/DashBoard';
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
@@ -91,6 +92,7 @@ function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="categories" element={<CategoriesPage />} />
                 <Route path="categories/create" element={<CreateCategory />} />
+                <Route path="dashboard" element={<Dashboard />} />
                 <Route path="categories/edit/:id" element={<EditCategory />} />
                 <Route path="products" element={<ProductsPage />} />
                 <Route path="products/edit/:id" element={<ProductEdit />} />

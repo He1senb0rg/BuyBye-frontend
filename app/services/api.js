@@ -404,4 +404,17 @@ export const changePassword = async (id, currentPassword, newPassword) => {
   });
 
   return response.json();
+  
+};
+// Dashboard
+export const getDashboardSummary = async () => {
+  const response = await fetch(`${BASE_URL}/dashboard/summary`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  return response.json();
 };
