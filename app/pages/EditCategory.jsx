@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect } from "react";  
 import { useNavigate, useParams } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import { updateCategory, getCategoryById } from "../services/api";

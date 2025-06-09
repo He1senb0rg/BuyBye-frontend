@@ -38,6 +38,7 @@ import UsersPage from "./pages/UsersPage.jsx";
 import UserPage from "./pages/UserPage.jsx";
 import UserEdit from "./pages/UserEdit.jsx";
 import Search from "./pages/Search.jsx"
+import CreateShop from "./pages/CreateShop.jsx"
 
 function App() {
   return (
@@ -55,7 +56,6 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/shop/edit" element={<ShopEditor />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/search" element={<Search />} />
 
@@ -100,6 +100,8 @@ function App() {
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/edit/:id" element={<UserEdit />} />
                 <Route path="users/:id" element={<UserPage />} />
+                <Route path="shop/create" element={<CreateShop />} />
+                <Route path="shop/edit/:id" element={<ShopEditor />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
