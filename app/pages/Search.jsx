@@ -65,7 +65,7 @@ const Search = () => {
                     <div className="d-flex align-items-center">
                         <p className="h2">{"Pesquisar por: " + search}</p>
                     </div>
-                    <div className="d-flex align-items-center">
+                    <div className="d-flex align-items-center justify-content-end py-3">
                         <div className="form-floating me-3">
                             <select
                                 className="form-select"
