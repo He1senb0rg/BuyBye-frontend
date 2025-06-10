@@ -5,17 +5,25 @@ import { useEffect, useState } from "react";
 import { getShopByID, editShopBanner } from "../services/api";
 import toast from "react-hot-toast";
 
-//684743fde07423dcb81fc329
+//684821e8db6eefe900649274
 const ShopBanner = () => {
   const { user } = useAuth();
   const isAdmin = user && user.role === "admin";
 
-  const [shopBanner, setShopBanner] = useState([]);
+  const [shopBanner, setShopBanner] = useState(
+    {
+      title: "",
+      description: "",
+      link: "",
+      buttonText: "",
+      image: "",
+    }
+  );
 
   useEffect(() => {
     const fetchShop = async () => {
       try {
-        const response = await getShopByID("684743fde07423dcb81fc329");
+        const response = await getShopByID("684821e8db6eefe900649274");
         setShopBanner(response.banner);
       } catch (error) {
         console.error("Erro:", error.message);
@@ -36,7 +44,7 @@ const ShopBanner = () => {
         buttonText: shopBanner.buttonText,
         image: shopBanner.image,
       };
-      await editShopBanner("684743fde07423dcb81fc329", updatedBanner);
+      await editShopBanner("684821e8db6eefe900649274", updatedBanner);
       toast.success("Banner atualizado com sucesso!");
     } catch (error) {
       console.error("Erro:", error.message);
@@ -94,7 +102,7 @@ const ShopBanner = () => {
                   name="title"
                   type="text"
                   placeholder="Título do Banner"
-                  value={shopBanner?.title}
+                  value={shopBanner?.title || ""}
                   onChange={handleChange}
                 />
                 <FloatingInput
@@ -102,7 +110,7 @@ const ShopBanner = () => {
                   type="text"
                   name="description"
                   placeholder="Descrição do Banner"
-                  value={shopBanner?.description}
+                  value={shopBanner?.description || ""}
                   onChange={handleChange}
                 />
                 <FloatingInput
@@ -110,7 +118,7 @@ const ShopBanner = () => {
                   type="text"
                   name="link"
                   placeholder="Link do Banner"
-                  value={shopBanner?.link}
+                  value={shopBanner?.link || ""}
                   onChange={handleChange}
                 />
                 <FloatingInput
@@ -118,7 +126,7 @@ const ShopBanner = () => {
                   type="text"
                   name="buttonText"
                   placeholder="Texto do Botão"
-                  value={shopBanner?.buttonText}
+                  value={shopBanner?.buttonText || ""}
                   onChange={handleChange}
                 />
                 <FloatingInput
@@ -126,7 +134,7 @@ const ShopBanner = () => {
                   type="text"
                   name="image"
                   placeholder="URL da Imagem"
-                  value={shopBanner?.image}
+                  value={shopBanner?.image || ""}
                   onChange={handleChange}
                 />
               </div>
