@@ -12,6 +12,9 @@ export default function AccountNavigation() {
       <NavLink to="/account/security" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
         Segurança
       </NavLink>
+      <NavLink to="/account/reviews" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+        Avaliações
+      </NavLink>
     </nav>
   );
 }

@@ -276,6 +276,28 @@ export const updateReview = async (reviewId, data) => {
   }
 };
 
+export const fetchUserReviews = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/reviews/user/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user reviews');
+    }
+
+    const data = await response.json();
+    console.log('Fetched reviews:', data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
 
 // Cart
 export const getCart = async () => {

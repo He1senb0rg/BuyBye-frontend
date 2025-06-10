@@ -9,6 +9,7 @@ import ProductPage from "./pages/products/ProductPage.jsx";
 import AccountDetailsProfile from "./pages/account/AccountDetailsProfile.jsx";
 import AccountDetailsBilling from "./pages/account/AccountDetailsBilling.jsx";
 import AccountDetailsSecurity from "./pages/account/AccountDetailsSecurity.jsx";
+import AccountDetailsReviews from "./pages/account/AccountDetailsReviews.jsx";
 import CreateProduct from "./pages/products/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
@@ -67,7 +68,10 @@ function App() {
                   path="/account/security"
                   element={<AccountDetailsSecurity />}
                 />
-
+                <Route
+                  path="/account/reviews"
+                  element={<AccountDetailsReviews />}
+                />
                 <Route
                   path="/cart"
                   element={
