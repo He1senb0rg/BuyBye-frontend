@@ -14,6 +14,7 @@ const UserEdit = () => {
     email: "",
     role: "",
     image: "",
+    phone: ""
   });
   const [loading, setLoading] = useState(true);
 
@@ -34,9 +35,9 @@ const UserEdit = () => {
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
-    console.log("Atualizando utilizador:", user);
+    console.log(user);
     try {
-      await updateUser(user);
+      const response = await updateUser(id, user);
       toast.success("Utilizador atualizado com sucesso.");
       setTimeout(() => {
         navigate("/admin/users");
@@ -115,6 +116,17 @@ const UserEdit = () => {
                             { value: "admin", label: "Administrador" },
                             { value: "user", label: "Utilizador" },
                           ]}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col">
+                        <FloatingInput
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          placeholder="Telefone do Utilizador"
+                          label="Telefone do Utilizador"
+                          value={user?.phone || ""}
                           onChange={handleChange}
                         />
                       </div>

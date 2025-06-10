@@ -68,7 +68,6 @@ const EditCategory = () => {
                     <div className="col">
                       <FloatingInput
                         type="text"
-                        id="name"
                         name="name"
                         placeholder="Nome da Categoria"
                         label="Nome da Categoria"
@@ -83,7 +82,6 @@ const EditCategory = () => {
                     <div className="col">
                       <FloatingInput
                         isTextArea={true}
-                        id="description"
                         name="description"
                         placeholder="Descrição da Categoria"
                         label="Descrição da Categoria"
