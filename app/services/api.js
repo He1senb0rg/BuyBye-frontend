@@ -92,9 +92,6 @@ export const deleteProduct = async (id) => {
 
 // Wishlist
 export const addToWishlist = async (productId) => {
-  console.log("Sending addToWishlist request with:", productId);
-  console.log("Token being sent:", localStorage.getItem("token"));
-
   const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
     headers: {
@@ -104,15 +101,15 @@ export const addToWishlist = async (productId) => {
     body: JSON.stringify({ productId }),
   });
 
+  const responseData = await response.json();
   console.log("Raw response:", response);
+  console.log("Failed response data:", responseData);
 
   if (!response.ok) {
-    const errorData = await response.json();
-    console.error("Failed response data:", errorData);
-    throw new Error(`Failed to add to wishlist: ${JSON.stringify(errorData)}`);
+    throw { status: response.status, message: responseData.message };
   }
 
-  return response.json();
+  return responseData;
 };
 
 export const removeFromWishlist = async (productId) => {
@@ -301,6 +298,13 @@ export const addToCart = async (item) => {
     },
     body: JSON.stringify(item),
   });
+
+  if (!response.ok) {
+    // Try to parse the error message from the response
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Erro ao adicionar ao carrinho.");
+  }
+
   return response.json();
 };
 

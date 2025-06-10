@@ -93,16 +93,18 @@ const ProductPage = () => {
       }
     };
 
-    const checkIfWishlisted = async () => {
-      try {
-        if (!user) return;
-        const wishlist = await getWishlist();
-        const found = wishlist.some((item) => item._id === id);
-        setIsWishlisted(found);
-      } catch (err) {
-        console.error("Failed to check wishlist:", err);
-      }
-    };
+const checkIfWishlisted = async () => {
+  try {
+    const response = await getWishlist();
+    console.log("Fetched Wishlist: ", response);
+
+    const found = response.items?.some(item => item.product?._id === product._id);
+
+    setIsWishlisted(found);
+  } catch (err) {
+    console.error("Failed to check wishlist:", err);
+  }
+};
 
     fetchProduct();
     fetchReviews();
@@ -140,7 +142,6 @@ const ProductPage = () => {
     }
   };
 
-  // Added function
   const handleUpdateReview = async (e) => {
     e.preventDefault();
 
@@ -185,51 +186,70 @@ const ProductPage = () => {
     }
   };
 
-  const toggleWishlist = async () => {
-    if (!user) {
-      toast.error("Inicie sessão para adicionar à wishlist.");
-      return;
-    }
+const toggleWishlist = async () => {
+  if (!user) {
+    toast.error("Inicie sessão para adicionar à lista de desejos.");
+    return;
+  }
 
-    try {
-      if (isWishlisted) {
-        await removeFromWishlist(product._id);
-        setIsWishlisted(false);
-        toast("Removido da lista wishlist.");
-      } else {
-        await addToWishlist(product._id);
-        setIsWishlisted(true);
-        toast.success("Adicionado à wishlist!");
-      }
-    } catch (err) {
-      toast.error("Erro ao atualizar wishlist.");
+  try {
+    if (isWishlisted) {
+      await removeFromWishlist(product._id);
+      setIsWishlisted(false);
+      toast("Removido da lista de desejos.");
+    } else {
+      await addToWishlist(product._id);
+      setIsWishlisted(true);
+      toast.success("Adicionado à lista de desejos!");
     }
-  };
+  } catch (err) {
+    if (err.status === 400 && err.message === 'Product already in wishlist') {
+      toast.error("Erro ao atualizar a lista de desejos. Produto já se encontra na lista de desejos.");
+    } else {
+      toast.error("Erro ao atualizar a lista de desejos.");
+    }
+  }
+};
 
   const handleAddToCart = async () => {
-    if (!user) {
-      toast.error("Inicie sessão para adicionar ao carrinho.");
-      return;
-    }
+  if (!user) {
+    toast.error("Inicie sessão para adicionar ao carrinho.");
+    return;
+  }
 
-    try {
-      const item = {
-        productId: product._id,
-        quantity,
-      };
+  try {
+    const item = {
+      productId: product._id,
+      quantity,
+    };
 
-      const response = await addToCart(item);
+    const response = await addToCart(item);
 
-      if (response.error) {
-        throw new Error(response.error);
+    // If your API returns { error: 'Some message' } in the JSON body
+    if (response.error) {
+      if (response.error === "Not enough stock available") {
+        toast.error("Estoque insuficiente para a quantidade desejada.");
+        return;
       }
-
-      toast.success("Produto adicionado ao carrinho!");
-    } catch (error) {
-      console.error("Erro ao adicionar ao carrinho:", error);
-      toast.error("Erro ao adicionar ao carrinho.");
+      throw new Error(response.error);
     }
-  };
+
+    toast.success("Produto adicionado ao carrinho!");
+  } catch (error) {
+    console.error("Erro ao adicionar ao carrinho:", error);
+
+    // Optional: handle HTTP errors like 400 from fetch response
+    if (error.response && error.response.status === 400) {
+      const data = await error.response.json();
+      if (data?.message === "Not enough stock available") {
+        toast.error("Estoque insuficiente para a quantidade desejada.");
+        return;
+      }
+    }
+
+    toast.error("Erro ao adicionar ao carrinho.");
+  }
+};
 
   return (
     <main>
