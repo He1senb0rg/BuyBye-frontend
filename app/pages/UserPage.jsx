@@ -93,6 +93,17 @@ const UserPage = () => {
                           ]}
                         />
                       </div>
+                      <div className="col">
+                        <FloatingInput
+                          type="tel"
+                          id="phone"
+                          name="phone"
+                          disabled={true}
+                          placeholder="Telefone do Utilizador"
+                          label="Telefone do Utilizador"
+                          value={user?.phone || ""}
+                        />
+                      </div>
                     </div>
                   </div>
                   <div className="col-3">

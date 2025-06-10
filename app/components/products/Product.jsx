@@ -53,7 +53,7 @@ const Product = ({
 
   return (
     <div className="col">
-      <div className="card">
+      <div className="card h-100 d-flex flex-column">
         <a href={link} className="text-decoration-none product-image rounded mx-3 mt-3">
           <img
             src={images?.[0] || "/assets/images/cao.gif"}
@@ -86,7 +86,7 @@ const Product = ({
             </div>
           )}
 
-          <p className="card-text">{description}</p>
+          <p className="card-text product-description">{description}</p>
           <div className="d-flex justify-content-between">
             {hasActiveDiscount(discount) ? (
               <div className="d-flex">
