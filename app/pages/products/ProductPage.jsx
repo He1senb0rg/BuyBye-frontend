@@ -9,8 +9,7 @@ import {
   addToWishlist,
   removeFromWishlist,
   addToCart,
-  updateReview, // Added import
-  getUserReviewForProduct, //New import
+  updateReview,
 } from "../../services/api";
 import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 import Review from "../../components/reviews/Review";
@@ -42,7 +41,6 @@ const ProductPage = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [deleteReviewId, setDeleteReviewId] = useState(null);
-  const [hasReviewed, setHasReviewed] = useState(false); // New state
 
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -106,22 +104,9 @@ const ProductPage = () => {
       }
     };
 
-    //New function
-    const checkIfUserReviewed = async () => {
-      if (!user) return;
-      try {
-        const response = await getUserReviewForProduct(id);
-        setHasReviewed(!!response); // Set to true if a review exists, false otherwise
-      } catch (error) {
-        console.error("Failed to check if user reviewed:", error);
-        setHasReviewed(false); // Default to false in case of error
-      }
-    };
-
     fetchProduct();
     fetchReviews();
     checkIfWishlisted();
-    checkIfUserReviewed(); //Call new function
   }, [id, user]);
 
   const maxCount = Math.max(
@@ -150,7 +135,6 @@ const ProductPage = () => {
       }));
       setRating(0);
       setComment("");
-      setHasReviewed(true); // Update state after successful review submission
     } catch (err) {
       toast.error("Erro ao enviar avaliação.");
     }
@@ -196,7 +180,6 @@ const ProductPage = () => {
         ...prev,
         reviews: prev.reviews.filter((review) => review._id !== reviewId),
       }));
-      setHasReviewed(false); //Update state after successful review deletion
     } catch (err) {
       toast.error("Erro ao apagar avaliação.");
     }
@@ -402,28 +385,24 @@ const ProductPage = () => {
                     <div className="card-body">
                       <div className="d-flex justify-content-center p-3 pt-3 flex-column">
                         {user ? (
-                          hasReviewed ? (
-                            <p className="fs-4 fw-semibold">Já avaliaste este produto.</p>
-                          ) : (
-                            <form onSubmit={handleSubmitReview}>
-                              <div className="mb-3">
-                                <p className="h4">Diga o que acha deste produto!</p>
-                                <div className="fs-4">
-                                  <StarSelector value={rating} onChange={setRating} />
-                                </div>
+                          <form onSubmit={handleSubmitReview}>
+                            <div className="mb-3">
+                              <p className="h4">Diga o que acha deste produto!</p>
+                              <div className="fs-4">
+                                <StarSelector value={rating} onChange={setRating} />
                               </div>
-                              <textarea
-                                className="form-control"
-                                rows="3"
-                                placeholder="Escreva aqui a sua avaliação..."
-                                value={comment}
-                                onChange={(e) => setComment(e.target.value)}
-                              ></textarea>
-                              <button className="btn btn-primary mt-2" type="submit" disabled={hasReviewed}>
-                                Enviar Avaliação
-                              </button>
-                            </form>
-                          )
+                            </div>
+                            <textarea
+                              className="form-control"
+                              rows="3"
+                              placeholder="Escreva aqui a sua avaliação..."
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                            <button className="btn btn-primary mt-2" type="submit">
+                              Enviar Avaliação
+                            </button>
+                          </form>
                         ) : (
                           <>
                             <p className="fs-4 fw-semibold">Junta-te à conversa e diz o que achaste deste produto</p>
@@ -490,9 +469,6 @@ const ProductPage = () => {
               Tens a certeza que queres apagar este comentário? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Cancelar
-              </button>
               <button
                 className="btn btn-danger"
                 data-bs-dismiss="modal"
