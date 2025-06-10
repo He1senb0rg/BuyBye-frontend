@@ -104,7 +104,7 @@ const Dashboard = () => {
             </select>
           </h2>
 
-          <div className="bg-dark p-2 rounded border mx-2 p-4">
+          <div className="bg-dark p-2 border-top border-bottom mx-auto p-4">
               <Bar data={chartData} options={chartOptions} height={100} />
             </div>
 
