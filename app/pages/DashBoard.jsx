@@ -80,7 +80,7 @@ const Dashboard = () => {
     },
   };
 
-  const startYear = 2025;
+  const startYear = 2024;
   const currentYear = new Date().getFullYear();
   const availableYears = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
 
@@ -104,11 +104,9 @@ const Dashboard = () => {
             </select>
           </h2>
 
-          <div className="card mx-3 my-2">
-            <div className="bg-dark p-2 rounded mx-auto p-4">
-              <Bar data={chartData} options={chartOptions} width={300} height={90} />
+          <div className="bg-dark p-2 rounded border mx-2 p-4">
+              <Bar data={chartData} options={chartOptions} height={100} />
             </div>
-          </div>
 
           <div className="d-flex flex-wrap gap-3 mx-3 my-4">
           <div className="card text-white bg-dark border border-secondary p-3 flex-fill">
