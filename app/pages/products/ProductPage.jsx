@@ -8,7 +8,9 @@ import {
   getWishlist,
   addToWishlist,
   removeFromWishlist,
-  addToCart, // <-- Added import
+  addToCart,
+  updateReview, // Added import
+  getUserReviewForProduct, //New import
 } from "../../services/api";
 import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 import Review from "../../components/reviews/Review";
@@ -34,6 +36,13 @@ const ProductPage = () => {
   const [errorProductStats, setErrorProductStats] = useState(null);
 
   const [quantity, setQuantity] = useState(1);
+  const [editReviewId, setEditReviewId] = useState(null); // Added state
+  const [editRating, setEditRating] = useState(0); // Added state
+  const [editComment, setEditComment] = useState(""); // Added state
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [deleteReviewId, setDeleteReviewId] = useState(null);
+  const [hasReviewed, setHasReviewed] = useState(false); // New state
 
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -97,9 +106,22 @@ const ProductPage = () => {
       }
     };
 
+    //New function
+    const checkIfUserReviewed = async () => {
+      if (!user) return;
+      try {
+        const response = await getUserReviewForProduct(id);
+        setHasReviewed(!!response); // Set to true if a review exists, false otherwise
+      } catch (error) {
+        console.error("Failed to check if user reviewed:", error);
+        setHasReviewed(false); // Default to false in case of error
+      }
+    };
+
     fetchProduct();
     fetchReviews();
     checkIfWishlisted();
+    checkIfUserReviewed(); //Call new function
   }, [id, user]);
 
   const maxCount = Math.max(
@@ -109,10 +131,6 @@ const ProductPage = () => {
     productStats[2] || 0,
     productStats[1] || 0
   );
-
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [deleteReviewId, setDeleteReviewId] = useState(null);
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -132,8 +150,39 @@ const ProductPage = () => {
       }));
       setRating(0);
       setComment("");
+      setHasReviewed(true); // Update state after successful review submission
     } catch (err) {
       toast.error("Erro ao enviar avaliação.");
+    }
+  };
+
+  // Added function
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+
+    if (!editRating) {
+      toast.error("Por favor, atribua uma classificação.");
+      return;
+    }
+
+    try {
+      const response = await updateReview(editReviewId, { rating: editRating, comment: editComment });
+      if (response.error) throw new Error(response.error);
+
+      toast.success("Avaliação atualizada com sucesso!");
+
+      setProduct((prev) => ({
+        ...prev,
+        reviews: prev.reviews.map((review) =>
+          review._id === editReviewId ? { ...review, rating: editRating, comment: editComment } : review
+        ),
+      }));
+
+      setEditReviewId(null);
+      setEditRating(0);
+      setEditComment("");
+    } catch (err) {
+      toast.error(err.message || "Erro ao atualizar avaliação.");
     }
   };
 
@@ -147,6 +196,7 @@ const ProductPage = () => {
         ...prev,
         reviews: prev.reviews.filter((review) => review._id !== reviewId),
       }));
+      setHasReviewed(false); //Update state after successful review deletion
     } catch (err) {
       toast.error("Erro ao apagar avaliação.");
     }
@@ -321,7 +371,107 @@ const ProductPage = () => {
               </div>
             </div>
           </section>
- </>
+
+          {/* Updated reviews section */}
+          <section className="bg-body-tertiary">
+            <div className="container py-4">
+              <p className="h2">Avaliações</p>
+              <div className="row">
+                <div className="col-md-4 text-center">
+                  <h1 className="display-4 mt-5 mb-4 fw-bold">{product.averageRating}</h1>
+                  <div className="mb-3 fs-4">
+                    <StarRating rating={product.averageRating} />
+                  </div>
+                </div>
+                <div className="col-md-8">
+                  <div className="rating-bars">
+                    {loadingProductStats ? (
+                      <div>Loading...</div>
+                    ) : (
+                      [5, 4, 3, 2, 1].map((star) => (
+                        <StarBar key={star} rating={star} count={productStats[star] || 0} maxCount={maxCount || 0} />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mt-4">
+                <div className="col">
+                  <div className="card bg-dark">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-center p-3 pt-3 flex-column">
+                        {user ? (
+                          hasReviewed ? (
+                            <p className="fs-4 fw-semibold">Já avaliaste este produto.</p>
+                          ) : (
+                            <form onSubmit={handleSubmitReview}>
+                              <div className="mb-3">
+                                <p className="h4">Diga o que acha deste produto!</p>
+                                <div className="fs-4">
+                                  <StarSelector value={rating} onChange={setRating} />
+                                </div>
+                              </div>
+                              <textarea
+                                className="form-control"
+                                rows="3"
+                                placeholder="Escreva aqui a sua avaliação..."
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                              <button className="btn btn-primary mt-2" type="submit" disabled={hasReviewed}>
+                                Enviar Avaliação
+                              </button>
+                            </form>
+                          )
+                        ) : (
+                          <>
+                            <p className="fs-4 fw-semibold">Junta-te à conversa e diz o que achaste deste produto</p>
+                            <p className="fs-5">
+                              <a className="fw-semibold text-decoration-none" href="/register">
+                                Cria uma conta
+                              </a>{" "}
+                              ou{" "}
+                              <a className="fw-semibold text-decoration-none" href="/login">
+                                inicia sessão
+                              </a>{" "}
+                              para poder deixar a sua avaliação!
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {product?.reviews?.length > 0 ? (
+                product.reviews.map((review, index) => (
+                  <Review
+                    key={index}
+                    reviewId={review._id}
+                    userId={review.user._id}
+                    user={review.user.name}
+                    comment={review.comment}
+                    rating={review.rating}
+                    createdAt={review.createdAt}
+                    reviewDelete={handleDeleteReview}
+                    setReviewDelete={setDeleteReviewId}
+                    editReviewId={editReviewId}
+                    setEditReviewId={setEditReviewId}
+                    editRating={editRating}
+                    setEditRating={setEditRating}
+                    editComment={editComment}
+                    setEditComment={setEditComment}
+                    handleUpdateReview={handleUpdateReview}
+                  />
+                ))
+              ) : (
+                <p className="text-muted pt-4">Sem avaliações ainda.</p>
+              )}
+            </div>
+          </section>
+        </>
       )}
 
       <div className="modal fade" id="deleteModal" tabIndex="-1">

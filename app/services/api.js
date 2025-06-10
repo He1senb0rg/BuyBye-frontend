@@ -164,6 +164,7 @@ export const checkIfInWishlist = async (productId) => {
     return { isWishlisted: false };
   }
 };
+
 export const getUserReviewForProduct = async (userId, productId) => {
   try {
     const response = await fetch(`/api/reviews/${userId}/${productId}`);
