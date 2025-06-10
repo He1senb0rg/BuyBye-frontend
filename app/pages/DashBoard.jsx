@@ -63,8 +63,7 @@ const Dashboard = () => {
       {
         label: 'Vendas',
         data: chartDataValues,
-        backgroundColor: '#38bdf8',
-        borderRadius: 4,
+        backgroundColor: '#00adef'
       },
     ],
   };
@@ -72,8 +71,8 @@ const Dashboard = () => {
   const chartOptions = {
     responsive: true,
     plugins: {
-      legend: { position: 'top', labels: { color: '#fff' } },
-      title: { display: true, text: `Vendas - ${selectedYear}`, color: '#fff' },
+      legend: { position: 'bottom', labels: { color: '#fff' } },
+      title: { display: true, text: `Vendas`, color: '#fff',font: { size: 20, family: 'Arial, sans-serif'} },
     },
     scales: {
       x: { ticks: { color: '#ccc' }, grid: { color: '#444' } },
@@ -81,43 +80,59 @@ const Dashboard = () => {
     },
   };
 
-  const availableYears = [2024, 2025, 2026];
+  const startYear = 2025;
+  const currentYear = new Date().getFullYear();
+  const availableYears = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
 
   return (
-    <div className="card mb-3 min-h-screen bg-gray-900 text-white p-8">
-      <div className="card-header text-xl font-bold border-b border-gray-700 pb-2">Dashboard</div>
-      <div className="mt-12">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold">Items Vendidos por Mês</h2>
-          <select
-            value={selectedYear}
-            onChange={e => setSelectedYear(Number(e.target.value))}
-            className="bg-gray-800 text-white border border-gray-600 rounded px-3 py-1"
-          >
-            {availableYears.map(year => (
-              <option key={year} value={year}>{year}</option>
-            ))}
-          </select>
+    <main>
+      <section className="container py-4">
+        <p className="h1 mb-3 ms-3">Dashboard</p>
+        <div className="card-body bg-dark border rounded">
+          <h2 className="ms-3">
+            Items Vendidos por Mês
+            <select
+              value={selectedYear}
+              onChange={e => setSelectedYear(Number(e.target.value))}
+              className="form-select d-inline-block w-auto ms-3 mt-2"
+            >
+              {availableYears.map(year => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+          </h2>
+
+          <div className="card mx-3 my-2">
+            <div className="bg-dark p-2 rounded mx-auto p-4">
+              <Bar data={chartData} options={chartOptions} width={300} height={90} />
+            </div>
+          </div>
+
+          <div className="d-flex flex-wrap gap-3 mx-3 my-4">
+          <div className="card text-white bg-dark border border-secondary p-3 flex-fill">
+              <p className="text-muted small mb-1">Total de Vendas</p>
+              <p className="h3 fw-bold">{summary.totalItemsSold}</p>
+            </div>
+
+            <div className="card text-white bg-dark border border-secondary p-3 flex-fill">
+              <p className="text-muted small mb-1">Lucro</p>
+              <p className="h3 fw-bold text-success">
+                {summary.totalRevenue.toFixed(2)}€
+              </p>
+            </div>
+
+            <div className="card text-white bg-dark border border-secondary p-3 flex-fill">
+              <p className="text-muted small mb-1">Total Users</p>
+              <p className="h3 fw-bold text-info">{totalUsers}</p>
+            </div>
+          </div>
         </div>
-        <div className="bg-gray-800 rounded-2xl px-6 pt-6 pb-2 border border-gray-700 max-w-3xl mx-auto">
-          <Bar data={chartData} options={chartOptions} height={100} />
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-6">
-        <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 flex flex-col justify-between h-40">
-          <p className="text-gray-400 text-sm">Vendas</p>
-          <p className="text-2xl font-semibold text-white">{summary.totalItemsSold}</p>
-        </div>
-        <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 flex flex-col justify-between h-40">
-          <p className="text-gray-400 text-sm">Lucro</p>
-          <p className="text-2xl font-semibold text-white">${summary.totalRevenue.toFixed(2)}</p>
-        </div>
-        <div className="bg-gray-800 rounded-2xl p-6 border border-gray-700 flex flex-col justify-between h-40">
-          <p className="text-gray-400 text-sm">Total Users</p>
-          <p className="text-2xl font-semibold text-white">{totalUsers}</p>
-        </div>
-      </div>
-    </div>
+      </section>
+</main>
+   
+      
   );
 };
 
