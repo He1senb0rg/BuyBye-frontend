@@ -4,6 +4,17 @@ import { updateCartItem, removeFromCart } from '../../services/api';
 const CartItem = ({ item, onUpdate }) => {
   const [loading, setLoading] = useState(false);
 
+  const getDiscountedPrice = (product) => {
+  const price = Number(product.price) || 0;
+  const discount = Number(product.discount);
+  if (discount && discount > 0 && discount < 100) {
+    return price * (1 - discount / 100);
+  }
+  return price;
+};
+
+const pricePerUnit = getDiscountedPrice(item.product);
+
   const handleQuantityChange = async (newQty) => {
     if (newQty < 1) return;
     setLoading(true);
@@ -11,7 +22,7 @@ const CartItem = ({ item, onUpdate }) => {
       await updateCartItem(item.product._id, {
         quantity: newQty,
         selectedColor: item.selectedColor,
-        selectedSize: item.selectedSize
+        selectedSize: item.selectedSize,
       });
       onUpdate();
     } catch (err) {
@@ -71,8 +82,17 @@ const CartItem = ({ item, onUpdate }) => {
               +
             </button>
           </div>
-          <p className="fw-bold mb-0">€{(item.product.price * item.quantity).toFixed(2)}</p>
-          <div className="text-muted">€{item.product.price.toFixed(2)} cada</div>
+          <p className="fw-bold mb-0">
+            €{(pricePerUnit * item.quantity).toFixed(2)}
+          </p>
+          <div className="text-muted">
+            €{pricePerUnit.toFixed(2)} cada{' '}
+            {item.product.discount > 0 && (
+              <span className="text-decoration-line-through ms-2 text-muted">
+                €{item.product.price.toFixed(2)}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </div>

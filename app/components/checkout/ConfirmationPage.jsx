@@ -1,7 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext'; // Import Auth Context
 
 const ConfirmationPage = ({ formData }) => {
+  const { user } = useAuth(); // Get logged-in user
   const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
   const navigate = useNavigate();
 
@@ -30,7 +32,8 @@ const ConfirmationPage = ({ formData }) => {
         <h2 className="mb-4 text-success">Pagamento Bem-sucedido!</h2>
         <p className="lead">Obrigado pela sua compra, {fullName || 'Cliente Valorizado'}!</p>
         <p className="mt-3">
-          Recebemos a sua encomenda e enviaremos um email de confirmação para <strong>{formData.email || '[email]'}</strong>.
+          Recebemos a sua encomenda e enviaremos um email de confirmação para{' '}
+          <strong>{user?.email || '[email]'}</strong>.
         </p>
       </div>
 

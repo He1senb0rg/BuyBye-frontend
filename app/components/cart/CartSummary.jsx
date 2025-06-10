@@ -4,7 +4,21 @@ import { useNavigate, Link } from 'react-router-dom';
 const CartSummary = ({ items }) => {
   const navigate = useNavigate();
 
-  const subtotal = items.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+ const getDiscountedPrice = (product) => {
+  const price = Number(product.price) || 0;
+  const discount = Number(product.discount);
+  if (discount && discount > 0 && discount < 100) {
+    return price * (1 - discount / 100);
+  }
+  return price;
+};
+
+ const subtotal = items.reduce((acc, item) => {
+  const pricePerUnit = getDiscountedPrice(item.product);
+  return acc + pricePerUnit * (item.quantity || 0);
+}, 0);
+
+
   const shipping = items.length > 0 ? 5 : 0;
   const total = subtotal + shipping;
 

@@ -33,6 +33,9 @@ const CartItemList = ({ items, onUpdate }) => {
         return (
           <div
             key={`${product._id}-${color}-${size}`}
+
+            to={`/product/${product._id}`}
+
             className="card mb-3 bg-dark text-white d-flex flex-row align-items-center p-2"
           >
             <Link
