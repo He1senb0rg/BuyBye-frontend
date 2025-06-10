@@ -462,8 +462,6 @@ export const deleteShop = async (id) => {
 };
 
 export const editShopBanner = async (id, banner) => {
-  const formData = new FormData();
-  formData.append("banner", banner);
 
   const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
     method: "PUT",
