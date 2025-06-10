@@ -29,12 +29,7 @@ const Home = () => {
 
   return (
     <main>
-      <ShopBanner 
-        title="Loja de Produtos"
-        description="Encontre os melhores produtos para você!"
-        link="/products"
-        buttonText="Ver Produtos"
-      />
+      <ShopBanner />
       <section className="bg-body-tertiary py-5 ">
         <ProductsRow
           products={products}

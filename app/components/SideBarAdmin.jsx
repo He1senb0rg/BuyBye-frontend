@@ -41,11 +41,16 @@ const SideBarAdmin = () => {
             Compras
           </NavLink>
         </li>
-        <li></li>
         <li>
           <NavLink to="/admin/users" className="nav-link text-white">
             <i className="bi bi-person me-2" />
             Utilizadores
+          </NavLink>
+        </li>
+        <li>
+          <NavLink to="/admin/shops" className="nav-link text-white">
+            <i className="bi bi-shop me-2" />
+            Lojas
           </NavLink>
         </li>
       </ul>

@@ -47,12 +47,12 @@ const CreateShop = () => {
                 </div>
                 <div className="row">
                     <div className="col mb-3">
-                        <div className="card mb-3 h-100">
+                        <div className="card mb-2 h-100">
                             <div className="card-header">Detalhes de Loja</div>
                             <div className="card-body">
                                 <form onSubmit={handleSubmit}>
                                     <div className="row">
-                                        <div className="col-6">
+                                        <div className="col-8">
                                             <div className="form-floating mb-3">
                                                 <input
                                                     type="text"
@@ -96,7 +96,6 @@ const CreateShop = () => {
                                             </div>
                                             <div className="form-floating mb-3">
                                                 <textarea
-                                                    rows={3}
                                                     className="form-control"
                                                     name='description'
                                                     maxLength={100}
@@ -108,15 +107,15 @@ const CreateShop = () => {
 
                                             </div>
                                         </div>
-                                        <div className="col-6 mb-3">
+                                        <div className="col-4 mb-3">
                                             <div className="card mb-3 h-100">
-                                                <div className="card-header">Foto da Loja</div>
-                                                <div className="card-body text-center">
+                                                <div className="card-header">Logo da Loja</div>
+                                                <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                                                     <img
                                                         className="img-account-profile mb-3"
-                                                        src="/assets/images/account-profile.png"
-                                                        alt="profile"
-                                                        width="40%"
+                                                        src="/assets/images/logo-placeholder.jpg"
+                                                        alt="logo"
+                                                        width="70%"
                                                     />
                                                     <div className="small font-italic text-muted mb-3">
                                                         JPG ou PNG menor que 5 MB
@@ -131,7 +130,7 @@ const CreateShop = () => {
                                     </div>
                                     <div className="d-flex justify-content-end">
                                         <button className="btn btn-primary" type="submit">
-                                            Criar
+                                            Criar Loja
                                         </button>
                                     </div>
                                 </form>

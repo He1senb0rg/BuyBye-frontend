@@ -93,9 +93,11 @@ const EditCategory = () => {
                       />
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary ms-auto">
-                    Editar Categoria
-                  </button>
+                  <div className="d-flex justify-content-end">
+                    <button className="btn btn-primary" type="submit">
+                      Editar Categoria
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
