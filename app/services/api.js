@@ -405,3 +405,73 @@ export const changePassword = async (id, currentPassword, newPassword) => {
 
   return response.json();
 };
+
+export const createShop = async (shop) => {
+  const response = await fetch(`${BASE_URL}/shop`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(shop),
+  });
+  return response.json();
+};
+
+export const getShops = async (page, limit, sort, search) => {
+  const response = await fetch(`${BASE_URL}/shop?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
+export const editShop = async (shop, id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(shop),
+  });
+  return response.json();
+};
+
+export const getShopByID = async (id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
+  return response.json();
+};
+
+export const deleteShop = async (id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+export const editShopBanner = async (id, banner) => {
+  const formData = new FormData();
+  formData.append("banner", banner);
+
+  const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(banner),
+  });
+  return response.json();
+};

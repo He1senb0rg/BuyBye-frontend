@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect } from "react";  
 import { useNavigate, useParams } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import { updateCategory, getCategoryById } from "../services/api";
@@ -93,9 +93,11 @@ const EditCategory = () => {
                       />
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary ms-auto">
-                    Editar Categoria
-                  </button>
+                  <div className="d-flex justify-content-end">
+                    <button className="btn btn-primary" type="submit">
+                      Editar Categoria
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>
