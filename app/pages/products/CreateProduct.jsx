@@ -26,8 +26,6 @@ const CreateProduct = () => {
   const prevStep = () => setStep((prev) => prev - 1);
 
   const [useDiscount, setUseDiscount] = useState(false);
-  const [discountType, setDiscountType] = useState("percentage");
-  const [discountValue, setDiscountValue] = useState("");
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -57,10 +55,6 @@ const CreateProduct = () => {
 
   const handleCheckboxChange = () => {
     setUseDiscount(!useDiscount);
-    if (useDiscount) {
-      setDiscountType("percentage");
-      setDiscountValue("");
-    }
   };
 
   const [productData, setProductData] = useState({
@@ -240,7 +234,6 @@ const CreateProduct = () => {
                   ]}
                   value={productData.discount_type}
                   onChange={(e) => {
-                    setDiscountType(e.target.value);
                     handleChange(e);
                   }}
                   disabled={!useDiscount}
@@ -260,7 +253,6 @@ const CreateProduct = () => {
                   value={productData.discount_value}
                   maxLength={6}
                   onChange={(e) => {
-                    setDiscountValue(e.target.value);
                     handleChange(e);
                   }}
                 />

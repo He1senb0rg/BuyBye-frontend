@@ -1,5 +1,5 @@
 import React from "react";
-import { useEffect } from "react";
+import { useEffect } from "react";  
 import { useNavigate, useParams } from "react-router-dom";
 import FloatingInput from "../components/FloatingInput";
 import { updateCategory, getCategoryById } from "../services/api";
@@ -68,7 +68,6 @@ const EditCategory = () => {
                     <div className="col">
                       <FloatingInput
                         type="text"
-                        id="name"
                         name="name"
                         placeholder="Nome da Categoria"
                         label="Nome da Categoria"
@@ -83,7 +82,6 @@ const EditCategory = () => {
                     <div className="col">
                       <FloatingInput
                         isTextArea={true}
-                        id="description"
                         name="description"
                         placeholder="Descrição da Categoria"
                         label="Descrição da Categoria"
@@ -93,9 +91,11 @@ const EditCategory = () => {
                       />
                     </div>
                   </div>
-                  <button type="submit" className="btn btn-primary ms-auto">
-                    Editar Categoria
-                  </button>
+                  <div className="d-flex justify-content-end">
+                    <button className="btn btn-primary" type="submit">
+                      Editar Categoria
+                    </button>
+                  </div>
                 </form>
               </div>
             </div>

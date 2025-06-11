@@ -89,8 +89,13 @@ const PaymentForm = ({ formData, setFormData }) => {
               id="cardNumber"
               name="cardNumber"
               placeholder="Número do Cartão"
+              maxLength="19"
               value={formData.cardNumber || ''}
-              onChange={handleChange}
+              onChange={(e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                value = value.replace(/(.{4})/g, '$1 ').trim(); // Add spacing every 4 digits
+                setFormData((prev) => ({ ...prev, cardNumber: value }));
+              }}
               onFocus={handleFocus}
             />
             <label htmlFor="cardNumber">Número do Cartão</label>
@@ -105,8 +110,15 @@ const PaymentForm = ({ formData, setFormData }) => {
                   id="expiry"
                   name="expiry"
                   placeholder="MM/AA"
+                  maxLength="5"
                   value={formData.expiry || ''}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    let value = e.target.value.replace(/\D/g, '');
+                    if (value.length > 2) {
+                      value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                    }
+                    setFormData((prev) => ({ ...prev, expiry: value }));
+                  }}
                   onFocus={handleFocus}
                 />
                 <label htmlFor="expiry">Validade (MM/AA)</label>
@@ -120,8 +132,12 @@ const PaymentForm = ({ formData, setFormData }) => {
                   id="cvv"
                   name="cvv"
                   placeholder="CVV"
+                  maxLength="4"
                   value={formData.cvv || ''}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    setFormData((prev) => ({ ...prev, cvv: value }));
+                  }}
                   onFocus={handleFocus}
                 />
                 <label htmlFor="cvv">CVV</label>

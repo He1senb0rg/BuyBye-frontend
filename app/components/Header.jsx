@@ -1,18 +1,27 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchInput, setSearchInput] = useState('');
 
   const handleLogout = () => {
     logout();
     setTimeout(() => navigate("/"), 100);
   };
+    const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchInput.trim()) {
+      navigate(`/search?search=${encodeURIComponent(searchInput.trim())}`);
+    }
+  };
+
 
   return (
     <header>
@@ -52,17 +61,17 @@ const Header = () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">
+                <NavLink className="nav-link" to="/latest">
                   Novidades
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink className="nav-link" to="/">
+                <NavLink className="nav-link" to="/about">
                   Sobre Nós
                 </NavLink>
               </li>
             </ul>
-            <form className="d-flex pe-4" role="search">
+            <form onSubmit={handleSearch} className="d-flex pe-4" role="search">
               <label className="visually-hidden" htmlFor="autoSizingInputGroup">
                 Pesquisa
               </label>
@@ -75,6 +84,7 @@ const Header = () => {
                   className="form-control"
                   aria-label="Search"
                   placeholder="Pesquisar..."
+                  onChange={(e) => setSearchInput(e.target.value)}
                 />
               </div>
             </form>

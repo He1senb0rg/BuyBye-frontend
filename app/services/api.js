@@ -92,9 +92,6 @@ export const deleteProduct = async (id) => {
 
 // Wishlist
 export const addToWishlist = async (productId) => {
-  console.log("Sending addToWishlist request with:", productId);
-  console.log("Token being sent:", localStorage.getItem("token"));
-
   const response = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
     headers: {
@@ -104,15 +101,15 @@ export const addToWishlist = async (productId) => {
     body: JSON.stringify({ productId }),
   });
 
+  const responseData = await response.json();
   console.log("Raw response:", response);
+  console.log("Failed response data:", responseData);
 
   if (!response.ok) {
-    const errorData = await response.json();
-    console.error("Failed response data:", errorData);
-    throw new Error(`Failed to add to wishlist: ${JSON.stringify(errorData)}`);
+    throw { status: response.status, message: responseData.message };
   }
 
-  return response.json();
+  return responseData;
 };
 
 export const removeFromWishlist = async (productId) => {
@@ -149,6 +146,32 @@ export const getWishlist = async () => {
   return response.json();
 };
 
+export const checkIfInWishlist = async (productId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        "Authorization": `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error checking wishlist status:', error);
+    return { isWishlisted: false };
+  }
+};
+
+export const getUserReviewForProduct = async (userId, productId) => {
+  try {
+    const response = await fetch(`/api/reviews/${userId}/${productId}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao obter avaliação.');
+    return data;
+  } catch (error) {
+    return { error: error.message };
+  }
+};
 
 // Category
 export const getCategories = async (page, limit, sort, search) => {
@@ -219,8 +242,6 @@ export const createReview = async (review) => {
   return response.json();
 };
 
-
-
 export const deleteReview = async (id) => {
   const response = await fetch(`${BASE_URL}/reviews/${id}`, {
     method: "DELETE",
@@ -230,6 +251,52 @@ export const deleteReview = async (id) => {
     },
   });
   return response.json();
+};
+
+export const updateReview = async (reviewId, data) => {
+  try {
+    const response = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return { error: errorData.message || "Erro desconhecido ao atualizar." };
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Erro ao atualizar a avaliação:", error);
+    return { error: "Erro de rede" };
+  }
+};
+
+export const fetchUserReviews = async (userId) => {
+  try {
+    const response = await fetch(`${BASE_URL}/reviews/user/${userId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch user reviews');
+    }
+
+    const data = await response.json();
+    console.log('Fetched reviews:', data);
+    return data;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
 };
 
 // Cart
@@ -253,6 +320,13 @@ export const addToCart = async (item) => {
     },
     body: JSON.stringify(item),
   });
+
+  if (!response.ok) {
+    // Try to parse the error message from the response
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.message || "Erro ao adicionar ao carrinho.");
+  }
+
   return response.json();
 };
 
@@ -358,14 +432,14 @@ export const getUser = async (id) => {
   return response.json();
 };
 
-export const updateUser = async (id, userData) => {
+export const updateUser = async (id, user) => {
   const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${localStorage.getItem("token")}`,
     },
-    body: JSON.stringify(userData),
+    body: JSON.stringify(user),
   });
   return response.json();
 };
@@ -404,8 +478,8 @@ export const changePassword = async (id, currentPassword, newPassword) => {
   });
 
   return response.json();
-  
 };
+
 // Dashboard
 export const getDashboardSummary = async () => {
   const response = await fetch(`${BASE_URL}/dashboard/summary`, {
@@ -416,5 +490,73 @@ export const getDashboardSummary = async () => {
     },
   });
 
+  return response.json();
+};
+
+export const createShop = async (shop) => {
+  const response = await fetch(`${BASE_URL}/shop`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(shop),
+  });
+  return response.json();
+};
+
+export const getShops = async (page, limit, sort, search) => {
+  const response = await fetch(`${BASE_URL}/shop?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
+export const editShop = async (shop, id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(shop),
+  });
+  return response.json();
+};
+
+export const getShopByID = async (id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json"
+    },
+  });
+  return response.json();
+};
+
+export const deleteShop = async (id) => {
+  const response = await fetch(`${BASE_URL}/shop/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+  return response.json();
+};
+
+export const editShopBanner = async (id, banner) => {
+
+  const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify(banner),
+  });
   return response.json();
 };

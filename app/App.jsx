@@ -9,6 +9,7 @@ import ProductPage from "./pages/products/ProductPage.jsx";
 import AccountDetailsProfile from "./pages/account/AccountDetailsProfile.jsx";
 import AccountDetailsBilling from "./pages/account/AccountDetailsBilling.jsx";
 import AccountDetailsSecurity from "./pages/account/AccountDetailsSecurity.jsx";
+import AccountDetailsReviews from "./pages/account/AccountDetailsReviews.jsx";
 import CreateProduct from "./pages/products/CreateProduct.jsx";
 import Dashboard from './pages/DashBoard';
 import EditCategory from "./pages/EditCategory.jsx";
@@ -27,8 +28,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { CartProvider } from "./contexts/CartContext.jsx";
-import { WishlistProvider } from "./contexts/WishlistContext.jsx";
 
 import ShopEditor from "./pages/ShopEditor.jsx";
 
@@ -38,12 +37,15 @@ import NotFound from "./pages/404.jsx";
 import UsersPage from "./pages/UsersPage.jsx";
 import UserPage from "./pages/UserPage.jsx";
 import UserEdit from "./pages/UserEdit.jsx";
+import Search from "./pages/Search.jsx"
+import CreateShop from "./pages/CreateShop.jsx"
+import ShopsPage from "./pages/ShopsPages.jsx";
+import AboutUs from "./pages/AboutUsPage.jsx"
+import NovidadesPage from "./pages/NovidadesPage.jsx";
 
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
           <Router>
             <Toaster
               position="bottom-right"
@@ -55,8 +57,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/shop/edit" element={<ShopEditor />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/about" element={<AboutUs />} />
+                <Route path="/latest" element={<NovidadesPage />} />
+
+
 
                 <Route
                   path="/account/profile"
@@ -70,7 +76,10 @@ function App() {
                   path="/account/security"
                   element={<AccountDetailsSecurity />}
                 />
-
+                <Route
+                  path="/account/reviews"
+                  element={<AccountDetailsReviews />}
+                />
                 <Route
                   path="/cart"
                   element={
@@ -100,13 +109,14 @@ function App() {
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/edit/:id" element={<UserEdit />} />
                 <Route path="users/:id" element={<UserPage />} />
+                <Route path="shops" element={<ShopsPage />} />
+                <Route path="shops/create" element={<CreateShop />} />
+                <Route path="shops/edit/:id" element={<ShopEditor />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
-        </WishlistProvider>
-      </CartProvider>
     </AuthProvider>
   );
 }
