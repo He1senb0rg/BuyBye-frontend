@@ -40,6 +40,7 @@ import UserEdit from "./pages/UserEdit.jsx";
 import Search from "./pages/Search.jsx"
 import CreateShop from "./pages/CreateShop.jsx"
 import ShopsPage from "./pages/ShopsPages.jsx";
+import AboutUs from "./pages/AboutUsPage.jsx"
 
 function App() {
   return (
@@ -59,6 +60,8 @@ function App() {
                 <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route path="/search" element={<Search />} />
+                <Route path="/about" element={<AboutUs />} />
+
 
                 <Route
                   path="/account/profile"
