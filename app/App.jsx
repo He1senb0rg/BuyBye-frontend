@@ -42,6 +42,7 @@ import CreateShop from "./pages/CreateShop.jsx"
 import ShopsPage from "./pages/ShopsPages.jsx";
 import AboutUs from "./pages/AboutUsPage.jsx"
 import NovidadesPage from "./pages/NovidadesPage.jsx";
+import SalesPage from "./pages/SalesPage.jsx";
 
 function App() {
   return (
@@ -61,6 +62,8 @@ function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/latest" element={<NovidadesPage />} />
+                <Route path="/sales" element={<SalesPage />} />
+
 
 
 

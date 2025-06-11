@@ -90,6 +90,16 @@ export const deleteProduct = async (id) => {
   return response.json();
 };
 
+export const getProductsSales = async (page, limit, sort) => {
+  const response = await fetch(`${BASE_URL}/products/sales?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return response.json();
+};
+
 // Wishlist
 export const addToWishlist = async (productId) => {
   const response = await fetch(`${BASE_URL}/wishlist`, {
