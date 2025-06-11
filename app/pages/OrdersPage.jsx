@@ -7,11 +7,10 @@ import toast from "react-hot-toast";
 const OrdersPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  
-  const [users, setUsers] = useState([]);
+
   const [orders, setOrders] = useState([]);
   const [totalOrders, setTotalOrders] = useState(0);
-  
+
   const traduzirStatus = (status) => {
     if (status === "pending") return "Pendente";
     if (status === "completed") return "Concluído";
@@ -69,35 +68,22 @@ const OrdersPage = () => {
   };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const response = await fetch('/api/users'); // your user endpoint
-      const data = await response.json();
-      setUsers(data);
-    };
-  
-    fetchUsers();
-  }, []);
-
-  const getUserName = (userId) => {
-    const u = users.find((usr) => usr._id === userId);
-    return u ? u.name : "Unknown User";
-  }
-
-  useEffect(() => {
     
     const fetchOrders = async () => {
       try {
-        const data = await fetchBillingHistory();
-        setOrders(data);
-        setTotalOrders(data.length);
+        const response = await fetchBillingHistory();
+        setOrders(response);
+        setTotalOrders(response.length);
       } catch (error) {
         console.error("Erro:", error.message);
         toast.error("Erro ao buscar os pedidos.");
       }
     };
     fetchOrders();
-  }, [searchParams]); 
+  }, [searchParams]);
   
+
+
   return (
     <main>
       <section className="container py-4">
@@ -182,7 +168,7 @@ const OrdersPage = () => {
                     {orders.map((order) => (
                       <tr key={order._id}>
                         <td>{order._id}</td>
-                        <td>{getUserName(order.user)}</td>
+                        <td>{order.user}</td>
                         <td>{order.totalAmount}   €</td>
                         <td>{traduzirStatus(order.orderStatus)}</td>
                         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
