@@ -80,7 +80,7 @@ const Dashboard = () => {
     },
   };
 
-  const startYear = 2024;
+  const startYear = 2025;
   const currentYear = new Date().getFullYear();
   const availableYears = Array.from({ length: currentYear - startYear + 1 }, (_, i) => startYear + i);
 
