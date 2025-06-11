@@ -130,23 +130,24 @@ const OrderPage = () => {
                                       <tr key={item._id || index}>
                                     <td>{item._id}</td>
                                     <td>
-                                      {/* <img
-                                        src={item.images[0] || "/assets/images/cao.gif"}
-                                        alt={item.name}
+                                      <img
+                                        src={item.product.images[0] || "/assets/images/cao.gif"}
+                                        alt={item.product.name}
                                         className="img-fluid rounded"
                                         style={{ width: "50px", height: "50px" }}
-                                      /> */}
+                                      />
                                     </td>
                                     <td>{item.product.name}</td>
                                     <td>{item.quantity}</td>
-                                        <td>{item.price}</td>
-                                        <td>{item.price.toFixed(2)} €</td>
-                                    <td>{(item.quantity * item.price).toFixed(2)} €</td>
+                                    <td>{item.price.toFixed(2)} €</td>
+                                    <td>{item.product.discount.value * 100} % </td>
+                                    <td>{(item.price * item.quantity * item.product.discount.value).toFixed(2)} €</td>
                                     <td>
                                       <div className="btn-group" role="group">
                                         <a
-                                          href={`/admin/products/${item.product._id}`}
+                                          href={`/product/${item.product._id}`}
                                           className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
+                                          target="_blank"
                                           type="button"
                                         >
                                           <i className="bi bi-file-earmark-text" />
