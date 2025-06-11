@@ -8,7 +8,8 @@ import {
   getWishlist,
   addToWishlist,
   removeFromWishlist,
-  addToCart, // <-- Added import
+  addToCart,
+  updateReview,
 } from "../../services/api";
 import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 import Review from "../../components/reviews/Review";
@@ -34,6 +35,12 @@ const ProductPage = () => {
   const [errorProductStats, setErrorProductStats] = useState(null);
 
   const [quantity, setQuantity] = useState(1);
+  const [editReviewId, setEditReviewId] = useState(null); // Added state
+  const [editRating, setEditRating] = useState(0); // Added state
+  const [editComment, setEditComment] = useState(""); // Added state
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [deleteReviewId, setDeleteReviewId] = useState(null);
 
   const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -86,16 +93,18 @@ const ProductPage = () => {
       }
     };
 
-    const checkIfWishlisted = async () => {
-      try {
-        if (!user) return;
-        const wishlist = await getWishlist();
-        const found = wishlist.some((item) => item._id === id);
-        setIsWishlisted(found);
-      } catch (err) {
-        console.error("Failed to check wishlist:", err);
-      }
-    };
+const checkIfWishlisted = async () => {
+  try {
+    const response = await getWishlist();
+    console.log("Fetched Wishlist: ", response);
+
+    const found = response.items?.some(item => item.product?._id === product._id);
+
+    setIsWishlisted(found);
+  } catch (err) {
+    console.error("Failed to check wishlist:", err);
+  }
+};
 
     fetchProduct();
     fetchReviews();
@@ -109,10 +118,6 @@ const ProductPage = () => {
     productStats[2] || 0,
     productStats[1] || 0
   );
-
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-  const [deleteReviewId, setDeleteReviewId] = useState(null);
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -137,6 +142,35 @@ const ProductPage = () => {
     }
   };
 
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+
+    if (!editRating) {
+      toast.error("Por favor, atribua uma classificação.");
+      return;
+    }
+
+    try {
+      const response = await updateReview(editReviewId, { rating: editRating, comment: editComment });
+      if (response.error) throw new Error(response.error);
+
+      toast.success("Avaliação atualizada com sucesso!");
+
+      setProduct((prev) => ({
+        ...prev,
+        reviews: prev.reviews.map((review) =>
+          review._id === editReviewId ? { ...review, rating: editRating, comment: editComment } : review
+        ),
+      }));
+
+      setEditReviewId(null);
+      setEditRating(0);
+      setEditComment("");
+    } catch (err) {
+      toast.error(err.message || "Erro ao atualizar avaliação.");
+    }
+  };
+
   const handleDeleteReview = async (reviewId) => {
     try {
       const response = await deleteReview(reviewId);
@@ -152,51 +186,70 @@ const ProductPage = () => {
     }
   };
 
-  const toggleWishlist = async () => {
-    if (!user) {
-      toast.error("Inicie sessão para adicionar à wishlist.");
-      return;
-    }
+const toggleWishlist = async () => {
+  if (!user) {
+    toast.error("Inicie sessão para adicionar à lista de desejos.");
+    return;
+  }
 
-    try {
-      if (isWishlisted) {
-        await removeFromWishlist(product._id);
-        setIsWishlisted(false);
-        toast("Removido da lista wishlist.");
-      } else {
-        await addToWishlist(product._id);
-        setIsWishlisted(true);
-        toast.success("Adicionado à wishlist!");
-      }
-    } catch (err) {
-      toast.error("Erro ao atualizar wishlist.");
+  try {
+    if (isWishlisted) {
+      await removeFromWishlist(product._id);
+      setIsWishlisted(false);
+      toast("Removido da lista de desejos.");
+    } else {
+      await addToWishlist(product._id);
+      setIsWishlisted(true);
+      toast.success("Adicionado à lista de desejos!");
     }
-  };
+  } catch (err) {
+    if (err.status === 400 && err.message === 'Product already in wishlist') {
+      toast.error("Erro ao atualizar a lista de desejos. Produto já se encontra na lista de desejos.");
+    } else {
+      toast.error("Erro ao atualizar a lista de desejos.");
+    }
+  }
+};
 
   const handleAddToCart = async () => {
-    if (!user) {
-      toast.error("Inicie sessão para adicionar ao carrinho.");
-      return;
-    }
+  if (!user) {
+    toast.error("Inicie sessão para adicionar ao carrinho.");
+    return;
+  }
 
-    try {
-      const item = {
-        productId: product._id,
-        quantity,
-      };
+  try {
+    const item = {
+      productId: product._id,
+      quantity,
+    };
 
-      const response = await addToCart(item);
+    const response = await addToCart(item);
 
-      if (response.error) {
-        throw new Error(response.error);
+    // If your API returns { error: 'Some message' } in the JSON body
+    if (response.error) {
+      if (response.error === "Not enough stock available") {
+        toast.error("Estoque insuficiente para a quantidade desejada.");
+        return;
       }
-
-      toast.success("Produto adicionado ao carrinho!");
-    } catch (error) {
-      console.error("Erro ao adicionar ao carrinho:", error);
-      toast.error("Erro ao adicionar ao carrinho.");
+      throw new Error(response.error);
     }
-  };
+
+    toast.success("Produto adicionado ao carrinho!");
+  } catch (error) {
+    console.error("Erro ao adicionar ao carrinho:", error);
+
+    // Optional: handle HTTP errors like 400 from fetch response
+    if (error.response && error.response.status === 400) {
+      const data = await error.response.json();
+      if (data?.message === "Not enough stock available") {
+        toast.error("Estoque insuficiente para a quantidade desejada.");
+        return;
+      }
+    }
+
+    toast.error("Erro ao adicionar ao carrinho.");
+  }
+};
 
   return (
     <main>
@@ -321,7 +374,103 @@ const ProductPage = () => {
               </div>
             </div>
           </section>
- </>
+
+          {/* Updated reviews section */}
+          <section className="bg-body-tertiary">
+            <div className="container py-4">
+              <p className="h2">Avaliações</p>
+              <div className="row">
+                <div className="col-md-4 text-center">
+                  <h1 className="display-4 mt-5 mb-4 fw-bold">{product.averageRating}</h1>
+                  <div className="mb-3 fs-4">
+                    <StarRating rating={product.averageRating} />
+                  </div>
+                </div>
+                <div className="col-md-8">
+                  <div className="rating-bars">
+                    {loadingProductStats ? (
+                      <div>Loading...</div>
+                    ) : (
+                      [5, 4, 3, 2, 1].map((star) => (
+                        <StarBar key={star} rating={star} count={productStats[star] || 0} maxCount={maxCount || 0} />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="row mt-4">
+                <div className="col">
+                  <div className="card bg-dark">
+                    <div className="card-body">
+                      <div className="d-flex justify-content-center p-3 pt-3 flex-column">
+                        {user ? (
+                          <form onSubmit={handleSubmitReview}>
+                            <div className="mb-3">
+                              <p className="h4">Diga o que acha deste produto!</p>
+                              <div className="fs-4">
+                                <StarSelector value={rating} onChange={setRating} />
+                              </div>
+                            </div>
+                            <textarea
+                              className="form-control"
+                              rows="3"
+                              placeholder="Escreva aqui a sua avaliação..."
+                              value={comment}
+                              onChange={(e) => setComment(e.target.value)}
+                            ></textarea>
+                            <button className="btn btn-primary mt-2" type="submit">
+                              Enviar Avaliação
+                            </button>
+                          </form>
+                        ) : (
+                          <>
+                            <p className="fs-4 fw-semibold">Junta-te à conversa e diz o que achaste deste produto</p>
+                            <p className="fs-5">
+                              <a className="fw-semibold text-decoration-none" href="/register">
+                                Cria uma conta
+                              </a>{" "}
+                              ou{" "}
+                              <a className="fw-semibold text-decoration-none" href="/login">
+                                inicia sessão
+                              </a>{" "}
+                              para poder deixar a sua avaliação!
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {product?.reviews?.length > 0 ? (
+                product.reviews.map((review, index) => (
+                  <Review
+                    key={index}
+                    reviewId={review._id}
+                    userId={review.user._id}
+                    user={review.user.name}
+                    comment={review.comment}
+                    rating={review.rating}
+                    createdAt={review.createdAt}
+                    reviewDelete={handleDeleteReview}
+                    setReviewDelete={setDeleteReviewId}
+                    editReviewId={editReviewId}
+                    setEditReviewId={setEditReviewId}
+                    editRating={editRating}
+                    setEditRating={setEditRating}
+                    editComment={editComment}
+                    setEditComment={setEditComment}
+                    handleUpdateReview={handleUpdateReview}
+                  />
+                ))
+              ) : (
+                <p className="text-muted pt-4">Sem avaliações ainda.</p>
+              )}
+            </div>
+          </section>
+        </>
       )}
 
       <div className="modal fade" id="deleteModal" tabIndex="-1">
@@ -340,9 +489,6 @@ const ProductPage = () => {
               Tens a certeza que queres apagar este comentário? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
-                Cancelar
-              </button>
               <button
                 className="btn btn-danger"
                 data-bs-dismiss="modal"

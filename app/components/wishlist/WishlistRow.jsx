@@ -17,29 +17,31 @@ const WishlistRow = ({ product, onRemove }) => {
 
   return (
     <div className="col-md-4 mb-4">
-      <div className="card h-100 bg-dark text-white d-flex flex-row align-items-center p-2">
+      <div className="card h-100 bg-dark text-white d-flex flex-column justify-content-between p-2">
         <Link
           to={`/product/${product._id}`}
-          className="d-flex align-items-center flex-grow-1 text-white text-decoration-none"
+          className="text-white text-decoration-none flex-grow-1"
         >
-          <img
-            src={product.images?.[0] || "/assets/images/cao.gif"}
-            alt={product.name}
-            style={{
-              width: "80px",
-              height: "80px",
-              objectFit: "cover",
-              marginRight: "1rem",
-            }}
-            className="rounded"
-          />
-          <div>
-            <h5 className="card-title mb-1">{product.name}</h5>
-            <p className="card-text small mb-1">{product.description}</p>
-            <p className="h6 mb-0">{product.price}€</p>
+          <div className="d-flex align-items-center mb-3">
+            <img
+              src={product.images?.[0] || "/assets/images/cao.gif"}
+              alt={product.name}
+              style={{
+                width: "80px",
+                height: "80px",
+                objectFit: "cover",
+                marginRight: "1rem",
+              }}
+              className="rounded"
+            />
+            <div>
+              <h5 className="card-title mb-1">{product.name}</h5>
+              <p className="card-text small mb-1">{product.description}</p>
+              <p className="h6 mb-0">{product.price}€</p>
+            </div>
           </div>
         </Link>
-        <button className="btn btn-danger btn-sm ms-2" onClick={handleRemove}>
+        <button className="btn btn-danger btn-sm align-self-end" onClick={handleRemove}>
           Remover
         </button>
       </div>

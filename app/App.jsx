@@ -9,6 +9,7 @@ import ProductPage from "./pages/products/ProductPage.jsx";
 import AccountDetailsProfile from "./pages/account/AccountDetailsProfile.jsx";
 import AccountDetailsBilling from "./pages/account/AccountDetailsBilling.jsx";
 import AccountDetailsSecurity from "./pages/account/AccountDetailsSecurity.jsx";
+import AccountDetailsReviews from "./pages/account/AccountDetailsReviews.jsx";
 import CreateProduct from "./pages/products/CreateProduct.jsx";
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
@@ -26,8 +27,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import "./assets/css/style.css";
 
 import { AuthProvider } from "./contexts/AuthContext.jsx";
-import { CartProvider } from "./contexts/CartContext.jsx";
-import { WishlistProvider } from "./contexts/WishlistContext.jsx";
 
 import ShopEditor from "./pages/ShopEditor.jsx";
 
@@ -46,8 +45,6 @@ import NovidadesPage from "./pages/NovidadesPage.jsx";
 function App() {
   return (
     <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
           <Router>
             <Toaster
               position="bottom-right"
@@ -78,7 +75,10 @@ function App() {
                   path="/account/security"
                   element={<AccountDetailsSecurity />}
                 />
-
+                <Route
+                  path="/account/reviews"
+                  element={<AccountDetailsReviews />}
+                />
                 <Route
                   path="/cart"
                   element={
@@ -115,8 +115,6 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Router>
-        </WishlistProvider>
-      </CartProvider>
     </AuthProvider>
   );
 }
