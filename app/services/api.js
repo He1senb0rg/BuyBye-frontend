@@ -400,9 +400,18 @@ export const fetchBillingHistory = async () => {
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
-    console.error("Billing fetch failed. Server response:", errorText);
-    throw new Error("Failed to fetch billing history");
+    // Try parsing JSON error, fallback to text
+    let errorMessage = "Erro desconhecido ao buscar histórico de faturação";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch {
+      const errorText = await response.text();
+      if (errorText) errorMessage = errorText;
+    }
+
+    console.error("Billing fetch failed. Server response:", errorMessage);
+    throw new Error(errorMessage);
   }
 
   return response.json();

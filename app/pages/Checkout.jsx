@@ -9,7 +9,7 @@ import { createOrder, getCart } from '../services/api';
 
 const Checkout = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({ delivery: 'standard', items: [] });
+  const [formData, setFormData] = useState({ delivery: 'standard', items: [], amount: 0 });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -18,70 +18,66 @@ const Checkout = () => {
   const handleNext = () => setStep((prev) => prev + 1);
   const handleBack = () => setStep((prev) => prev - 1);
 
+  // This is called from OrderSummary to update the total amount including shipping
   const handleTotalChange = (total) => {
     setFormData((prev) => ({ ...prev, amount: total }));
   };
 
-const handleCheckout = async () => {
-  const {
-    address,
-    city,
-    state,
-    zip,
-    paymentMethod,
-    phoneNumber,
-    amount, // ✅ The subtotal without delivery fee
-    items, // ✅ We need to pass this too
-  } = formData;
+  const handleCheckout = async () => {
+    const {
+      address,
+      city,
+      state,
+      zip,
+      paymentMethod,
+      phoneNumber,
+      amount,  // This already includes shipping fee from OrderSummary
+      items,
+    } = formData;
 
-  const shippingAddress = { address, city, state, zip };
+    const shippingAddress = { address, city, state, zip };
 
-  if (!address || !city || !state || !zip || !paymentMethod || !phoneNumber) {
-    setError('Por favor preencha todos os campos antes de confirmar.');
-    return;
-  }
-
-  const DELIVERY_FEE = 5; // ✅ Fixed delivery fee
-  const finalAmount = amount + DELIVERY_FEE; // ✅ Add delivery fee to total
-
-  const orderData = {
-    shippingAddress,
-    paymentMethod,
-    phoneNumber,
-    amount: finalAmount, // ✅ Save the final amount with delivery fee
-    deliveryFee: DELIVERY_FEE, // Optional: If you want to save it separately
-    items, // ✅ Save the purchased items
-  };
-
-  setIsLoading(true);
-  setError('');
-
-  try {
-    const response = await createOrder(orderData);
-    console.log('Order response:', response);
-
-    const isSuccess =
-      response?.success === true ||
-      response?.status === 200 ||
-      /sucesso|successfully/i.test(response?.message);
-
-    if (isSuccess) {
-      setOrderPlaced(true);
-      // ✅ Update local formData to include final amount (so ConfirmationPage shows the correct amount)
-      setFormData((prev) => ({
-        ...prev,
-        amount: finalAmount,
-      }));
-    } else {
-      setError('A criação do pedido falhou: ' + (response.message || 'Erro desconhecido.'));
+    if (!address || !city || !state || !zip || !paymentMethod || !phoneNumber) {
+      setError('Por favor preencha todos os campos antes de confirmar.');
+      return;
     }
-  } catch (err) {
-    setError('Erro: ' + err.message);
-  }
 
-  setIsLoading(false);
-};
+    // Prepare order data matching backend schema:
+    const orderData = {
+      shippingAddress,
+      paymentMethod,
+      phoneNumber,
+      totalAmount: amount,  // Use total amount directly
+      items,
+    };
 
+    setIsLoading(true);
+    setError('');
+
+    try {
+      const response = await createOrder(orderData);
+      console.log('Order response:', response);
+
+      const isSuccess =
+        response?.success === true ||
+        response?.status === 200 ||
+        /sucesso|successfully/i.test(response?.message);
+
+      if (isSuccess) {
+        setOrderPlaced(true);
+        setFormData((prev) => ({
+          ...prev,
+          amount,
+        }));
+      } else {
+        setError('A criação do pedido falhou: ' + (response.message || 'Erro desconhecido.'));
+      }
+    } catch (err) {
+      setError('Erro: ' + err.message);
+    }
+
+    setIsLoading(false);
+  };
 
   useEffect(() => {
     const fetchCartItems = async () => {
@@ -112,28 +108,27 @@ const handleCheckout = async () => {
     }
   };
 
-  console.log('formData:', formData);
-
-  // Removed email check here
+  // Validate billing form completeness
   const isBillingFormComplete = () => {
     const { firstName, lastName, address, city, state, zip } = formData;
     return firstName && lastName && address && city && state && zip;
   };
 
+  // Validate payment form completeness
   const isPaymentFormComplete = () => {
     if (formData.paymentMethod === 'ccdb') {
       return (
         formData.cardName &&
-        /^\d{16}$/.test(formData.cardNumber.replace(/\s/g, '')) && // Exactly 16 digits
-        /^\d{2}\/\d{2}$/.test(formData.expiry) && // Simple MM/YY format
-        /^\d{3,4}$/.test(formData.cvv) // 3 or 4 digits
+        /^\d{16}$/.test(formData.cardNumber.replace(/\s/g, '')) &&
+        /^\d{2}\/\d{2}$/.test(formData.expiry) &&
+        /^\d{3,4}$/.test(formData.cvv)
       );
     } else if (formData.paymentMethod === 'paypal') {
-      return true; // Assuming PayPal button handles its own validation
+      return true; // PayPal handles validation separately
     } else if (formData.paymentMethod === 'mbway') {
-      return /^\d{9}$/.test(formData.mbwayPhone); // Valid 9-digit phone number
+      return /^\d{9}$/.test(formData.mbwayPhone);
     } else if (formData.paymentMethod === 'multibanco') {
-      return true; // No extra input required
+      return true; // No extra input required for multibanco here
     }
     return false;
   };
@@ -154,7 +149,6 @@ const handleCheckout = async () => {
                 Voltar
               </button>
             )}
-
             {step === 0 && (
               <button
                 className="btn btn-primary ms-auto"
@@ -164,7 +158,6 @@ const handleCheckout = async () => {
                 Próximo
               </button>
             )}
-
             {step === 1 && (
               <button
                 className="btn btn-success ms-auto"
