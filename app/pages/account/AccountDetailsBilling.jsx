@@ -15,9 +15,10 @@ const BillingPage = () => {
       try {
         const data = await fetchBillingHistory();
         setTransactions(data);
+        setError('');
       } catch (err) {
         console.error("Billing fetch error:", err);
-        setError('Erro ao carregar o histórico de encomendas.');
+        setError(err.message || 'Erro ao carregar o histórico de encomendas.');
       } finally {
         setLoading(false);
       }
@@ -25,6 +26,8 @@ const BillingPage = () => {
 
     if (isAuthenticated) {
       loadBillingHistory();
+    } else {
+      setLoading(false);
     }
   }, [isAuthenticated]);
 

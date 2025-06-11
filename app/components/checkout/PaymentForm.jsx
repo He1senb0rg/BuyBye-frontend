@@ -93,7 +93,7 @@ const PaymentForm = ({ formData, setFormData }) => {
               value={formData.cardNumber || ''}
               onChange={(e) => {
                 let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(.{4})/g, '$1 ').trim(); // Add spacing every 4 digits
+                value = value.replace(/(.{4})/g, '$1 ').trim();
                 setFormData((prev) => ({ ...prev, cardNumber: value }));
               }}
               onFocus={handleFocus}
@@ -172,7 +172,7 @@ const PaymentForm = ({ formData, setFormData }) => {
         <div className="alert alert-info mt-3">
           <p><strong>Entidade:</strong> {mbData.entidade}</p>
           <p><strong>Referência:</strong> {mbData.referencia}</p>
-          <p><strong>Montante:</strong> {formData.amount || 'XX.XX'} €</p>
+          <p><strong>Montante:</strong> {(Number(formData.amount).toFixed(2)) || 'XX.XX'} €</p>
         </div>
       )}
     </div>
