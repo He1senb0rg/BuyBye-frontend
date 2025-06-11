@@ -140,8 +140,25 @@ const OrderPage = () => {
                                     <td>{item.product.name}</td>
                                     <td>{item.quantity}</td>
                                     <td>{item.price.toFixed(2)} €</td>
-                                    <td>{item.product.discount.value * 100} % </td>
-                                    <td>{(item.price * item.quantity * item.product.discount.value).toFixed(2)} €</td>
+                                    <td>
+                                      {item.product.discount
+                                        ? item.product.discount.type === "percentage"
+                                        ? `${item.product.discount.value * 100}%`
+                                        : `${item.product.discount.value}`
+                                      : "-"}
+                                    </td> 
+                                    <td>
+                                      {item.product.discount
+                                        ? item.product.discount.type === "percentage"
+                                          ? `${(
+                                              (item.price *
+                                              (1 - item.product.discount.value)) * item.quantity
+                                            ).toFixed(2)}€`
+                                          : `${(
+                                              (item.price - item.product.discount.value) * item.quantity
+                                            ).toFixed(2)}€`
+                                        : `${item.price * item.quantity}€`}
+                                    </td>
                                     <td>
                                       <div className="btn-group" role="group">
                                         <a
