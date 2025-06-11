@@ -4,20 +4,31 @@ import { useNavigate, Link } from 'react-router-dom';
 const CartSummary = ({ items }) => {
   const navigate = useNavigate();
 
- const getDiscountedPrice = (product) => {
-  const price = Number(product.price) || 0;
-  const discount = Number(product.discount);
-  if (discount && discount > 0 && discount < 100) {
-    return price * (1 - discount / 100);
-  }
-  return price;
-};
+  const getDiscountedPrice = (product) => {
+    if (!product.discount) return product.price;
 
- const subtotal = items.reduce((acc, item) => {
-  const pricePerUnit = getDiscountedPrice(item.product);
-  return acc + pricePerUnit * (item.quantity || 0);
-}, 0);
+    const { type, value, start_date, end_date } = product.discount;
 
+    const now = new Date();
+    const isActive = (!start_date || new Date(start_date) <= now) &&
+                     (!end_date || new Date(end_date) >= now);
+
+    if (!isActive) return product.price;
+
+    if (type === 'percentage') {
+      // value is fractional, e.g., 0.5 means 50%
+      return Math.max(0, product.price * (1 - value));
+    } else if (type === 'fixed') {
+      return Math.max(0, product.price - value);
+    }
+
+    return product.price;
+  };
+
+  const subtotal = items.reduce((acc, item) => {
+    const pricePerUnit = getDiscountedPrice(item.product);
+    return acc + pricePerUnit * (item.quantity || 0);
+  }, 0);
 
   const shipping = items.length > 0 ? 5 : 0;
   const total = subtotal + shipping;

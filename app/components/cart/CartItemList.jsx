@@ -12,6 +12,26 @@ const CartItemList = ({ items, onUpdate }) => {
     );
   }
 
+  const hasActiveDiscount = (discount) => {
+    if (!discount) return false;
+    const now = new Date();
+    const start = discount.start_date ? new Date(discount.start_date) : null;
+    const end = discount.end_date ? new Date(discount.end_date) : null;
+    return (!start || now >= start) && (!end || now <= end);
+  };
+
+  const calculateDiscountedPrice = (product) => {
+    if (hasActiveDiscount(product.discount)) {
+      const { type, value } = product.discount;
+      if (type === "percentage") {
+        return Math.max(0, product.price * (1 - value));
+      } else if (type === "fixed") {
+        return Math.max(0, product.price - value);
+      }
+    }
+    return product.price;
+  };
+
   const handleRemove = async (itemId, selectedColor, selectedSize) => {
     try {
       await removeFromCart(itemId, selectedColor, selectedSize);
@@ -30,12 +50,12 @@ const CartItemList = ({ items, onUpdate }) => {
         const color = item.selectedColor || "Normal";
         const size = item.selectedSize || "Normal";
 
+        const discountActive = hasActiveDiscount(product.discount);
+        const discountedPrice = calculateDiscountedPrice(product);
+
         return (
           <div
             key={`${product._id}-${color}-${size}`}
-
-            to={`/product/${product._id}`}
-
             className="card mb-3 bg-dark text-white d-flex flex-row align-items-center p-2"
           >
             <Link
@@ -60,7 +80,26 @@ const CartItemList = ({ items, onUpdate }) => {
                 <p className="card-text small mb-1">
                   Cor: {color} | Tamanho: {size}
                 </p>
-                <p className="h6 mb-0">{product.price}€</p>
+
+                <p className="h6 mb-0">
+                  {discountActive ? (
+                    <>
+                      <span className="badge bg-primary me-1">
+                        {product.discount.type === "percentage"
+                          ? `${(product.discount.value * 100).toFixed(0)}%`
+                          : `-€${product.discount.value.toFixed(2)}`}
+                      </span>
+                      <span className="fw-bold">
+                        {discountedPrice.toFixed(2)}€
+                      </span>{" "}
+                      <span className="text-muted text-decoration-line-through">
+                        {product.price.toFixed(2)}€
+                      </span>
+                    </>
+                  ) : (
+                    <span>{product.price.toFixed(2)}€</span>
+                  )}
+                </p>
               </div>
             </Link>
             <button

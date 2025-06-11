@@ -1,101 +1,84 @@
-import React, { useState } from 'react';
-import { updateCartItem, removeFromCart } from '../../services/api';
+import React from "react";
+import { useCart } from "../../contexts/CartContext";
 
-const CartItem = ({ item, onUpdate }) => {
-  const [loading, setLoading] = useState(false);
+const CartItem = ({ item }) => {
+  const { removeFromCart, updateQuantity } = useCart();
+  const { product, quantity } = item;
 
-  const getDiscountedPrice = (product) => {
-  const price = Number(product.price) || 0;
-  const discount = Number(product.discount);
-  if (discount && discount > 0 && discount < 100) {
-    return price * (1 - discount / 100);
-  }
-  return price;
-};
+  if (!product) return null;
 
-const pricePerUnit = getDiscountedPrice(item.product);
+  const hasActiveDiscount = (discount) => {
+    if (!discount) return false;
 
-  const handleQuantityChange = async (newQty) => {
-    if (newQty < 1) return;
-    setLoading(true);
-    try {
-      await updateCartItem(item.product._id, {
-        quantity: newQty,
-        selectedColor: item.selectedColor,
-        selectedSize: item.selectedSize,
-      });
-      onUpdate();
-    } catch (err) {
-      console.error('Erro ao atualizar quantidade:', err);
-    }
-    setLoading(false);
+    const now = new Date();
+    const start = discount.start_date ? new Date(discount.start_date) : null;
+    const end = discount.end_date ? new Date(discount.end_date) : null;
+
+    return (!start || now >= start) && (!end || now <= end);
   };
 
-  const handleRemove = async () => {
-    setLoading(true);
-    try {
-      await removeFromCart(item.product._id);
-      onUpdate();
-    } catch (err) {
-      console.error('Erro ao remover item:', err);
+  const calculateDiscountedPrice = () => {
+    if (hasActiveDiscount(product.discount)) {
+      const { type, value } = product.discount;
+
+      if (type === "percentage") {
+        return Math.max(0, product.price * (1 - value));
+      } else if (type === "fixed") {
+        return Math.max(0, product.price - value);
+      }
     }
-    setLoading(false);
+    return product.price;
   };
+
+  const pricePerUnit = calculateDiscountedPrice();
+  const totalPrice = (pricePerUnit * quantity).toFixed(2);
+  const discountActive = hasActiveDiscount(product.discount);
 
   return (
-    <div className="card mb-3 w-100 position-relative">
-      <div className="position-absolute top-0 end-0 p-2">
+    <tr>
+      <td>{product.name}</td>
+      <td>
+        {discountActive ? (
+          <>
+            <span className="badge bg-success me-1">
+              {product.discount.type === "percentage"
+                ? `${(product.discount.value * 100).toFixed(0)}% OFF`
+                : `-€${product.discount.value.toFixed(2)}`}
+            </span>
+            <span className="fw-bold text-success">{pricePerUnit.toFixed(2)}€</span>{" "}
+            <span className="text-muted text-decoration-line-through">
+              {product.price.toFixed(2)}€
+            </span>
+          </>
+        ) : (
+          <span>{product.price.toFixed(2)}€</span>
+        )}
+      </td>
+      <td>
+        <input
+          type="number"
+          min="1"
+          max={product.stock}
+          value={quantity}
+          onChange={(e) => {
+            const newQuantity = parseInt(e.target.value, 10);
+            if (newQuantity > 0 && newQuantity <= product.stock) {
+              updateQuantity(product._id, newQuantity);
+            }
+          }}
+          className="form-control"
+        />
+      </td>
+      <td>{totalPrice}€</td>
+      <td>
         <button
-          className="btn btn-outline-danger btn-sm"
-          onClick={handleRemove}
-          disabled={loading}
+          className="btn btn-danger"
+          onClick={() => removeFromCart(product._id)}
         >
-          <i className="bi bi-x"></i>
+          Remover
         </button>
-      </div>
-
-      <div className="d-flex flex-row">
-        <div className="p-2" style={{ flex: '0 0 120px' }}>
-          <img
-            src={item.product.image}
-            className="img-fluid rounded-start"
-            alt={item.product.name}
-            style={{ maxWidth: '100px', height: 'auto' }}
-          />
-        </div>
-        <div className="flex-grow-1 p-3">
-          <h5>{item.product.name}</h5>
-          <div className="d-flex align-items-center mb-2">
-            <button
-              className="btn btn-outline-secondary btn-sm me-2"
-              onClick={() => handleQuantityChange(item.quantity - 1)}
-              disabled={loading || item.quantity <= 1}
-            >
-              -
-            </button>
-            <span>{item.quantity}</span>
-            <button
-              className="btn btn-outline-secondary btn-sm ms-2"
-              onClick={() => handleQuantityChange(item.quantity + 1)}
-              disabled={loading}
-            >
-              +
-            </button>
-          </div>
-          <p className="fw-bold mb-0">
-            €{(pricePerUnit * item.quantity).toFixed(2)}
-          </p>
-          <div className="text-muted">
-            €{pricePerUnit.toFixed(2)} cada{' '}
-            {item.product.discount > 0 && (
-              <span className="text-decoration-line-through ms-2 text-muted">
-                €{item.product.price.toFixed(2)}
-              </span>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+      </td>
+    </tr>
   );
 };
 

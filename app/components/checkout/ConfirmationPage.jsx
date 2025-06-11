@@ -26,6 +26,31 @@ const ConfirmationPage = ({ formData }) => {
     }
   };
 
+  // Check if discount is active based on date
+  const hasActiveDiscount = (discount) => {
+    if (!discount) return false;
+
+    const now = new Date();
+    const start = discount.start_date ? new Date(discount.start_date) : null;
+    const end = discount.end_date ? new Date(discount.end_date) : null;
+
+    return (!start || now >= start) && (!end || now <= end);
+  };
+
+  // Calculate discounted price based on discount type
+  const calculateDiscountedPrice = (product) => {
+    if (hasActiveDiscount(product.discount)) {
+      const { type, value } = product.discount;
+
+      if (type === "percentage") {
+        return Math.max(0, product.price * (1 - value));
+      } else if (type === "fixed") {
+        return Math.max(0, product.price - value);
+      }
+    }
+    return product.price;
+  };
+
   return (
     <div className="container py-5">
       <div className="text-center mb-5">
@@ -70,6 +95,9 @@ const ConfirmationPage = ({ formData }) => {
             <ul className="list-group text-start">
               {(formData.items || []).map((item, idx) => {
                 const product = item.product || {};
+                const discountActive = hasActiveDiscount(product.discount);
+                const discountedPrice = calculateDiscountedPrice(product);
+
                 return (
                   <li
                     key={idx}
@@ -92,7 +120,23 @@ const ConfirmationPage = ({ formData }) => {
                         <small>Qtd: {item.quantity}</small>
                       </div>
                     </div>
-                    <span className="fw-bold">{((product.price || 0) * item.quantity).toFixed(2)}€</span>
+                    <div className="text-end">
+                      {discountActive ? (
+                        <>
+                          <span className="badge bg-primary me-1">
+                            {product.discount.type === "percentage"
+                              ? `${(product.discount.value * 100).toFixed(0)}% OFF`
+                              : `-€${product.discount.value.toFixed(2)}`}
+                          </span>
+                          <span className="fw-bold me-2">{(discountedPrice * item.quantity).toFixed(2)}€</span>
+                          <span className="text-muted text-decoration-line-through">
+                            {(product.price * item.quantity).toFixed(2)}€
+                          </span>
+                        </>
+                      ) : (
+                        <span className="fw-bold">{(product.price * item.quantity).toFixed(2)}€</span>
+                      )}
+                    </div>
                   </li>
                 );
               })}
