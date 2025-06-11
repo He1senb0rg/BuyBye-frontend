@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchBillingHistory, fetchOrders } from "../services/api";
+import { fetchOrders } from "../services/api";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -17,7 +17,7 @@ const OrdersPage = () => {
     if (status === "canceled") return "Cancelado";
     if (status === "shipped") return "Enviado";
     if (status === "processing") return "Processando";
-    return "Desconhecido"; // valor padrão se não corresponder a nenhum
+    return "Desconhecido";
   };
 
   const page = Number(searchParams.get("page")) || 1;
@@ -71,10 +71,9 @@ const OrdersPage = () => {
     
     const fetchOrder = async () => {
       try {
-        const response = await fetchOrders(); // This fetches all orders
+        const response = await fetchOrders();
         let filteredOrders = response;
   
-        // Filter orders based on user name search
         if (search) {
           const lowerSearch = search.toLowerCase();
           filteredOrders = response.filter(order =>
@@ -82,7 +81,6 @@ const OrdersPage = () => {
           );
         }
   
-        // Optional: Add sorting logic here if needed
         if (sort === "nome_az") {
           filteredOrders.sort((a, b) => a.user.name.localeCompare(b.user.name));
         } else if (sort === "nome_za") {
@@ -90,11 +88,9 @@ const OrdersPage = () => {
         } else if (sort === "mais_antigo") {
           filteredOrders.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
         } else {
-          // Default or "mais_recente"
           filteredOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         }
   
-        // Paginate
         const startIndex = (page - 1) * limit;
         const paginatedOrders = filteredOrders.slice(startIndex, startIndex + limit);
   

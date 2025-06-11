@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { fetchBillingHistory } from "../services/api";
+import { fetchBillingHistory, fetchOrders } from "../services/api";
 import toast from "react-hot-toast";
 import FloatingInput from "../components/FloatingInput";
 
@@ -12,7 +12,7 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const orders = await fetchBillingHistory();
+        const orders = await fetchOrders();
         const foundOrder = orders.find((o) => o._id === id);
 
         if (!foundOrder) {
