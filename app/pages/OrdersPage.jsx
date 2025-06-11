@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchBillingHistory } from "../services/api";
+import { fetchBillingHistory, fetchOrders } from "../services/api";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -69,9 +69,9 @@ const OrdersPage = () => {
 
   useEffect(() => {
     
-    const fetchOrders = async () => {
+    const fetchOrder = async () => {
       try {
-        const response = await fetchBillingHistory(); // This fetches all orders
+        const response = await fetchOrders(); // This fetches all orders
         let filteredOrders = response;
   
         // Filter orders based on user name search
@@ -105,7 +105,7 @@ const OrdersPage = () => {
         toast.error("Erro ao buscar os pedidos.");
       }
     };
-    fetchOrders();
+    fetchOrder();
   }, [searchParams]);
   
 
