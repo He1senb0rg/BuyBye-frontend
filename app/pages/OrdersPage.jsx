@@ -71,9 +71,35 @@ const OrdersPage = () => {
     
     const fetchOrders = async () => {
       try {
-        const response = await fetchBillingHistory();
-        setOrders(response);
-        setTotalOrders(response.length);
+        const response = await fetchBillingHistory(); // This fetches all orders
+        let filteredOrders = response;
+  
+        // Filter orders based on user name search
+        if (search) {
+          const lowerSearch = search.toLowerCase();
+          filteredOrders = response.filter(order =>
+            order.user?.name?.toLowerCase().includes(lowerSearch)
+          );
+        }
+  
+        // Optional: Add sorting logic here if needed
+        if (sort === "nome_az") {
+          filteredOrders.sort((a, b) => a.user.name.localeCompare(b.user.name));
+        } else if (sort === "nome_za") {
+          filteredOrders.sort((a, b) => b.user.name.localeCompare(a.user.name));
+        } else if (sort === "mais_antigo") {
+          filteredOrders.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        } else {
+          // Default or "mais_recente"
+          filteredOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        }
+  
+        // Paginate
+        const startIndex = (page - 1) * limit;
+        const paginatedOrders = filteredOrders.slice(startIndex, startIndex + limit);
+  
+        setOrders(paginatedOrders);
+        setTotalOrders(filteredOrders.length);
       } catch (error) {
         console.error("Erro:", error.message);
         toast.error("Erro ao buscar os pedidos.");
@@ -168,7 +194,7 @@ const OrdersPage = () => {
                     {orders.map((order) => (
                       <tr key={order._id}>
                         <td>{order._id}</td>
-                        <td>{order.user}</td>
+                        <td>{order.user.name}</td>
                         <td>{order.totalAmount}   €</td>
                         <td>{traduzirStatus(order.orderStatus)}</td>
                         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
