@@ -181,7 +181,7 @@ const OrdersPage = () => {
                       <th scope="col">#</th>
                       <th scope="col">Utilizador</th>
                       <th scope="col">Total</th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Estado</th>
                       <th scope="col">Data</th>
                       <th scope="col">Ações</th>
                     </tr>
