@@ -191,7 +191,7 @@ const OrdersPage = () => {
                       <tr key={order._id}>
                         <td>{order._id}</td>
                         <td>{order.user.name}</td>
-                        <td>{order.totalAmount}   €</td>
+                        <td>{Number(order.totalAmount).toFixed(2)}   €</td>
                         <td>{traduzirStatus(order.orderStatus)}</td>
                         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                         <td>

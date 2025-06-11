@@ -63,12 +63,34 @@ const OrderPage = () => {
               </div>
               <div className="card-body">
                 <div className="row">
+                  <div className="row">
                   <div className="col">
-                    <div className="row">
+                  <div className="form-floating input-group">
+                    <input
+                      type="text"
+                      className="form-control rounded"
+                      id="Utilizador"
+                      value={order.user ? order.user.name : "Utilizador Desconhecido"}  
+                      disabled
+                    />
+                    <label htmlFor="Utilizador">Utilizador</label>
+                    <div className="btn-group" role="group">
+                            <a
+                              href={`/admin/orders/${order._id}`}
+                              className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
+                              type="button"
+                             
+                            >
+                              <i className="bi bi-file-earmark-text" />
+                            </a>
+                            </div>
+                      </div>
+                    </div>
+                    
                       <div className="col">
                         <FloatingInput
                           label="Valor Total"
-                          value={order.totalAmount}
+                          value={Number(order.totalAmount).toFixed(2) + " €"} 
                           disabled={true}
                         />
                         </div>
@@ -93,19 +115,44 @@ const OrderPage = () => {
                             {order.items && order.items.length > 0 ? (                                <table className="table table-striped border">
                                   <thead>
                                     <tr>
-                                      <th>Produto</th>
-                                      <th>Quantidade</th>
-                                      <th>Preço Unitário</th>
-                                      <th>Subtotal</th>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Imagem</th>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Quantidade</th>
+                                    <th scope="col">Preço</th>
+                                    <th scope="col">Desconto</th>
+                                    <th scope="col">Preço Final</th>
+                                    <th scope="col">Ações</th>
                                     </tr>
                                   </thead>
                                   <tbody>
                                 {order.items.map((item, index) => (
                                       <tr key={item._id || index}>
-                                        <td>{item.product.name}</td>
-                                        <td>{item.quantity}</td>
+                                    <td>{item._id}</td>
+                                    <td>
+                                      {/* <img
+                                        src={item.images[0] || "/assets/images/cao.gif"}
+                                        alt={item.name}
+                                        className="img-fluid rounded"
+                                        style={{ width: "50px", height: "50px" }}
+                                      /> */}
+                                    </td>
+                                    <td>{item.product.name}</td>
+                                    <td>{item.quantity}</td>
+                                        <td>{item.price}</td>
                                         <td>{item.price.toFixed(2)} €</td>
-                                        <td>{(item.quantity * item.price).toFixed(2)} €</td>
+                                    <td>{(item.quantity * item.price).toFixed(2)} €</td>
+                                    <td>
+                                      <div className="btn-group" role="group">
+                                        <a
+                                          href={`/admin/products/${item.product._id}`}
+                                          className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
+                                          type="button"
+                                        >
+                                          <i className="bi bi-file-earmark-text" />
+                                        </a>
+                                        </div>
+                                        </td>
                                       </tr>
                                     ))}
                                 </tbody>
@@ -153,7 +200,6 @@ const OrderPage = () => {
               </div>
             </div>
           </div>
-        </div>
       </section>
     </main>
   );
