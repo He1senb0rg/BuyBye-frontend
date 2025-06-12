@@ -103,7 +103,7 @@ function App() {
                 />
               </Route>
 
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={<ProtectedRoute> <AdminLayout /> </ProtectedRoute>}>
                 <Route path="categories" element={<CategoriesPage />} />
                 <Route path="categories/create" element={<CreateCategory />} />
                 <Route path="dashboard" element={<Dashboard />} />

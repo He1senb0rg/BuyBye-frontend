@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { fetchBillingHistory, fetchOrders,updateOrderStatus } from "../services/api";
 import toast from "react-hot-toast";
 import FloatingInput from "../components/FloatingInput";
@@ -278,7 +278,7 @@ const OrderPage = () => {
               >
                 Cancelar
               </button>
-              <button type="button" data-bs-dismiss="modal" className="btn btn-success" onClick={() => handleStatusUpdate(order._id, "deleted")}>
+              <button type="button" data-bs-dismiss="modal" className="btn btn-primary" onClick={() => handleStatusUpdate(order._id, "deleted")}>
                 Atualizar
               </button>
             </div>
