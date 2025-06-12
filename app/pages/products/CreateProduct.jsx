@@ -101,17 +101,6 @@ const handleSubmit = async (e) => {
     formData.append("files", file);
   });
 
-  // Debugging logs to see what is inside formData
-  console.log("Submitting product with the following data:");
-  for (let pair of formData.entries()) {
-    // If the value is a File object, log its name and size instead of the whole object
-    if (pair[1] instanceof File) {
-      console.log(`${pair[0]}: File - name: ${pair[1].name}, size: ${pair[1].size} bytes`);
-    } else {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-  }
-
   try {
     await createProduct(formData);
     toast.success("Produto criado com sucesso!");

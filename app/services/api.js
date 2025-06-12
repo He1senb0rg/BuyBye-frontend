@@ -3,8 +3,10 @@ const BASE_URL = "http://localhost:3000/api";
 const getAuthHeaders = (isJson = true) => {
   const headers = {};
   const token = localStorage.getItem("token");
-  if (isJson) headers["Content-Type"] = "application/json";
+
   if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (isJson) headers["Content-Type"] = "application/json";
+
   return headers;
 };
 
@@ -54,24 +56,15 @@ export const getProductReviewsStats = async (id) => {
   return res.json();
 };
 
-export const createProduct = async (product, files) => {
-  const formData = new FormData();
-  formData.append('name', product.name);
-  formData.append('description', product.description);
-  formData.append('price', product.price);
-  formData.append('stock', product.stock);
-  formData.append('category', product.category);
-  formData.append('shop', product.shop);
-  if (files && files.length) {
-    files.forEach(file => formData.append('files', file));
-  }
+export const createProduct = async (formData) => {
   const res = await fetch(`${BASE_URL}/products`, {
     method: "POST",
-    headers: getAuthHeaders(false), // NO content-type for FormData
+    headers: getAuthHeaders(false),
     body: formData,
   });
   return res.json();
 };
+
 
 export const updateProduct = async (id, product, files) => {
   const formData = new FormData();
