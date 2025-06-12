@@ -189,7 +189,7 @@ const ProductsPage = () => {
                           <img
                             src={
                               product.images && product.images.length > 0
-                                ? `${BACKEND_URL}/api/images/${product.images[0]}`
+                                ? `${BACKEND_URL}${product.images[0]}`
                                 : "/assets/images/cao.gif"
                             }
                             alt={product.name}
@@ -319,13 +319,6 @@ const ProductsPage = () => {
               {productToDelete?.name}? Esta ação não pode ser revertida.
             </div>
             <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Cancelar
-              </button>
               <button
                 type="button"
                 data-bs-dismiss="modal"

@@ -1,82 +1,73 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getProductById, getCategories, updateProduct } from "../../services/api";
-import { useState, useEffect, useRef } from "react";
 import FloatingInput from "../../components/FloatingInput";
 import FloatingSelect from "../../components/FloatingSelect";
 import Checkbox from "../../components/Checkbox";
-import ProductImagesSwiper from "../../components/products/ProductImagesSwiper";
 
 const ProductEdit = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const { id } = useParams();
-  let imgNum = 0;
+
   const [productData, setProductData] = useState({
     name: "",
     description: "",
     euros: "",
     centimos: "",
-    price: "",
+    price: 0,
     stock: "",
     discount_type: "",
     discount_value: "",
     category: "",
-    images: [],
   });
 
   const [useDiscount, setUseDiscount] = useState(false);
-
-  const [imageFiles, setImageFiles] = useState([]);
-
   const [categories, setCategories] = useState([]);
-
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const nextStep = (e) => {
-    if (e) e.preventDefault();
-
-    if (formRef.current.checkValidity()) {
-      setStep((prev) => prev + 1);
-    } else {
-      formRef.current.reportValidity();
-    }
-  };
-  const prevStep = () => setStep((prev) => prev - 1);
+  const [existingImages, setExistingImages] = useState([]); // Store only IDs
+  const [newFiles, setNewFiles] = useState([]);
 
   useEffect(() => {
+    if (!id) {
+      toast.error("Produto ID está faltando.");
+      navigate("/admin/products");
+      return;
+    }
+
     const fetchProduct = async () => {
       try {
         const response = await getProductById(id);
-
         if (!response || response.error) {
           throw new Error("Produto não encontrado");
         }
 
         setProductData({
-          ...response,
-          euros: Math.floor(response.price),
-          centimos: Math.round((response.price % 1) * 100),
-          images: response.images,
+          name: response.name || "",
+          description: response.description || "",
+          euros: Math.floor(response.price) || "",
+          centimos: Math.round((response.price - Math.floor(response.price)) * 100) || "",
+          price: response.price || 0,
+          stock: response.stock ?? "",
+          category: response.category || "",
+          discount_type: response.discount?.type || "",
+          discount_value: response.discount?.value || "",
         });
-        setImageFiles(response.images);
 
-        if (response.discount) {
-          setUseDiscount(response.discount);
-          setProductData((prevData) => ({
-            ...prevData,
-            discount_type: response.discount.type,
-            discount_value: response.discount.value,
-          }));
-        }
+        // Store IDs directly
+        setExistingImages(response.images || []);
+        setUseDiscount(Boolean(response.discount));
       } catch (error) {
         toast.error("Erro ao buscar o produto.");
         navigate("/404");
       }
     };
+
     fetchProduct();
-  }, [id]);
+  }, [id, navigate]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -89,74 +80,105 @@ const ProductEdit = () => {
         setCategories(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
-        setError("Failed to fetch categories");
       }
     };
 
     fetchCategories();
   }, []);
 
+  const nextStep = (e) => {
+    if (e) e.preventDefault();
+    if (formRef.current.checkValidity()) {
+      setStep((prev) => prev + 1);
+    } else {
+      formRef.current.reportValidity();
+    }
+  };
+
+  const prevStep = () => setStep((prev) => prev - 1);
+
   const handleCheckboxChange = () => {
-    setUseDiscount(!useDiscount);
+    setUseDiscount((prev) => {
+      if (prev) {
+        setProductData((pd) => ({
+          ...pd,
+          discount_type: "",
+          discount_value: "",
+        }));
+      }
+      return !prev;
+    });
   };
 
-  const addImage = () => {
-    const newImage = `https://picsum.photos/seed/${
-      productData.name + imgNum
-    }/800/900`;
-    setImageFiles((prev) => {
-      const updated = [...prev, newImage];
-      setProductData((prevData) => ({ ...prevData, images: updated }));
-      return updated;
-    });
-    imgNum++;
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    setNewFiles((prev) => [...prev, ...files]);
+    e.target.value = null;
   };
 
-  const removeImage = () => {
-    setImageFiles((prev) => {
-      const updated = prev.slice(0, -1);
-      setProductData((prevData) => ({ ...prevData, images: updated }));
-      return updated;
-    });
-    if (imgNum > 0) imgNum--;
+  const removeExistingImageAtIndex = (index) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const removeNewFileAtIndex = (index) => {
+    setNewFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleChange = (e) => {
-    setProductData({ ...productData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setProductData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const euros = parseInt(productData.euros || "0", 10);
-    const centimos = parseInt(productData.centimos || "0", 10);
-    const price = euros + centimos / 100;
-
-    const finalProductData = {
-      ...productData,
-      price: Number(price.toFixed(2)),
-      stock: Number(productData.stock),
-      discount: useDiscount
-        ? {
-            type: productData.discount_type,
-            value: productData.discount_value,
-          }
-        : null,
-    };
+    setIsSubmitting(true);
 
     try {
-      const response = await updateProduct(id, finalProductData);
+      const price = (parseInt(productData.euros || "0", 10)) + (parseInt(productData.centimos || "0", 10)) / 100;
 
-      if (response.error) {
-        toast.error("Erro ao editar o produto.");
-        return;
+      const formData = new FormData();
+      formData.append("name", productData.name);
+      formData.append("description", productData.description);
+      formData.append("price", price.toFixed(2));
+      formData.append("stock", productData.stock || 0);
+      formData.append("category", productData.category);
+
+      if (useDiscount) {
+        formData.append(
+          "discount",
+          JSON.stringify({
+            type: productData.discount_type,
+            value: productData.discount_value,
+          })
+        );
       }
 
-      toast.success("Produto editado com sucesso!");
-      setTimeout(() => navigate("/admin/products"), 100);
+      // Append existing image IDs (backend expects IDs)
+      existingImages.forEach((imgId) => {
+        formData.append("existingImages", imgId);
+      });
+
+      // Append new files
+      newFiles.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      // Debug: Log FormData contents
+      for (let [key, value] of formData.entries()) {
+        console.log(key, value instanceof File ? value.name : value);
+      }
+
+      const response = await updateProduct(id, formData);
+      toast.success("Product updated successfully!");
+      navigate("/admin/products");
     } catch (error) {
-      console.error("Erro:", error.message);
-      toast.error("Erro ao editar o produto.");
+      toast.error(error.message || "Failed to update product");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -172,18 +194,18 @@ const ProductEdit = () => {
               placeholder="Nome do Produto"
               label="Nome do Produto"
               maxLength={60}
-              required={true}
+              required
               value={productData.name}
               onChange={handleChange}
             />
             <FloatingInput
-              isTextArea={true}
+              isTextArea
               id="description"
               name="description"
               placeholder="Descrição do Produto"
               label="Descrição do Produto"
               maxLength={150}
-              required={true}
+              required
               value={productData.description}
               onChange={handleChange}
             />
@@ -195,23 +217,8 @@ const ProductEdit = () => {
                   name="stock"
                   placeholder="Stock do Produto"
                   label="Stock do Produto"
-                  required={true}
+                  required
                   value={productData.stock}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md">
-                <label className="form-label my-0" htmlFor="imageInput">
-                  Imagem do Produto
-                </label>
-                <input
-                  type="file"
-                  name="image"
-                  className="form-control mb-3"
-                  id="imageInput"
-                  placeholder="Imagem do Produto"
-                  accept="image/*"
                   onChange={handleChange}
                 />
               </div>
@@ -224,9 +231,9 @@ const ProductEdit = () => {
                   id="euros"
                   placeholder="Euros"
                   label="Euros"
-                  value={productData.euros}
                   maxLength={6}
-                  required={true}
+                  required
+                  value={productData.euros}
                   onChange={handleChange}
                 />
               </div>
@@ -235,11 +242,11 @@ const ProductEdit = () => {
                   type="text"
                   name="centimos"
                   id="centimos"
-                  value={productData.centimos}
                   placeholder="Centimos"
                   label="Centimos"
                   maxLength={2}
-                  required={true}
+                  required
+                  value={productData.centimos}
                   onChange={handleChange}
                 />
               </div>
@@ -252,7 +259,7 @@ const ProductEdit = () => {
                   options={categories}
                   placeholder="Categoria"
                   onChange={handleChange}
-                  required={true}
+                  required
                 />
               </div>
             </div>
@@ -275,9 +282,7 @@ const ProductEdit = () => {
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
                   value={productData.discount_type}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
+                  onChange={handleChange}
                   disabled={!useDiscount}
                   required={useDiscount}
                   placeholder="Tipo de Desconto"
@@ -292,11 +297,9 @@ const ProductEdit = () => {
                   label="Valor do Desconto"
                   disabled={!useDiscount}
                   required={useDiscount}
-                  value={productData.discount_value}
                   maxLength={6}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
+                  value={productData.discount_value}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -305,31 +308,60 @@ const ProductEdit = () => {
       case 2:
         return (
           <>
-            <div className="row mb-3">
-              <div className="col-12 col-md-8">
-                <ProductImagesSwiper imageFiles={imageFiles} />
-              </div>
-              <div className="col-12 col-md-4">
-                <p className="h4">Imagens</p>
-                <p>
-                  Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
-                  Tamanho máximo: 150 mb
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={addImage}
+            <div className="mb-3">
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                className="form-control mb-3"
+                onChange={handleImageUpload}
+              />
+            </div>
+            <div className="row">
+              {existingImages.map((imgId, index) => (
+                <div
+                  key={`existing-${index}`}
+                  className="col-6 col-md-4 mb-3 position-relative"
                 >
-                  Adicionar Imagem
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger ms-3"
-                  onClick={removeImage}
+                  <img
+                    src={`${imgId}`}
+                    alt={`Produto existente ${index + 1}`}
+                    className="img-fluid rounded"
+                    style={{ maxHeight: "200px", objectFit: "cover" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                    style={{ zIndex: 10 }}
+                    onClick={() => removeExistingImageAtIndex(index)}
+                    aria-label={`Remover imagem existente ${index + 1}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
+              {newFiles.map((file, index) => (
+                <div
+                  key={`new-${index}`}
+                  className="col-6 col-md-4 mb-3 position-relative"
                 >
-                  Remover Imagem
-                </button>
-              </div>
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={`Produto novo ${index + 1}`}
+                    className="img-fluid rounded"
+                    style={{ maxHeight: "200px", objectFit: "cover" }}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                    style={{ zIndex: 10 }}
+                    onClick={() => removeNewFileAtIndex(index)}
+                    aria-label={`Remover nova imagem ${index + 1}`}
+                  >
+                    &times;
+                  </button>
+                </div>
+              ))}
             </div>
           </>
         );
@@ -373,8 +405,12 @@ const ProductEdit = () => {
                         Seguinte
                       </button>
                     ) : (
-                      <button type="submit" className="btn btn-primary ms-auto">
-                        Editar Produto
+                      <button 
+                        type="submit" 
+                        className="btn btn-primary ms-auto"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? 'Editando...' : 'Editar Produto'}
                       </button>
                     )}
                   </div>
@@ -387,4 +423,5 @@ const ProductEdit = () => {
     </main>
   );
 };
+
 export default ProductEdit;

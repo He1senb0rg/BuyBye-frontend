@@ -65,24 +65,27 @@ export const createProduct = async (formData) => {
   return res.json();
 };
 
+export const updateProduct = async (id, formData) => {
+  try {
+    const response = await fetch(`${BASE_URL}/products/${id}`, {
+      method: 'PUT',
+      headers: {
+        ...getAuthHeaders(false), // Your auth headers
+        // Don't set Content-Type - let browser set it for FormData
+      },
+      body: formData,
+    });
 
-export const updateProduct = async (id, product, files) => {
-  const formData = new FormData();
-  formData.append('name', product.name);
-  formData.append('description', product.description);
-  formData.append('price', product.price);
-  formData.append('stock', product.stock);
-  formData.append('category', product.category);
-  formData.append('shop', product.shop);
-  if (files && files.length) {
-    files.forEach(file => formData.append('files', file));
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || 'Failed to update product');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating product:', error);
+    throw error; // Re-throw to handle in component
   }
-  const res = await fetch(`${BASE_URL}/products/${id}`, {
-    method: "PUT",
-    headers: getAuthHeaders(false), // NO content-type for FormData
-    body: formData,
-  });
-  return res.json();
 };
 
 export const deleteProduct = async (id) => {
@@ -281,17 +284,6 @@ export const updateCartItem = async (productId, updatedData) => {
     body: JSON.stringify(updatedData),
   });
   return res.json();
-};
-
-//Product Management
-
-export const editProduct = async (updatedData) => {
-  const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
-    method: "PUT",
-    headers: getAuthHeaders(),
-    body: JSON.stringify(updatedData),
-  });
-  return response.json();
 };
 
 // Checkout
