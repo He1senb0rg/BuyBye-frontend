@@ -76,9 +76,10 @@ const OrderPage = () => {
                     <label htmlFor="Utilizador">Utilizador</label>
                     <div className="btn-group" role="group">
                             <a
-                              href={`/admin/orders/${order._id}`}
+                              href={`/admin/users/${order.user._id}`}
                               className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
                               type="button"
+                              target="_blank"
                              
                             >
                               <i className="bi bi-file-earmark-text" />
