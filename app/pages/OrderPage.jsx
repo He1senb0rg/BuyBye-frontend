@@ -65,7 +65,8 @@ const OrderPage = () => {
   };
 
   const displayStatus = status[order.orderStatus] || order.status;
-
+  const orderstatus = ['pending', 'paid', 'shipped', 'delivered']
+  const nextStatus = orderstatus[orderstatus.indexOf(order.orderStatus) + 1] || order.orderStatus;
   return (
     <main>
       <section className="container py-4">
@@ -123,7 +124,7 @@ const OrderPage = () => {
                     <div className="btn-group" role="group">
                       <button
                         className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
-                        onClick={() => handleStatusUpdate(order._id, "paid")}
+                        onClick={() => handleStatusUpdate(order._id, nextStatus)}
                       >
                         <i className="bi bi-file-earmark-text" />
                       </button>
