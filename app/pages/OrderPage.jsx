@@ -1,14 +1,29 @@
 import { useParams } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import { fetchBillingHistory, fetchOrders } from "../services/api";
+import { fetchBillingHistory, fetchOrders,updateOrderStatus } from "../services/api";
 import toast from "react-hot-toast";
 import FloatingInput from "../components/FloatingInput";
 
 const OrderPage = () => {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [state, setStatus] = useState("pending");
   const [loading, setLoading] = useState(true);
 
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      toast.success(`Status atualizado para "${newStatus}"`);
+  
+      setOrder((prev) => ({
+        ...prev,
+        orderStatus: newStatus,
+      }));
+    } catch (error) {
+      console.error("Erro:", error.message);
+      toast.error("Erro ao atualizar o status.");
+    }
+  };
   useEffect(() => {
     const fetchOrder = async () => {
       try {
@@ -85,22 +100,35 @@ const OrderPage = () => {
                               <i className="bi bi-file-earmark-text" />
                             </a>
                             </div>
-                      </div>
+                  </div>
                     </div>
                     
-                      <div className="col">
+                  <div className="col">    
                         <FloatingInput
                           label="Valor Total"
                           value={Number(order.totalAmount).toFixed(2) + " €"} 
                           disabled={true}
                         />
                         </div>
-                        <div className="col">
-                        <FloatingInput
-                          label="Estado do Pedido"
-                          value={displayStatus}
-                          disabled={true}
-                        />
+                    <div className="col">
+                    <div className="form-floating input-group">
+                    <input
+                      type="text"
+                      className="form-control rounded"
+                      id="Estado"
+                      value={displayStatus}  
+                      disabled
+                    />
+                    <label htmlFor="Estado">Estado do Pedido</label>
+                    <div className="btn-group" role="group">
+                      <button
+                        className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
+                        onClick={() => handleStatusUpdate(order._id, "paid")}
+                      >
+                        <i className="bi bi-file-earmark-text" />
+                      </button>
+                    </div>
+                  </div>
                       </div>
                       <div className="col"> 
                         <FloatingInput
