@@ -121,14 +121,6 @@ const OrderPage = () => {
                       disabled
                     />
                     <label htmlFor="Estado">Estado do Pedido</label>
-                    <div className="btn-group" role="group">
-                      <button
-                        className="btn btn-success mx-1 d-flex justify-content-center align-items-center"
-                        onClick={() => handleStatusUpdate(order._id, nextStatus)}
-                      >
-                        <i className="bi bi-file-earmark-text" />
-                      </button>
-                    </div>
                   </div>
                       </div>
                       <div className="col"> 
@@ -242,6 +234,20 @@ const OrderPage = () => {
                           disabled={true}
                         />
                       </div>
+                  </div>
+                    <div className="row">
+                      <div className="col">
+                      <div className="btn-group" role="group">
+                      <button
+                          data-bs-toggle="modal"
+                          data-bs-target="#deleteModal"
+                          type="button"
+                          className="btn btn-primary"
+                        >
+                        Atualizar Estado do Pedido
+                        </button>                        
+                    </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -249,6 +255,36 @@ const OrderPage = () => {
             </div>
           </div>
       </section>
+      <div className="modal fade" id="deleteModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Atualizar Estado do Pedido </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Fechar"
+              ></button>
+            </div>
+            <div className="modal-body">
+              Tens a certeza que queres atualizar o estado do pedido. Esta ação não pode ser revertida.
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancelar
+              </button>
+              <button type="button" data-bs-dismiss="modal" className="btn btn-success" onClick={() => handleStatusUpdate(order._id, "deleted")}>
+                Atualizar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 };
