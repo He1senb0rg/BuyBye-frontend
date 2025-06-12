@@ -1,185 +1,162 @@
 const BASE_URL = "http://localhost:3000/api";
 
-// User Authentication
+const getAuthHeaders = (isJson = true) => {
+  const headers = {};
+  const token = localStorage.getItem("token");
+  if (isJson) headers["Content-Type"] = "application/json";
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  return headers;
+};
+
+// --- Auth ---
+
 export const userLogin = async (credentials) => {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
+  const res = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
-  return response.json();
+  return res.json();
 };
 
 export const userRegister = async (user) => {
-  const response = await fetch(`${BASE_URL}/auth/register`, {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(user),
   });
-  return response.json();
+  return res.json();
 };
 
-//Products
+// --- Products ---
 
-export const getProducts = async (page, limit, sort, search) => {
-  const response = await fetch(`${BASE_URL}/products?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
+export const getProducts = async (page = 1, limit = 10, sort = "mais_recente", search = "") => {
+  const res = await fetch(`${BASE_URL}/products?page=${page}&limit=${limit}&sort=${sort}&search=${encodeURIComponent(search)}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-  return response.json();
+  return res.json();
 };
 
 export const getProductById = async (id) => {
-  const response = await fetch(`${BASE_URL}/products/${id}`, {
+  const res = await fetch(`${BASE_URL}/products/${id}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-  return response.json();
+  return res.json();
 };
 
 export const getProductReviewsStats = async (id) => {
-  const response = await fetch(`${BASE_URL}/reviews/product/${id}/stats`, {
+  const res = await fetch(`${BASE_URL}/reviews/product/${id}/stats`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-  return response.json();
+  return res.json();
 };
 
-export const createProduct = async (product) => {
-  const response = await fetch(`${BASE_URL}/products`, {
+export const createProduct = async (product, files) => {
+  const formData = new FormData();
+  formData.append('name', product.name);
+  formData.append('description', product.description);
+  formData.append('price', product.price);
+  formData.append('stock', product.stock);
+  formData.append('category', product.category);
+  formData.append('shop', product.shop);
+  if (files && files.length) {
+    files.forEach(file => formData.append('files', file));
+  }
+  const res = await fetch(`${BASE_URL}/products`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(product),
+    headers: getAuthHeaders(false), // NO content-type for FormData
+    body: formData,
   });
-  return response.json();
+  return res.json();
 };
 
-export const updateProduct = async (id, product) => {
-  const response = await fetch(`${BASE_URL}/products/${id}`, {
+export const updateProduct = async (id, product, files) => {
+  const formData = new FormData();
+  formData.append('name', product.name);
+  formData.append('description', product.description);
+  formData.append('price', product.price);
+  formData.append('stock', product.stock);
+  formData.append('category', product.category);
+  formData.append('shop', product.shop);
+  if (files && files.length) {
+    files.forEach(file => formData.append('files', file));
+  }
+  const res = await fetch(`${BASE_URL}/products/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(product),
+    headers: getAuthHeaders(false), // NO content-type for FormData
+    body: formData,
   });
-  return response.json();
+  return res.json();
 };
 
 export const deleteProduct = async (id) => {
-  const response = await fetch(`${BASE_URL}/products/${id}`, {
+  const res = await fetch(`${BASE_URL}/products/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
 };
 
-export const getProductsSales = async (page, limit, sort) => {
-  const response = await fetch(`${BASE_URL}/products/sales?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}`, {
+export const getProductsSales = async (page = 1, limit = 10, sort = "mais_recente") => {
+  const res = await fetch(`${BASE_URL}/products/sales?page=${page}&limit=${limit}&sort=${sort}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
   });
-  return response.json();
+  return res.json();
 };
 
-// Wishlist
+// --- Wishlist ---
+
 export const addToWishlist = async (productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist`, {
+  const res = await fetch(`${BASE_URL}/wishlist`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ productId }),
   });
-
-  const responseData = await response.json();
-  console.log("Raw response:", response);
-  console.log("Failed response data:", responseData);
-
-  if (!response.ok) {
-    throw { status: response.status, message: responseData.message };
+  if (!res.ok) {
+    const data = await res.json();
+    throw { status: res.status, message: data.message };
   }
-
-  return responseData;
+  return res.json();
 };
 
 export const removeFromWishlist = async (productId) => {
-  const response = await fetch(`${BASE_URL}/wishlist`, {
+  const res = await fetch(`${BASE_URL}/wishlist`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ productId }),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(`Failed to remove from wishlist: ${JSON.stringify(errorData)}`);
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(`Failed to remove from wishlist: ${data.message || JSON.stringify(data)}`);
   }
-
-  return response.json();
+  return res.json();
 };
 
 export const getWishlist = async () => {
-  const response = await fetch(`${BASE_URL}/wishlist`, {
+  const res = await fetch(`${BASE_URL}/wishlist`, {
     method: "GET",
-    headers: {
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Failed to fetch wishlist: ${errorText}`);
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Failed to fetch wishlist: ${errText}`);
   }
-
-  return response.json();
+  return res.json();
 };
 
 export const checkIfInWishlist = async (productId) => {
   try {
-    const response = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": `Bearer ${localStorage.getItem('token')}`,
-      },
+    const res = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
     });
-    return await response.json();
-  } catch (error) {
-    console.error('Error checking wishlist status:', error);
+    return await res.json();
+  } catch {
     return { isWishlisted: false };
-  }
-};
-
-export const getUserReviewForProduct = async (userId, productId) => {
-  try {
-    const response = await fetch(`/api/reviews/${userId}/${productId}`);
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'Erro ao obter avaliação.');
-    return data;
-  } catch (error) {
-    return { error: error.message };
   }
 };
 
@@ -207,10 +184,7 @@ export const getCategoryById = async (id) => {
 export const createCategory = async (category) => {
   const response = await fetch(`${BASE_URL}/categories`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(category),
   });
   return response.json();
@@ -219,10 +193,7 @@ export const createCategory = async (category) => {
 export const updateCategory = async (id, category) => {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(category),
   });
   return response.json();
@@ -231,136 +202,92 @@ export const updateCategory = async (id, category) => {
 export const deleteCategory = async (id) => {
   const response = await fetch(`${BASE_URL}/categories/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
   return response.json();
 };
 
-// Review
+// --- Reviews ---
+
 export const createReview = async (review) => {
-  const response = await fetch(`${BASE_URL}/reviews`, {
+  const res = await fetch(`${BASE_URL}/reviews`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(review),
   });
-  return response.json();
-};
-
-export const deleteReview = async (id) => {
-  const response = await fetch(`${BASE_URL}/reviews/${id}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  return response.json();
+  return res.json();
 };
 
 export const updateReview = async (reviewId, data) => {
-  try {
-    const response = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      return { error: errorData.message || "Erro desconhecido ao atualizar." };
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Erro ao atualizar a avaliação:", error);
-    return { error: "Erro de rede" };
+  const res = await fetch(`${BASE_URL}/reviews/${reviewId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    return { error: data.message || "Unknown update error" };
   }
+  return res.json();
+};
+
+export const deleteReview = async (id) => {
+  const res = await fetch(`${BASE_URL}/reviews/${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return res.json();
 };
 
 export const fetchUserReviews = async (userId) => {
-  try {
-    const response = await fetch(`${BASE_URL}/reviews/user/${userId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch user reviews');
-    }
-
-    const data = await response.json();
-    console.log('Fetched reviews:', data);
-    return data;
-  } catch (error) {
-    console.error(error);
-    return [];
+  const res = await fetch(`${BASE_URL}/reviews/user/${userId}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+  if (!res.ok) {
+    throw new Error('Failed to fetch user reviews');
   }
+  return res.json();
 };
 
-// Cart
+// --- Cart ---
+
 export const getCart = async () => {
-  const response = await fetch(`${BASE_URL}/cart`, {
+  const res = await fetch(`${BASE_URL}/cart`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
 };
 
 export const addToCart = async (item) => {
-  const response = await fetch(`${BASE_URL}/cart`, {
+  const res = await fetch(`${BASE_URL}/cart`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(item),
   });
-
-  if (!response.ok) {
-    // Try to parse the error message from the response
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || "Erro ao adicionar ao carrinho.");
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(data.message || "Error adding to cart");
   }
-
-  return response.json();
+  return res.json();
 };
 
 export const removeFromCart = async (productId) => {
-  const response = await fetch(`${BASE_URL}/cart/${productId}`, {
+  const res = await fetch(`${BASE_URL}/cart/${productId}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
 };
 
 export const updateCartItem = async (productId, updatedData) => {
-  const response = await fetch(`${BASE_URL}/cart/${productId}`, {
+  const res = await fetch(`${BASE_URL}/cart/${productId}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(updatedData),
   });
-  return response.json();
+  return res.json();
 };
 
 //Product Management
@@ -368,27 +295,17 @@ export const updateCartItem = async (productId, updatedData) => {
 export const editProduct = async (updatedData) => {
   const response = await fetch(`${BASE_URL}/products/${updatedData._id}`, {
     method: "PUT",
-
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-
-    body: JSON.stringify(orderData),
+    headers: getAuthHeaders(),
+    body: JSON.stringify(updatedData),
   });
   return response.json();
 };
 
 // Checkout
 export const createOrder = async (orderData) => {
-  const token = localStorage.getItem('token');
-
   const response = await fetch(`${BASE_URL}/checkout`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify(orderData),
   });
 
@@ -403,14 +320,10 @@ export const createOrder = async (orderData) => {
 export const fetchBillingHistory = async () => {
   const response = await fetch(`${BASE_URL}/checkout/history`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   if (!response.ok) {
-    // Try parsing JSON error, fallback to text
     let errorMessage = "Erro desconhecido ao buscar histórico de faturação";
     try {
       const errorData = await response.json();
@@ -427,86 +340,69 @@ export const fetchBillingHistory = async () => {
   return response.json();
 };
 
-// User Management
+// --- User Management ---
 
-export const getUsers = async (page, limit, sort, search) => {
-  const response = await fetch(`${BASE_URL}/users?page=${page || 1}&limit=${limit || 10}&sort=${sort || "mais_recente"}&search=${search || ""}`, {
+export const getUsers = async (page = 1, limit = 10, sort = "mais_recente", search = "") => {
+  const res = await fetch(`${BASE_URL}/users?page=${page}&limit=${limit}&sort=${sort}&search=${encodeURIComponent(search)}`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-  return response.json();
-}
-
-export const getUser = async (id) => {
-  const response = await fetch(`${BASE_URL}/users/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
-  return response.json();
+  return res.json();
 };
 
-export const updateUser = async (id, user) => {
-  const response = await fetch(`${BASE_URL}/users/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(user),
+export const getUser = async (id) => {
+  const res = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
+};
+
+export const updateUser = async (id, user, file) => {
+  const formData = new FormData();
+  formData.append('name', user.name);
+  formData.append('email', user.email);
+  formData.append('role', user.role);
+  if (file) formData.append('file', file);
+
+  const res = await fetch(`${BASE_URL}/users/${id}`, {
+    method: "PUT",
+    headers: getAuthHeaders(false), // no content-type for FormData
+    body: formData,
+  });
+  return res.json();
 };
 
 export const deleteUser = async (id) => {
-  const response = await fetch(`${BASE_URL}/users/${id}`, {
+  const res = await fetch(`${BASE_URL}/users/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
 };
 
 export const removeImage = async (id) => {
-  const response = await fetch(`${BASE_URL}/users/${id}/image`, {
+  const res = await fetch(`${BASE_URL}/users/${id}/image`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    }
+    headers: getAuthHeaders(),
   });
-  return response.json();
+  return res.json();
 };
 
-// Change Password
 export const changePassword = async (id, currentPassword, newPassword) => {
-  const response = await fetch(`${BASE_URL}/users/${id}/password`, {
+  const res = await fetch(`${BASE_URL}/users/${id}/password`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
     body: JSON.stringify({ currentPassword, newPassword }),
   });
-
-  return response.json();
+  return res.json();
 };
 
 // Dashboard
 export const getDashboardSummary = async () => {
   const response = await fetch(`${BASE_URL}/dashboard/summary`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
 
   return response.json();
@@ -534,14 +430,19 @@ export const getShops = async (page, limit, sort, search) => {
   return response.json();
 };
 
-export const editShop = async (shop, id) => {
+export const editShop = async (shop, id, file) => {
+  const formData = new FormData();
+  formData.append('name', shop.name);
+  formData.append('description', shop.description);
+
+  if (file) {
+    formData.append('file', file);
+  }
+
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(shop),
+    headers: getAuthHeaders(false),
+    body: formData,
   });
   return response.json();
 };
@@ -559,23 +460,19 @@ export const getShopByID = async (id) => {
 export const deleteShop = async (id) => {
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
     method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
+    headers: getAuthHeaders(),
   });
   return response.json();
 };
 
-export const editShopBanner = async (id, banner) => {
+export const editShopBanner = async (id, bannerFile) => {
+  const formData = new FormData();
+  formData.append('file', bannerFile);
 
   const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${localStorage.getItem("token")}`,
-    },
-    body: JSON.stringify(banner),
+    headers: getAuthHeaders(false),
+    body: formData,
   });
   return response.json();
 };

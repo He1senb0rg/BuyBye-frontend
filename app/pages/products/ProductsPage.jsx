@@ -4,6 +4,8 @@ import { getProducts, deleteProduct } from "../../services/api";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 
+const BACKEND_URL = "http://localhost:3000";
+
 const ProductsPage = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -185,11 +187,16 @@ const ProductsPage = () => {
                         <td>{product._id}</td>
                         <td>
                           <img
-                            src={product.images[0] || "/assets/images/cao.gif"}
+                            src={
+                              product.images && product.images.length > 0
+                                ? `${BACKEND_URL}/api/images/${product.images[0]}`
+                                : "/assets/images/cao.gif"
+                            }
                             alt={product.name}
                             className="img-fluid rounded"
                             style={{ width: "50px", height: "50px" }}
                           />
+
                         </td>
                         <td>{product.name}</td>
                         <td>{product.category.name}</td>

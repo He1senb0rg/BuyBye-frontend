@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { useState, useEffect, useRef } from "react";
 import { createProduct, getCategories } from "../../services/api";
 import FloatingInput from "../../components/FloatingInput";
 import FloatingSelect from "../../components/FloatingSelect";
@@ -12,24 +11,22 @@ const CreateProduct = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const [step, setStep] = useState(1);
-  let imgNum = 0;
-
-  const nextStep = (e) => {
-    if (e) e.preventDefault();
-
-    if (formRef.current.checkValidity()) {
-      setStep((prev) => prev + 1);
-    } else {
-      formRef.current.reportValidity();
-    }
-  };
-  const prevStep = () => setStep((prev) => prev - 1);
-
   const [useDiscount, setUseDiscount] = useState(false);
-
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]); // Real files
+  const [imagePreviews, setImagePreviews] = useState([]); // Preview URLs
+
+  const [productData, setProductData] = useState({
+    name: "",
+    description: "",
+    euros: "",
+    centimos: "",
+    price: "",
+    stock: "",
+    discount_type: "",
+    discount_value: "",
+    category: "",
+  });
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -42,82 +39,99 @@ const CreateProduct = () => {
         setCategories(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
-        setError("Failed to fetch categories");
-      } finally {
-        setLoading(false);
+        toast.error("Erro ao carregar categorias.");
       }
     };
 
     fetchCategories();
   }, []);
 
-  const [imageFiles, setImageFiles] = useState([]);
-
   const handleCheckboxChange = () => {
     setUseDiscount(!useDiscount);
   };
-
-  const [productData, setProductData] = useState({
-    name: "",
-    description: "",
-    euros: "",
-    centimos: "",
-    price: "",
-    stock: "",
-    discount_type: "",
-    discount_value: "",
-    category: "",
-    images: [],
-  });
 
   const handleChange = (e) => {
     setProductData({ ...productData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
 
-    const euros = parseInt(productData.euros || "0", 10);
-    const centimos = parseInt(productData.centimos || "0", 10);
-    const price = euros + centimos / 100;
+    if (files.length === 0) return;
 
-    const finalProductData = {
-      ...productData,
-      price: Number(price.toFixed(2)),
-      stock: Number(productData.stock),
-    };
+    // Preview images
+    const previews = files.map((file) => URL.createObjectURL(file));
 
-    try {
-      const response = await createProduct(finalProductData);
+    setImageFiles((prev) => [...prev, ...files]);
+    setImagePreviews((prev) => [...prev, ...previews]);
+  };
 
-      toast.success("Produto criado com sucesso!");
-      setTimeout(() => navigate("/admin/products"), 100);
-    } catch (error) {
-      console.error("Erro:", error.message);
-      toast.error("Erro ao criar o produto.");
+  const removeImage = (index) => {
+    const newFiles = [...imageFiles];
+    const newPreviews = [...imagePreviews];
+
+    newFiles.splice(index, 1);
+    newPreviews.splice(index, 1);
+
+    setImageFiles(newFiles);
+    setImagePreviews(newPreviews);
+  };
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const euros = parseInt(productData.euros || "0", 10);
+  const centimos = parseInt(productData.centimos || "0", 10);
+  const price = euros + centimos / 100;
+
+  const formData = new FormData();
+
+  formData.append("name", productData.name);
+  formData.append("description", productData.description);
+  formData.append("price", Number(price.toFixed(2)));
+  formData.append("stock", productData.stock);
+  formData.append("category", productData.category);
+
+  if (useDiscount) {
+    formData.append("discount_type", productData.discount_type);
+    formData.append("discount_value", productData.discount_value);
+  }
+
+  imageFiles.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  // Debugging logs to see what is inside formData
+  console.log("Submitting product with the following data:");
+  for (let pair of formData.entries()) {
+    // If the value is a File object, log its name and size instead of the whole object
+    if (pair[1] instanceof File) {
+      console.log(`${pair[0]}: File - name: ${pair[1].name}, size: ${pair[1].size} bytes`);
+    } else {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+  }
+
+  try {
+    await createProduct(formData);
+    toast.success("Produto criado com sucesso!");
+    setTimeout(() => navigate("/admin/products"), 500);
+  } catch (error) {
+    console.error("Erro:", error.message);
+    toast.error("Erro ao criar o produto.");
+  }
+};
+
+  const nextStep = (e) => {
+    if (e) e.preventDefault();
+    if (formRef.current.checkValidity()) {
+      setStep((prev) => prev + 1);
+    } else {
+      formRef.current.reportValidity();
     }
   };
 
-  const addImage = () => {
-    const newImage = `https://picsum.photos/seed/${
-      productData.name + imgNum
-    }/800/900`;
-    setImageFiles((prev) => {
-      const updated = [...prev, newImage];
-      setProductData((prevData) => ({ ...prevData, images: updated }));
-      return updated;
-    });
-    imgNum++;
-  };
-
-  const removeImage = () => {
-    setImageFiles((prev) => {
-      const updated = prev.slice(0, -1);
-      setProductData((prevData) => ({ ...prevData, images: updated }));
-      return updated;
-    });
-    if (imgNum > 0) imgNum--;
-  };
+  const prevStep = () => setStep((prev) => prev - 1);
 
   const renderStep = () => {
     switch (step) {
@@ -166,12 +180,12 @@ const CreateProduct = () => {
                 </label>
                 <input
                   type="file"
-                  name="image"
+                  multiple
                   className="form-control mb-3"
                   id="imageInput"
                   placeholder="Imagem do Produto"
                   accept="image/*"
-                  onChange={handleChange}
+                  onChange={handleImageChange}
                 />
               </div>
             </div>
@@ -233,9 +247,7 @@ const CreateProduct = () => {
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
                   value={productData.discount_type}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
+                  onChange={handleChange}
                   disabled={!useDiscount}
                   required={useDiscount}
                   placeholder="Tipo de Desconto"
@@ -252,9 +264,7 @@ const CreateProduct = () => {
                   required={useDiscount}
                   value={productData.discount_value}
                   maxLength={6}
-                  onChange={(e) => {
-                    handleChange(e);
-                  }}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -265,28 +275,10 @@ const CreateProduct = () => {
           <>
             <div className="row">
               <div className="col-12 col-md-8">
-                <ProductImagesSwiper imageFiles={imageFiles} />
-              </div>
-              <div className="col-12 col-md-4">
-                <p className="h4">Imagens</p>
-                <p>
-                  Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
-                  Tamanho máximo: 150 mb
-                </p>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={addImage}
-                >
-                  Adicionar Imagem
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-danger ms-3"
-                  onClick={removeImage}
-                >
-                  Remover Imagem
-                </button>
+                <ProductImagesSwiper
+                  imageFiles={imagePreviews}
+                  onRemove={removeImage}
+                />
               </div>
             </div>
           </>
@@ -345,4 +337,5 @@ const CreateProduct = () => {
     </main>
   );
 };
+
 export default CreateProduct;
