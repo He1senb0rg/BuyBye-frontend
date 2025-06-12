@@ -13,10 +13,9 @@ const OrdersPage = () => {
 
   const traduzirStatus = (status) => {
     if (status === "pending") return "Pendente";
-    if (status === "completed") return "Concluído";
-    if (status === "canceled") return "Cancelado";
+    if (status === "paid") return "Pago";
     if (status === "shipped") return "Enviado";
-    if (status === "processing") return "Processando";
+    if (status === "delivered") return "Entregue";
     return "Desconhecido";
   };
 
