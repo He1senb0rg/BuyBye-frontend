@@ -11,10 +11,16 @@ const CreateProduct = () => {
   const navigate = useNavigate();
   const formRef = useRef();
   const [step, setStep] = useState(1);
+
   const [useDiscount, setUseDiscount] = useState(false);
+  const [discountType, setDiscountType] = useState("percentage");
+  const [discountValue, setDiscountValue] = useState("");
+
   const [categories, setCategories] = useState([]);
-  const [imageFiles, setImageFiles] = useState([]); // Real files
-  const [imagePreviews, setImagePreviews] = useState([]); // Preview URLs
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [imageFiles, setImageFiles] = useState([]);
 
   const [productData, setProductData] = useState({
     name: "",
@@ -39,77 +45,14 @@ const CreateProduct = () => {
         setCategories(formatted);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
-        toast.error("Erro ao carregar categorias.");
+        setError("Erro ao carregar categorias.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCategories();
   }, []);
-
-  const handleCheckboxChange = () => {
-    setUseDiscount(!useDiscount);
-  };
-
-  const handleChange = (e) => {
-    setProductData({ ...productData, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-
-    if (files.length === 0) return;
-
-    // Preview images
-    const previews = files.map((file) => URL.createObjectURL(file));
-
-    setImageFiles((prev) => [...prev, ...files]);
-    setImagePreviews((prev) => [...prev, ...previews]);
-  };
-
-  const removeImage = (index) => {
-    const newFiles = [...imageFiles];
-    const newPreviews = [...imagePreviews];
-
-    newFiles.splice(index, 1);
-    newPreviews.splice(index, 1);
-
-    setImageFiles(newFiles);
-    setImagePreviews(newPreviews);
-  };
-
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  const euros = parseInt(productData.euros || "0", 10);
-  const centimos = parseInt(productData.centimos || "0", 10);
-  const price = euros + centimos / 100;
-
-  const formData = new FormData();
-
-  formData.append("name", productData.name);
-  formData.append("description", productData.description);
-  formData.append("price", Number(price.toFixed(2)));
-  formData.append("stock", productData.stock);
-  formData.append("category", productData.category);
-
-  if (useDiscount) {
-    formData.append("discount_type", productData.discount_type);
-    formData.append("discount_value", productData.discount_value);
-  }
-
-  imageFiles.forEach((file) => {
-    formData.append("files", file);
-  });
-
-  try {
-    await createProduct(formData);
-    toast.success("Produto criado com sucesso!");
-    setTimeout(() => navigate("/admin/products"), 500);
-  } catch (error) {
-    console.error("Erro:", error.message);
-    toast.error("Erro ao criar o produto.");
-  }
-};
 
   const nextStep = (e) => {
     if (e) e.preventDefault();
@@ -121,6 +64,74 @@ const handleSubmit = async (e) => {
   };
 
   const prevStep = () => setStep((prev) => prev - 1);
+
+  const handleCheckboxChange = () => {
+    setUseDiscount(!useDiscount);
+    if (useDiscount) {
+      setDiscountType("percentage");
+      setDiscountValue("");
+      setProductData((prevData) => ({
+        ...prevData,
+        discount_type: "",
+        discount_value: "",
+      }));
+    }
+  };
+
+  const handleChange = (e) => {
+    setProductData({ ...productData, [e.target.name]: e.target.value });
+  };
+
+  const handleImageChange = (e) => {
+    setImageFiles([...imageFiles, ...e.target.files]);
+  };
+
+ const removeImage = (index) => {
+  if (imageFiles.length <= 1) {
+    toast.error("Deve manter pelo menos uma imagem.");
+    return;
+  }
+
+  setImageFiles((prev) => prev.filter((_, idx) => idx !== index));
+};
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (imageFiles.length === 0) {
+    toast.error("Adicione pelo menos uma imagem.");
+    return;
+  }
+
+  const euros = parseInt(productData.euros || "0", 10);
+  const centimos = parseInt(productData.centimos || "0", 10);
+  const price = euros + centimos / 100;
+
+  const formData = new FormData();
+  formData.append("name", productData.name);
+  formData.append("description", productData.description);
+  formData.append("price", Number(price.toFixed(2)));
+  formData.append("stock", Number(productData.stock));
+  formData.append("category", productData.category);
+
+  if (useDiscount) {
+    formData.append("discount_type", discountType);
+    formData.append("discount_value", discountValue);
+  }
+
+  imageFiles.forEach((file) => {
+    formData.append("files", file);
+  });
+
+  try {
+    await createProduct(formData);
+    toast.success("Produto criado com sucesso!");
+    setTimeout(() => navigate("/admin/products"), 100);
+  } catch (error) {
+    console.error("Erro:", error.message);
+    toast.error("Erro ao criar o produto.");
+  }
+};
 
   const renderStep = () => {
     switch (step) {
@@ -160,21 +171,6 @@ const handleSubmit = async (e) => {
                   required={true}
                   value={productData.stock}
                   onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md">
-                <label className="form-label my-0" htmlFor="imageInput">
-                  Imagem do Produto
-                </label>
-                <input
-                  type="file"
-                  multiple
-                  className="form-control mb-3"
-                  id="imageInput"
-                  placeholder="Imagem do Produto"
-                  accept="image/*"
-                  onChange={handleImageChange}
                 />
               </div>
             </div>
@@ -236,7 +232,10 @@ const handleSubmit = async (e) => {
                     { value: "fixed", label: "Valor Fixo" },
                   ]}
                   value={productData.discount_type}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setDiscountType(e.target.value);
+                    handleChange(e);
+                  }}
                   disabled={!useDiscount}
                   required={useDiscount}
                   placeholder="Tipo de Desconto"
@@ -253,7 +252,10 @@ const handleSubmit = async (e) => {
                   required={useDiscount}
                   value={productData.discount_value}
                   maxLength={6}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    setDiscountValue(e.target.value);
+                    handleChange(e);
+                  }}
                 />
               </div>
             </div>
@@ -264,10 +266,36 @@ const handleSubmit = async (e) => {
           <>
             <div className="row">
               <div className="col-12 col-md-8">
-                <ProductImagesSwiper
-                  imageFiles={imagePreviews}
-                  onRemove={removeImage}
+                <ProductImagesSwiper imageFiles={imageFiles.map(file => URL.createObjectURL(file))} />
+              </div>
+              <div className="col-12 col-md-4">
+                <p className="h4">Imagens</p>
+                <p>
+                  Ficheiros suportados: JPG, PNG, GIF, WEBP <br />
+                  Tamanho máximo: 150 mb
+                </p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageChange}
+                  className="form-control mb-3"
                 />
+                {imageFiles.length > 0 && (
+                  <ul className="list-group mb-3">
+                    {imageFiles.map((file, index) => (
+                      <li key={index} className="list-group-item d-flex justify-content-between align-items-center">
+  <span className="text-truncate" style={{ maxWidth: "150px" }} title={file.name}>
+    {file.name}
+  </span>
+  <button type="button" className="btn btn-sm btn-danger" onClick={() => removeImage(index)}>
+    Remover
+  </button>
+</li>
+
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
           </>
@@ -280,7 +308,7 @@ const handleSubmit = async (e) => {
   return (
     <main>
       <section className="container py-4">
-        <p className="h1">Criar Novo Produto</p>
+        <p className="h1 mb-4">Criar Novo Produto</p>
         <div className="row">
           <div className="col">
             <div className="card bg-body-tertiary">
@@ -290,10 +318,10 @@ const handleSubmit = async (e) => {
                   {step === 2 && "Imagens"}
                 </h5>
               </div>
-              <div className="card-body">
-                <form ref={formRef} onSubmit={handleSubmit}>
-                  {renderStep()}
-                  <div className="d-flex justify-content-between mt-0">
+              <div className="card-body d-flex flex-column">
+                <form ref={formRef} onSubmit={handleSubmit} className="d-flex flex-column">
+                  <div className="flex-grow-1">{renderStep()}</div>
+                  <div className="d-flex justify-content-between mt-4">
                     {step > 1 && (
                       <button
                         type="button"
@@ -312,7 +340,7 @@ const handleSubmit = async (e) => {
                         Seguinte
                       </button>
                     ) : (
-                      <button type="submit" className="btn btn-primary ms-auto">
+                      <button type="submit" className="btn btn-primary ms-auto px-4 py-2">
                         Criar Produto
                       </button>
                     )}

@@ -57,11 +57,15 @@ export const getProductReviewsStats = async (id) => {
 };
 
 export const createProduct = async (formData) => {
+  const headers = getAuthHeaders(false);
+  if (headers['Content-Type']) delete headers['Content-Type'];
+
   const res = await fetch(`${BASE_URL}/products`, {
     method: "POST",
-    headers: getAuthHeaders(false),
+    headers,
     body: formData,
   });
+
   return res.json();
 };
 
@@ -146,7 +150,7 @@ export const getWishlist = async () => {
 
 export const checkIfInWishlist = async (productId) => {
   try {
-    const res = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
+    const res = await fetch(`${BASE_URL}/wishlist/${productId}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });

@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import StarRating from "../reviews/StarRating";
-import { addToWishlist } from "../../services/api";
+import { addToWishlist, removeFromWishlist, checkIfInWishlist } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { toast } from "react-hot-toast";
 
@@ -8,18 +8,8 @@ const BACKEND_URL = "http://localhost:3000";
 
 const getImageUrl = (image) => {
   if (!image) return "/assets/images/cao.gif";
-
-  if (typeof image === "string") {
-    // If image is already a URL string, return as-is
-    return image;
-  }
-
-  if (image.filename) {
-    // Construct full URL for GridFS-served image
-    return `${BACKEND_URL}/api/files/${image.filename}`;
-  }
-
-  // Fallback image
+  if (typeof image === "string") return image;
+  if (image.filename) return `${BACKEND_URL}/api/files/${image.filename}`;
   return "/assets/images/cao.gif";
 };
 
@@ -34,12 +24,33 @@ const Product = ({
   _id,
 }) => {
   const { user } = useAuth();
-  const [isAdding, setIsAdding] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Debug _id presence
+  useEffect(() => {
+    console.log("Product _id:", _id);
+  }, [_id]);
+
+  // Fetch initial wishlist status only if _id exists
+  useEffect(() => {
+    const fetchWishlistStatus = async () => {
+      if (user && _id) {
+        try {
+          const { isWishlisted } = await checkIfInWishlist(_id);
+          setIsWishlisted(isWishlisted);
+        } catch (error) {
+          console.error("Falha ao adicionar à lista de desejos.", error);
+        }
+      }
+    };
+
+    fetchWishlistStatus();
+  }, [_id, user]);
 
   const hasActiveDiscount = (discount) => {
     if (!discount) return false;
     const now = new Date();
-
     if (!discount.start_date || !discount.end_date) return true;
 
     const start = new Date(discount.start_date);
@@ -51,50 +62,46 @@ const Product = ({
   const calculateFinalPrice = () => {
     if (hasActiveDiscount(discount)) {
       const { type, value } = discount;
-
-      if (type === "percentage") {
-        const discounted = price * (1 - value);
-        return discounted > 0 ? discounted.toFixed(2) : "0.00";
-      }
-
-      if (type === "fixed") {
-        const discounted = price - value;
-        return discounted > 0 ? discounted.toFixed(2) : "0.00";
-      }
+      if (type === "percentage") return Math.max(price * (1 - value), 0).toFixed(2);
+      if (type === "fixed") return Math.max(price - value, 0).toFixed(2);
     }
-
     return price.toFixed(2);
   };
 
-  const handleAddToWishlist = async () => {
+  const handleWishlistToggle = async () => {
     if (!user) {
-      toast.error("You must be logged in to add items to your wishlist.");
+      toast.error("Deves estar logged in para alterar a lista de desejos.");
+      return;
+    }
+    if (!_id) {
+      toast.error("Produto de ID inválido.");
       return;
     }
 
+    setIsProcessing(true);
+
     try {
-      setIsAdding(true);
-      await addToWishlist(_id);
-      toast.success("Added to wishlist!");
+      if (isWishlisted) {
+        await removeFromWishlist(_id);
+        toast("Removido da lista de desejos.");
+      } else {
+        await addToWishlist(_id);
+        toast.success("Adicionado à lista de desejos.");
+      }
+      setIsWishlisted(!isWishlisted);
     } catch (error) {
-      toast.error("Failed to add to wishlist.");
+      console.error(error);
+      toast.error("Falha ao atualizar a lista de desejos.");
     } finally {
-      setIsAdding(false);
+      setIsProcessing(false);
     }
   };
 
   return (
     <div className="col">
       <div className="card h-100 d-flex flex-column">
-        <a
-          href={link}
-          className="text-decoration-none product-image rounded mx-3 mt-3"
-        >
-          <img
-            src={getImageUrl(images?.[0])}
-            className="card-img-top rounded"
-            alt={name}
-          />
+        <a href={link} className="text-decoration-none product-image rounded mx-3 mt-3">
+          <img src={getImageUrl(images?.[0])} className="card-img-top rounded" alt={name} />
         </a>
 
         <div className="card-body">
@@ -105,11 +112,13 @@ const Product = ({
 
             <button
               className="btn p-0 border-0 bg-transparent"
-              onClick={handleAddToWishlist}
-              disabled={isAdding}
-              title="Add to Wishlist"
+              onClick={handleWishlistToggle}
+              disabled={isProcessing}
+              title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
             >
-              <i className="bi bi-heart-fill text-danger fs-5" />
+              <i
+                className={`bi ${isWishlisted ? "bi-heart-fill text-danger" : "bi-heart"} fs-5`}
+              />
             </button>
           </div>
 

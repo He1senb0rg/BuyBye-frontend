@@ -68,48 +68,56 @@ const ProductPage = () => {
     return product.price;
   };
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await getProductById(id);
-        if (!response || response.error) throw new Error("Produto não encontrado");
-        setProduct(response);
-      } catch (error) {
-        setErrorProduct("Failed to fetch product");
-        navigate("/404");
-      } finally {
-        setLoadingProduct(false);
-      }
-    };
+useEffect(() => {
+  const fetchProduct = async () => {
+    try {
+      const response = await getProductById(id);
+      if (!response || response.error) throw new Error("Produto não encontrado");
+      setProduct(response);
+    } catch (error) {
+      setErrorProduct("Failed to fetch product");
+      navigate("/404");
+    } finally {
+      setLoadingProduct(false);
+    }
+  };
 
-    const fetchReviews = async () => {
-      try {
-        const response = await getProductReviewsStats(id);
-        setProductStats(response);
-      } catch (error) {
-        setErrorProductStats("Failed to fetch product");
-      } finally {
-        setLoadingProductStats(false);
-      }
-    };
+  const fetchReviews = async () => {
+    try {
+      const response = await getProductReviewsStats(id);
+      setProductStats(response);
+    } catch (error) {
+      setErrorProductStats("Failed to fetch product");
+    } finally {
+      setLoadingProductStats(false);
+    }
+  };
 
-const checkIfWishlisted = async () => {
-  try {
-    const response = await getWishlist();
-    console.log("Fetched Wishlist: ", response);
+  fetchProduct();
+  fetchReviews();
+}, [id, navigate]);
 
-    const found = response.items?.some(item => item.product?._id === product._id);
-
-    setIsWishlisted(found);
-  } catch (err) {
-    console.error("Failed to check wishlist:", err);
+useEffect(() => {
+  if (!user) {
+    setIsWishlisted(false);
+    return;
   }
-};
 
-    fetchProduct();
-    fetchReviews();
-    checkIfWishlisted();
-  }, [id, user]);
+  const checkIfWishlisted = async () => {
+    try {
+      const response = await getWishlist();
+      console.log("Fetched Wishlist: ", response);
+
+      const found = response.items?.some(item => item.product?._id === id);
+
+      setIsWishlisted(found);
+    } catch (err) {
+      console.error("Failed to check wishlist:", err);
+    }
+  };
+
+  checkIfWishlisted();
+}, [id, user]);
 
   const maxCount = Math.max(
     productStats[5] || 0,

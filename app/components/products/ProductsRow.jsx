@@ -24,6 +24,7 @@ const ProductsRow = ({ products, title, error, loading, link }) => {
           products.slice(0, 8).map((product, index) => (
             <Product
               key={"product" + index}
+              _id={product._id}
               name={product.name}
               description={product.description}
               price={product.price}
