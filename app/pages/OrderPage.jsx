@@ -113,7 +113,6 @@ const OrderPage = () => {
                         <thead>
                           <tr>
                           <th scope="col">#</th>
-                          <th scope="col">Imagem</th>
                           <th scope="col">Nome</th>
                           <th scope="col">Quantidade</th>
                           <th scope="col">Preço</th>
@@ -126,13 +125,6 @@ const OrderPage = () => {
                           {order.items.map((item, index) => (
                           <tr key={item._id || index}>
                             <td>{item._id}</td>
-                            <td>
-                              <img
-                                src={item.product.images[0] || "/assets/images/cao.gif"}
-                                alt={item.product.name}
-                                className="img-fluid rounded"
-                                style={{ width: "50px", height: "50px" }}/>
-                            </td>
                             <td>{item.product.name}</td>
                             <td>{item.quantity}</td>
                             <td>{item.price.toFixed(2)} €</td>
