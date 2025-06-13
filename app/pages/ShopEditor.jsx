@@ -45,7 +45,7 @@ const ShopEditor = () => {
     const response = await editShop(shopData, id);
     console.log("editShop response:", response);
     toast.success("Loja editada com sucesso!");
-    setTimeout(() => navigate("/admin/dashboard"), 100);
+    setTimeout(() => navigate("/admin/shops"), 100);
   } catch (error) {
     console.error("Erro:", error.message);
     toast.error("Erro ao editar a loja.");
@@ -132,7 +132,7 @@ const ShopEditor = () => {
                         <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                           <img
                             className="img-account-profile mb-3"
-                            src={shopData.logo}
+                            src={shopData.logo || "/assets/images/BuyByeLogo.png"}
                             alt="logo"
                             width="70%"
                           />

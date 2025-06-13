@@ -181,7 +181,7 @@ const ShopsPage = () => {
                         <td>{shop._id}</td>
                         <td>
                           <img
-                            src={shop.logo || "/assets/images/logo-placeholder.jpg"}
+                            src={shop.logo || "/assets/images/BuyByeLogo.png"}
                             alt={shop.name}
                             className="img-fluid rounded"
                             style={{ width: "150px", height: "50px" }}
