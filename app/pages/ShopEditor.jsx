@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { editShop, getShopByID } from "../services/api";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -34,24 +33,24 @@ const ShopEditor = () => {
     };
 
     fetchShop();
-  }, []);
+  }, [id, navigate]);
 
   const handleChange = (e) => {
     setShopData({ ...shopData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await editShop(shopData, id);
-      toast.success("Loja criada com sucesso!");
-      setTimeout(() => navigate("/admin/dashboard"), 100);
-    } catch (error) {
-      console.error("Erro:", error.message);
-      toast.error("Erro ao criar a loja.");
-    }
-  };
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await editShop(shopData, id);
+    console.log("editShop response:", response);
+    toast.success("Loja editada com sucesso!");
+    setTimeout(() => navigate("/admin/dashboard"), 100);
+  } catch (error) {
+    console.error("Erro:", error.message);
+    toast.error("Erro ao editar a loja.");
+  }
+};
 
   return (
     <main>
@@ -140,18 +139,7 @@ const ShopEditor = () => {
                           <div className="small font-italic text-muted mb-3">
                             JPG ou PNG menor que 5 MB
                           </div>
-                          <label
-                            htmlFor="fileUpload"
-                            className="btn btn-primary"
-                          >
-                            Upload da imagem
-                          </label>
-                          <input
-                            hidden
-                            type="file"
-                            id="fileUpload"
-                            name="fileUpload"
-                          />
+                          {/* File upload removed */}
                         </div>
                       </div>
                     </div>
