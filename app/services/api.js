@@ -450,20 +450,16 @@ export const getShops = async (page, limit, sort, search) => {
 };
 
 export const editShop = async (shop, id) => {
-  const headers = getAuthHeaders(true); // true means Content-Type: application/json
+  const headers = getAuthHeaders(true);
 
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
     method: "PUT",
     headers,
-    body: JSON.stringify({
-      name: shop.name,
-      description: shop.description,
-    }),
+    body: JSON.stringify(shop),
   });
 
   return response.json();
 };
-
 
 export const getShopByID = async (id) => {
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
