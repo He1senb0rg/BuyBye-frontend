@@ -444,11 +444,14 @@ export const getShops = async (page, limit, sort, search) => {
 };
 
 export const editShop = async (shop, id) => {
+  const headers = getAuthHeaders(true);
+
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
     method: "PUT",
-    headers: getAuthHeaders(false),
-    body: shop,
+    headers,
+    body: JSON.stringify(shop),
   });
+
   return response.json();
 };
 
@@ -470,17 +473,15 @@ export const deleteShop = async (id) => {
   return response.json();
 };
 
-export const editShopBanner = async (id, banner) => {
-  const formData = new FormData();
-  formData.append("title", banner.title);
-  formData.append("description", banner.description);
-  formData.append("link", banner.link);
-  formData.append("buttonText", banner.buttonText);
+export const editShopBanner = async (id, bannerData) => {
+  const headers = getAuthHeaders(true);
 
   const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
     method: "PUT",
-    headers: getAuthHeaders(false),
-    body: formData,
+    headers,
+    body: JSON.stringify(bannerData),
   });
+
   return response.json();
 };
+
