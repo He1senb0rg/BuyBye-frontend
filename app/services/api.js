@@ -57,11 +57,15 @@ export const getProductReviewsStats = async (id) => {
 };
 
 export const createProduct = async (formData) => {
+  const headers = getAuthHeaders(false);
+  if (headers['Content-Type']) delete headers['Content-Type'];
+
   const res = await fetch(`${BASE_URL}/products`, {
     method: "POST",
-    headers: getAuthHeaders(false),
+    headers,
     body: formData,
   });
+
   return res.json();
 };
 

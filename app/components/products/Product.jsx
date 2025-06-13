@@ -40,7 +40,7 @@ const Product = ({
           const { isWishlisted } = await checkIfInWishlist(_id);
           setIsWishlisted(isWishlisted);
         } catch (error) {
-          console.error("Failed to check wishlist status.", error);
+          console.error("Falha ao adicionar à lista de desejos.", error);
         }
       }
     };
@@ -70,11 +70,11 @@ const Product = ({
 
   const handleWishlistToggle = async () => {
     if (!user) {
-      toast.error("You must be logged in to manage your wishlist.");
+      toast.error("Deves estar logged in para alterar a lista de desejos.");
       return;
     }
     if (!_id) {
-      toast.error("Invalid product ID.");
+      toast.error("Produto de ID inválido.");
       return;
     }
 
@@ -83,15 +83,15 @@ const Product = ({
     try {
       if (isWishlisted) {
         await removeFromWishlist(_id);
-        toast.success("Removed from wishlist.");
+        toast("Removido da lista de desejos.");
       } else {
         await addToWishlist(_id);
-        toast.success("Added to wishlist.");
+        toast.success("Adicionado à lista de desejos.");
       }
       setIsWishlisted(!isWishlisted);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update wishlist.");
+      toast.error("Falha ao atualizar a lista de desejos.");
     } finally {
       setIsProcessing(false);
     }

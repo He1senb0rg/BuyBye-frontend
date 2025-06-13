@@ -28,7 +28,7 @@ const ProductEdit = () => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [existingImages, setExistingImages] = useState([]); // Store only IDs
+  const [existingImages, setExistingImages] = useState([]);
   const [newFiles, setNewFiles] = useState([]);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const ProductEdit = () => {
       throw new Error("Produto não encontrado");
     }
 
-    console.log("Fetched product images:", response.images); // 👈 Add this line
+    console.log("Fetched product images:", response.images);
 
     setProductData({
       name: response.name || "",
@@ -168,8 +168,6 @@ const handleSubmit = async (e) => {
         }
       });
     }
-
-    // ✅ Safely append new files
     if (Array.isArray(newFiles)) {
       newFiles.forEach((file) => {
         if (file) {
@@ -178,7 +176,6 @@ const handleSubmit = async (e) => {
       });
     }
 
-    // 🔍 Debug: Log FormData contents
     console.log("---- FormData to be sent ----");
     for (let [key, value] of formData.entries()) {
       console.log(key, value instanceof File ? value.name : value);

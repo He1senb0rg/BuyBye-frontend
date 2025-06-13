@@ -120,7 +120,7 @@ const CreateProduct = () => {
   }
 
   imageFiles.forEach((file) => {
-    formData.append("images", file);
+    formData.append("files", file);
   });
 
   try {
