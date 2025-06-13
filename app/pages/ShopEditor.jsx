@@ -45,11 +45,11 @@ const ShopEditor = () => {
 
     try {
       const response = await editShop(shopData, id);
-      toast.success("Loja criada com sucesso!");
-      setTimeout(() => navigate("/admin/dashboard"), 100);
+      toast.success("Loja editada com sucesso!");
+      setTimeout(() => navigate("/admin/shops"), 100);
     } catch (error) {
       console.error("Erro:", error.message);
-      toast.error("Erro ao criar a loja.");
+      toast.error("Erro ao editar a loja.");
     }
   };
 

@@ -2,11 +2,11 @@ import React from "react";
 import Product from "./Product";
 import { useAuth } from "../../contexts/AuthContext";
 
-const ProductsRow = ({ products, title, error, loading }) => {
+const ProductsRow = ({ products, title, error, loading, link }) => {
   const { user } = useAuth();
   const isAdmin = user && user.role === "admin";
   return (
-    <div className="container border-bottom pb-3">
+    <div className="container border-bottom mb-4 pb-3">
       <div className="d-flex align-items-center">
         <p className="h1">{title}</p>
         {isAdmin && (<a href="/admin/products/create" className="text-decoration-none">
@@ -21,7 +21,7 @@ const ProductsRow = ({ products, title, error, loading }) => {
         {loading ? (
           <p>Loading...</p>
         ) : (
-          products.map((product, index) => (
+          products.slice(0, 8).map((product, index) => (
             <Product
               key={"product" + index}
               name={product.name}
@@ -37,7 +37,7 @@ const ProductsRow = ({ products, title, error, loading }) => {
       </div>
       <div className="row">
         <div className="col text-center">
-          <a href="#" className="btn btn-primary my-2">
+          <a href={link} className="btn btn-primary mt-3 mb-2">
             Ver Mais Produtos
           </a>
         </div>

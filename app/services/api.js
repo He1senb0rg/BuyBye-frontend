@@ -445,19 +445,11 @@ export const getShops = async (page, limit, sort, search) => {
   return response.json();
 };
 
-export const editShop = async (shop, id, file) => {
-  const formData = new FormData();
-  formData.append('name', shop.name);
-  formData.append('description', shop.description);
-
-  if (file) {
-    formData.append('file', file);
-  }
-
+export const editShop = async (shop, id) => {
   const response = await fetch(`${BASE_URL}/shop/${id}`, {
     method: "PUT",
     headers: getAuthHeaders(false),
-    body: formData,
+    body: shop,
   });
   return response.json();
 };
@@ -480,9 +472,12 @@ export const deleteShop = async (id) => {
   return response.json();
 };
 
-export const editShopBanner = async (id, bannerFile) => {
+export const editShopBanner = async (id, banner) => {
   const formData = new FormData();
-  formData.append('file', bannerFile);
+  formData.append("title", banner.title);
+  formData.append("description", banner.description);
+  formData.append("link", banner.link);
+  formData.append("buttonText", banner.buttonText);
 
   const response = await fetch(`${BASE_URL}/shop/${id}/banner`, {
     method: "PUT",
