@@ -22,17 +22,18 @@ const ProductsRow = ({ products, title, error, loading }) => {
           <p>Loading...</p>
         ) : (
           products.map((product, index) => (
-            <Product
-              key={"product" + index}
-              name={product.name}
-              description={product.description}
-              price={product.price}
-              images={product.images}
-              rating={product.averageRating}
-              discount={product.discount}
-              link={`product/${product._id}`}
-            />
-          ))
+  <Product
+    key={"product" + index}
+    _id={product._id}
+    name={product.name}
+    description={product.description}
+    price={product.price}
+    images={product.images}
+    rating={product.averageRating}
+    discount={product.discount}
+    link={`product/${product._id}`}
+  />
+))
         )}
       </div>
       <div className="row">

@@ -146,7 +146,7 @@ export const getWishlist = async () => {
 
 export const checkIfInWishlist = async (productId) => {
   try {
-    const res = await fetch(`${BASE_URL}/wishlist/check/${productId}`, {
+    const res = await fetch(`${BASE_URL}/wishlist/${productId}`, {
       method: "GET",
       headers: getAuthHeaders(),
     });
