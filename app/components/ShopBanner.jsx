@@ -37,14 +37,7 @@ const ShopBanner = () => {
   const handleEdit = async (e) => {
     e.preventDefault();
     try {
-      const updatedBanner = {
-        title: shopBanner.title,
-        description: shopBanner.description,
-        link: shopBanner.link,
-        buttonText: shopBanner.buttonText,
-        image: shopBanner.image,
-      };
-      await editShopBanner("684821e8db6eefe900649274", updatedBanner);
+      await editShopBanner("684821e8db6eefe900649274", shopBanner);
       toast.success("Banner atualizado com sucesso!");
     } catch (error) {
       console.error("Erro:", error.message);
@@ -129,14 +122,14 @@ const ShopBanner = () => {
                   value={shopBanner?.buttonText || ""}
                   onChange={handleChange}
                 />
-                <FloatingInput
+                {/* <FloatingInput
                   label="Imagem do Banner"
                   type="text"
                   name="image"
                   placeholder="URL da Imagem"
                   value={shopBanner?.image || ""}
                   onChange={handleChange}
-                />
+                /> */}
               </div>
               <div className="modal-footer">
                 <button
