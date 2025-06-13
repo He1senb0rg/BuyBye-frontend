@@ -133,7 +133,7 @@ const ShopEditor = () => {
                         <div className="card-body text-center d-flex flex-column align-items-center justify-content-center">
                           <img
                             className="img-account-profile mb-3"
-                            src={shopData.logo}
+                            src={shopData.logo || "/assets/images/BuyByeLogo.png"}
                             alt="logo"
                             width="70%"
                           />
