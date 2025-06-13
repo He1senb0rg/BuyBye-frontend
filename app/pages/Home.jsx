@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Product from "../components/products/Product";
-import { getProducts } from "../services/api";
+import { getProducts, getProductsSales } from "../services/api";
 import ProductsRow from "../components/products/ProductsRow";
 import ShopBanner from "../components/ShopBanner";
 import toast from "react-hot-toast";
 
 const Home = () => {
   const [products, setProducts] = useState([]);
+  const [productsSales, setProductsSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,6 +25,20 @@ const Home = () => {
       }
     };
 
+    const fetchProductsSales = async () => {
+      try {
+        const response = await getProductsSales();
+        setProductsSales(response.products);
+      } catch (error) {
+        console.error("Failed to fetch products sales:", error);
+        setError("Failed to fetch products sales");
+        toast.error("Erro ao buscar os produtos.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductsSales();
     fetchProducts();
   }, []);
 
@@ -36,6 +51,14 @@ const Home = () => {
           title="Novidades"
           error={error}
           loading={loading}
+          link={"/latest"}
+        />
+        <ProductsRow
+          products={productsSales}
+          title="Em Promoção"
+          error={error}
+          loading={loading}
+          link={"/sales"}
         />
       </section>
     </main>
