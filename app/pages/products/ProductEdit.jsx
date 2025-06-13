@@ -39,32 +39,34 @@ const ProductEdit = () => {
     }
 
     const fetchProduct = async () => {
-      try {
-        const response = await getProductById(id);
-        if (!response || response.error) {
-          throw new Error("Produto não encontrado");
-        }
+  try {
+    const response = await getProductById(id);
+    if (!response || response.error) {
+      throw new Error("Produto não encontrado");
+    }
 
-        setProductData({
-          name: response.name || "",
-          description: response.description || "",
-          euros: Math.floor(response.price) || "",
-          centimos: Math.round((response.price - Math.floor(response.price)) * 100) || "",
-          price: response.price || 0,
-          stock: response.stock ?? "",
-          category: response.category || "",
-          discount_type: response.discount?.type || "",
-          discount_value: response.discount?.value || "",
-        });
+    console.log("Fetched product images:", response.images); // 👈 Add this line
 
-        // Store IDs directly
-        setExistingImages(response.images || []);
-        setUseDiscount(Boolean(response.discount));
-      } catch (error) {
-        toast.error("Erro ao buscar o produto.");
-        navigate("/404");
-      }
-    };
+    setProductData({
+      name: response.name || "",
+      description: response.description || "",
+      euros: Math.floor(response.price) || "",
+      centimos: Math.round((response.price - Math.floor(response.price)) * 100) || "",
+      price: response.price || 0,
+      stock: response.stock ?? "",
+      category: response.category || "",
+      discount_type: response.discount?.type || "",
+      discount_value: response.discount?.value || "",
+    });
+
+    setExistingImages(response.images || []);
+
+    setUseDiscount(Boolean(response.discount));
+  } catch (error) {
+    toast.error("Erro ao buscar o produto.");
+    navigate("/404");
+  }
+};
 
     fetchProduct();
   }, [id, navigate]);
@@ -118,7 +120,7 @@ const ProductEdit = () => {
   };
 
   const removeExistingImageAtIndex = (index) => {
-    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+    setExistingImages(response.images.map(img => ({ id: img._id, url: img.url })));
   };
 
   const removeNewFileAtIndex = (index) => {
@@ -133,54 +135,65 @@ const ProductEdit = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    try {
-      const price = (parseInt(productData.euros || "0", 10)) + (parseInt(productData.centimos || "0", 10)) / 100;
+  try {
+    const price =
+      parseInt(productData.euros || "0", 10) +
+      parseInt(productData.centimos || "0", 10) / 100;
 
-      const formData = new FormData();
-      formData.append("name", productData.name);
-      formData.append("description", productData.description);
-      formData.append("price", price.toFixed(2));
-      formData.append("stock", productData.stock || 0);
-      formData.append("category", productData.category);
+    const formData = new FormData();
+    formData.append("name", productData.name);
+    formData.append("description", productData.description);
+    formData.append("price", price.toFixed(2));
+    formData.append("stock", productData.stock || 0);
+    formData.append("category", productData.category);
 
-      if (useDiscount) {
-        formData.append(
-          "discount",
-          JSON.stringify({
-            type: productData.discount_type,
-            value: productData.discount_value,
-          })
-        );
-      }
-
-      // Append existing image IDs (backend expects IDs)
-      existingImages.forEach((imgId) => {
-        formData.append("existingImages", imgId);
-      });
-
-      // Append new files
-      newFiles.forEach((file) => {
-        formData.append("files", file);
-      });
-
-      // Debug: Log FormData contents
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value instanceof File ? value.name : value);
-      }
-
-      const response = await updateProduct(id, formData);
-      toast.success("Product updated successfully!");
-      navigate("/admin/products");
-    } catch (error) {
-      toast.error(error.message || "Failed to update product");
-    } finally {
-      setIsSubmitting(false);
+    if (useDiscount) {
+      formData.append(
+        "discount",
+        JSON.stringify({
+          type: productData.discount_type,
+          value: productData.discount_value,
+        })
+      );
     }
-  };
+    
+    if (Array.isArray(existingImages)) {
+      existingImages.forEach((img) => {
+        if (img?.id) {
+          formData.append("existingImages", img.id);
+        }
+      });
+    }
+
+    // ✅ Safely append new files
+    if (Array.isArray(newFiles)) {
+      newFiles.forEach((file) => {
+        if (file) {
+          formData.append("files", file);
+        }
+      });
+    }
+
+    // 🔍 Debug: Log FormData contents
+    console.log("---- FormData to be sent ----");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value instanceof File ? value.name : value);
+    }
+
+    const response = await updateProduct(id, formData);
+    toast.success("Product updated successfully!");
+    navigate("/admin/products");
+  } catch (error) {
+    console.error("Error updating product:", error);
+    toast.error(error.message || "Failed to update product");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const renderStep = () => {
     switch (step) {

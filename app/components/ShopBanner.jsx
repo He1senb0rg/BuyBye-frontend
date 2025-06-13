@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { getShopByID, editShopBanner } from "../services/api";
 import toast from "react-hot-toast";
 
-//684821e8db6eefe900649274
+
 const ShopBanner = () => {
   const { user } = useAuth();
   const isAdmin = user && user.role === "admin";
