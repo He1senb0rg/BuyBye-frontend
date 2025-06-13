@@ -325,7 +325,37 @@ export const fetchBillingHistory = async () => {
   return response.json();
 };
 
-// --- User Management ---
+export const fetchOrders = async () => {
+  const response = await fetch(`${BASE_URL}/checkout/orders`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Billing fetch failed. Server response:", errorText);
+    throw new Error("Failed to fetch billing history");
+  }
+
+  return response.json();
+};
+
+export const updateOrderStatus = async (id, orderStatus) => {
+  const response = await fetch(`${BASE_URL}/checkout/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ orderStatus }),
+  });
+  return response.json();
+};
+
+// User Management
 
 export const getUsers = async (page = 1, limit = 10, sort = "mais_recente", search = "") => {
   const res = await fetch(`${BASE_URL}/users?page=${page}&limit=${limit}&sort=${sort}&search=${encodeURIComponent(search)}`, {

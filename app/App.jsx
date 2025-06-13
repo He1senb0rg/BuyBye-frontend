@@ -14,6 +14,8 @@ import CreateProduct from "./pages/products/CreateProduct.jsx";
 import Dashboard from './pages/DashBoard';
 import EditCategory from "./pages/EditCategory.jsx";
 import CategoriesPage from "./pages/CategoriesPage.jsx";
+import OrdersPage from "./pages/OrdersPage.jsx";
+import OrderPage from "./pages/OrderPage.jsx";
 import CreateCategory from "./pages/CreateCategory.jsx";
 import Checkout from "./pages/Checkout";
 import Wishlist from "./pages/Wishlist.jsx";
@@ -101,7 +103,7 @@ function App() {
                 />
               </Route>
 
-              <Route path="/admin" element={<AdminLayout />}>
+              <Route path="/admin" element={<ProtectedRoute> <AdminLayout /> </ProtectedRoute>}>
                 <Route path="categories" element={<CategoriesPage />} />
                 <Route path="categories/create" element={<CreateCategory />} />
                 <Route path="dashboard" element={<Dashboard />} />
@@ -112,6 +114,8 @@ function App() {
                 <Route path="users" element={<UsersPage />} />
                 <Route path="users/edit/:id" element={<UserEdit />} />
                 <Route path="users/:id" element={<UserPage />} />
+                <Route path="orders" element={<OrdersPage />} />
+                <Route path="orders/:id" element={<OrderPage />} />
                 <Route path="shops" element={<ShopsPage />} />
                 <Route path="shops/create" element={<CreateShop />} />
                 <Route path="shops/edit/:id" element={<ShopEditor />} />
