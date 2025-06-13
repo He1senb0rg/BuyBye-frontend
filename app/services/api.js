@@ -444,6 +444,19 @@ export const fetchOrders = async () => {
 
   return response.json();
 };
+
+export const updateOrderStatus = async (id, orderStatus) => {
+  const response = await fetch(`${BASE_URL}/checkout/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    },
+    body: JSON.stringify({ orderStatus }),
+  });
+  return response.json();
+};
+
 // User Management
 
 export const getUsers = async (page, limit, sort, search) => {
