@@ -10,7 +10,7 @@ const ProductImagesSwiper = ({ imageFiles = [], onRemove }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   if (!imageFiles.length) {
-    return <p>No images to display</p>;
+    return <p>Sem imagens para mostrar</p>;
   }
 
   return (
@@ -22,7 +22,7 @@ const ProductImagesSwiper = ({ imageFiles = [], onRemove }) => {
         pagination={{ clickable: true }}
         loop={true}
         thumbs={{ swiper: thumbsSwiper }}
-        className="mySwiper2 pb-2"
+        className="mySwiper2 pb-2 w-75"
       >
         {imageFiles.map((image, index) => (
           <SwiperSlide key={index}>
