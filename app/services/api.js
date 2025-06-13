@@ -377,17 +377,11 @@ export const getUser = async (id) => {
   return res.json();
 };
 
-export const updateUser = async (id, user, file) => {
-  const formData = new FormData();
-  formData.append('name', user.name);
-  formData.append('email', user.email);
-  formData.append('role', user.role);
-  if (file) formData.append('file', file);
-
+export const updateUser = async (id, user) => {
   const res = await fetch(`${BASE_URL}/users/${id}`, {
     method: "PUT",
-    headers: getAuthHeaders(false), // no content-type for FormData
-    body: formData,
+    headers: getAuthHeaders(), // this sets Content-Type: application/json
+    body: JSON.stringify(user),
   });
   return res.json();
 };
