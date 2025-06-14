@@ -74,8 +74,7 @@ export const updateProduct = async (id, formData) => {
     const response = await fetch(`${BASE_URL}/products/${id}`, {
       method: 'PUT',
       headers: {
-        ...getAuthHeaders(false), // Your auth headers
-        // Don't set Content-Type - let browser set it for FormData
+        ...getAuthHeaders(false),
       },
       body: formData,
     });
@@ -88,7 +87,7 @@ export const updateProduct = async (id, formData) => {
     return await response.json();
   } catch (error) {
     console.error('Error updating product:', error);
-    throw error; // Re-throw to handle in component
+    throw error;
   }
 };
 
