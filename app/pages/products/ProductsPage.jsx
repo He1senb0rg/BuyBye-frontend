@@ -189,7 +189,7 @@ const ProductsPage = () => {
                           <img
                             src={
                               product.images && product.images.length > 0
-                                ? `${BACKEND_URL}/${product.images[0]}`
+                                ? `${BACKEND_URL}/${product.images[0].url}`
                                 : "/assets/images/cao.gif"
                             }
                             alt={product.name}

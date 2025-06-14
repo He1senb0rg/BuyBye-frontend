@@ -37,74 +37,66 @@ const ProductEdit = () => {
     category: "",
   });
 
-useEffect(() => {
-  if (!id) {
-    toast.error("Produto ID está faltando.");
-    navigate("/admin/products");
-    return;
-  }
-
-  const fetchProductAndCategories = async () => {
-    try {
-      setLoading(true);
-
-      // Fetch product data
-      const productResponse = await getProductById(id);
-      console.log("Fetched productResponse:", productResponse); // <-- DEBUG
-
-      if (!productResponse || productResponse.error) {
-        throw new Error("Produto não encontrado");
-      }
-
-      // Fetch categories
-      const categoriesResponse = await getCategories();
-      const formattedCategories = categoriesResponse.categories.map((cat) => ({
-        value: cat._id,
-        label: cat.name,
-      }));
-      setCategories(formattedCategories);
-
-      // Set product data
-      const price = productResponse.price || 0;
-      setProductData({
-        name: productResponse.name || "",
-        description: productResponse.description || "",
-        euros: Math.floor(price) || "",
-        centimos: Math.round((price - Math.floor(price)) * 100) || "",
-        price: price,
-        stock: productResponse.stock ?? "",
-        category: productResponse.category || "",
-        discount_type: productResponse.discount?.type || "",
-        discount_value: productResponse.discount?.value || "",
-      });
-
-      // Format images & debug
-      const formattedImages = productResponse.images.map((imgUrl, index) => ({
-  id: index,
-  url: imgUrl.startsWith('http') ? imgUrl : `/${imgUrl}`,
-  filename: imgUrl.split('/').pop(),
-}));
-
-      console.log("Formatted Images:", formattedImages); // <-- DEBUG
-
-      setExistingImages(formattedImages || []);
-      setUseDiscount(Boolean(productResponse.discount));
-      if (productResponse.discount) {
-        setDiscountType(productResponse.discount.type);
-        setDiscountValue(productResponse.discount.value);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setError(error.message);
-      toast.error("Erro ao buscar o produto.");
-      navigate("/404");
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (!id) {
+      toast.error("Produto ID está faltando.");
+      navigate("/admin/products");
+      return;
     }
-  };
 
-  fetchProductAndCategories();
-}, [id, navigate]);
+    const fetchProductAndCategories = async () => {
+      try {
+        setLoading(true);
+
+        const productResponse = await getProductById(id);
+        if (!productResponse || productResponse.error) {
+          throw new Error("Produto não encontrado");
+        }
+
+        const categoriesResponse = await getCategories();
+        const formattedCategories = categoriesResponse.categories.map((cat) => ({
+          value: cat._id,
+          label: cat.name,
+        }));
+        setCategories(formattedCategories);
+
+        const price = productResponse.price || 0;
+        setProductData({
+          name: productResponse.name || "",
+          description: productResponse.description || "",
+          euros: Math.floor(price) || "",
+          centimos: Math.round((price - Math.floor(price)) * 100) || "",
+          price: price,
+          stock: productResponse.stock ?? "",
+          category: productResponse.category || "",
+          discount_type: productResponse.discount?.type || "",
+          discount_value: productResponse.discount?.value || "",
+        });
+
+        const formattedImages = productResponse.images.map((img) => ({
+          id: img.id,
+          url: img.url.startsWith("http") ? img.url : `/${img.url}`,
+          filename: img.url.split("/").pop(),
+        }));
+
+        setExistingImages(formattedImages || []);
+        setUseDiscount(Boolean(productResponse.discount));
+        if (productResponse.discount) {
+          setDiscountType(productResponse.discount.type);
+          setDiscountValue(productResponse.discount.value);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setError(error.message);
+        toast.error("Erro ao buscar o produto.");
+        navigate("/404");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProductAndCategories();
+  }, [id, navigate]);
 
   const nextStep = (e) => {
     if (e) e.preventDefault();
@@ -145,8 +137,8 @@ useEffect(() => {
       return;
     }
     const imageToRemove = existingImages[index];
-    setImagesToDelete(prev => [...prev, imageToRemove.id]);
-    setExistingImages(prev => prev.filter((_, idx) => idx !== index));
+    setImagesToDelete((prev) => [...prev, imageToRemove.id]);
+    setExistingImages((prev) => prev.filter((_, idx) => idx !== index));
   };
 
   const removeNewFile = (index) => {
@@ -154,61 +146,61 @@ useEffect(() => {
       toast.error("Deve manter pelo menos uma imagem.");
       return;
     }
-    setNewFiles(prev => prev.filter((_, idx) => idx !== index));
+    setNewFiles((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  if (existingImages.length + newFiles.length === 0) {
-    toast.error("Adicione pelo menos uma imagem.");
-    setIsSubmitting(false);
-    return;
-  }
+    if (existingImages.length + newFiles.length === 0) {
+      toast.error("Adicione pelo menos uma imagem.");
+      setIsSubmitting(false);
+      return;
+    }
 
-  const euros = parseInt(productData.euros || "0", 10);
-  const centimos = parseInt(productData.centimos || "0", 10);
-  const price = euros + centimos / 100;
+    const euros = parseInt(productData.euros || "0", 10);
+    const centimos = parseInt(productData.centimos || "0", 10);
+    const price = euros + centimos / 100;
 
-  const formData = new FormData();
-  formData.append("name", productData.name);
-  formData.append("description", productData.description);
-  formData.append("price", Number(price.toFixed(2)));
-  formData.append("stock", Number(productData.stock));
-  formData.append("category", productData.category);
+    const formData = new FormData();
+    formData.append("name", productData.name);
+    formData.append("description", productData.description);
+    formData.append("price", Number(price.toFixed(2)));
+    formData.append("stock", Number(productData.stock));
+    formData.append("category", productData.category);
 
-  if (useDiscount) {
-    const discount = JSON.stringify({
-      type: productData.discount_type,
-      value: productData.discount_value,
+    if (useDiscount) {
+      const discount = JSON.stringify({
+        type: productData.discount_type,
+        value: productData.discount_value,
+      });
+      formData.append("discount", discount);
+    }
+
+    existingImages.forEach((img) => {
+      formData.append("existingImages", img.id);
     });
-    formData.append("discount", discount);
-  }
 
-  existingImages.forEach((img) => {
-    formData.append("existingImages", img.id);
-  });
+    imagesToDelete.forEach((imgId) => {
+      formData.append("imagesToDelete", imgId);
+    });
 
-  imagesToDelete.forEach((imgId) => {
-    formData.append("imagesToDelete", imgId);
-  });
+    newFiles.forEach((file) => {
+      formData.append("files", file);
+    });
 
-  newFiles.forEach((file) => {
-    formData.append("files", file);
-  });
-
-  try {
-    await updateProduct(id, formData);
-    toast.success("Produto atualizado com sucesso!");
-    setTimeout(() => navigate("/admin/products"), 100);
-  } catch (error) {
-    console.error("Erro:", error.message);
-    toast.error("Erro ao atualizar o produto.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      await updateProduct(id, formData);
+      toast.success("Produto atualizado com sucesso!");
+      setTimeout(() => navigate("/admin/products"), 100);
+    } catch (error) {
+      console.error("Erro:", error.message);
+      toast.error("Erro ao atualizar o produto.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const renderStep = () => {
     switch (step) {
@@ -368,9 +360,9 @@ const handleSubmit = async (e) => {
                   <ul className="list-group mb-3">
                     {existingImages.map((img, index) => (
                       <li key={`existing-${index}`} className="list-group-item d-flex justify-content-between align-items-center">
-                        <span className="text-truncate" style={{ maxWidth: "150px" }} title={img.url.split("/").pop()}>
-  {img.url.split("/").pop()}
-</span>
+                        <span className="text-truncate" style={{ maxWidth: "150px" }} title={img.filename}>
+                          {img.filename}
+                        </span>
                         <button 
                           type="button" 
                           className="btn btn-sm btn-danger" 

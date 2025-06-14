@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { removeFromWishlist } from "../../services/api";
+import { getProductById, removeFromWishlist } from "../../services/api";
 import { Link } from "react-router-dom";
 
-const WishlistRow = ({ product, onRemove }) => {
+const BACKEND_URL = "http://localhost:3000";
+
+const getImageUrl = (image) => {
+  if (!image) return "/assets/images/cao.gif";
+  if (typeof image === "string") return `${BACKEND_URL}/images/${image}`;
+  if (image.url && image.url.startsWith("http")) return image.url;
+  if (image.url) return `${BACKEND_URL}/${image.url}`;
+  return "/assets/images/cao.gif";
+};
+
+const WishlistRow = ({ product: initialProduct, onRemove }) => {
+  const [product, setProduct] = useState(initialProduct);
+
+  useEffect(() => {
+    async function fetchProduct() {
+      try {
+        const fullProduct = await getProductById(initialProduct._id);
+        setProduct(fullProduct);
+      } catch (error) {
+        console.error("Failed to fetch full product details:", error);
+        setProduct(initialProduct); // fallback
+      }
+    }
+    fetchProduct();
+  }, [initialProduct]);
+
   const handleRemove = async () => {
     try {
       await removeFromWishlist(product._id);
@@ -24,7 +49,7 @@ const WishlistRow = ({ product, onRemove }) => {
         >
           <div className="d-flex align-items-center mb-3">
             <img
-              src={product.images?.[0] || "/assets/images/cao.gif"}
+              src={getImageUrl(product.images?.[0])}
               alt={product.name}
               style={{
                 width: "80px",
@@ -37,7 +62,7 @@ const WishlistRow = ({ product, onRemove }) => {
             <div>
               <h5 className="card-title mb-1">{product.name}</h5>
               <p className="card-text small mb-1">{product.description}</p>
-              <p className="h6 mb-0">{product.price}€</p>
+              <p className="h6 mb-0">{product.price.toFixed(2)}€</p>
             </div>
           </div>
         </Link>
