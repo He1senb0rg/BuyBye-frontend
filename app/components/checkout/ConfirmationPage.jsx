@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext'; // Import Auth Context
+import { useAuth } from '../../contexts/AuthContext';
+import { getProductById } from '../../services/api'; // You need to implement this or adjust path
+
+const BACKEND_URL = "http://localhost:3000";
+
+const getImageUrl = (image) => {
+  if (!image) return "/assets/images/cao.gif";
+  if (typeof image === "string") return `${BACKEND_URL}/images/${image}`;
+  if (image.url && image.url.startsWith("http")) return image.url;
+  if (image.url) return `${BACKEND_URL}/${image.url}`;
+  return "/assets/images/cao.gif";
+};
 
 const ConfirmationPage = ({ formData }) => {
-  const { user } = useAuth(); // Get logged-in user
+  const { user } = useAuth();
   const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
   const navigate = useNavigate();
+
+  // State to hold full product info fetched by id
+  const [products, setProducts] = useState({}); // key: productId, value: full product object
+
+  useEffect(() => {
+    // Fetch full product details for each product id in formData.items
+    async function fetchProducts() {
+      if (!formData.items) return;
+      const productsMap = {};
+      await Promise.all(
+        formData.items.map(async (item) => {
+          if (item.product && item.product._id) {
+            try {
+              const fullProduct = await getProductById(item.product._id);
+              productsMap[item.product._id] = fullProduct;
+            } catch (error) {
+              // fallback to partial product data if fetch fails
+              productsMap[item.product._id] = item.product;
+            }
+          }
+        })
+      );
+      setProducts(productsMap);
+    }
+    fetchProducts();
+  }, [formData.items]);
 
   const handleGoToBilling = () => {
     navigate('/account/billing');
@@ -13,35 +50,25 @@ const ConfirmationPage = ({ formData }) => {
 
   const translatePaymentMethod = (method) => {
     switch (method) {
-      case 'ccdb':
-        return 'Cartão de Crédito/Débito';
-      case 'paypal':
-        return 'PayPal';
-      case 'multibanco':
-        return 'Multibanco';
-      case 'mbway':
-        return 'MB Way';
-      default:
-        return 'Método Desconhecido';
+      case 'ccdb': return 'Cartão de Crédito/Débito';
+      case 'paypal': return 'PayPal';
+      case 'multibanco': return 'Multibanco';
+      case 'mbway': return 'MB Way';
+      default: return 'Método Desconhecido';
     }
   };
 
-  // Check if discount is active based on date
   const hasActiveDiscount = (discount) => {
     if (!discount) return false;
-
     const now = new Date();
     const start = discount.start_date ? new Date(discount.start_date) : null;
     const end = discount.end_date ? new Date(discount.end_date) : null;
-
     return (!start || now >= start) && (!end || now <= end);
   };
 
-  // Calculate discounted price based on discount type
   const calculateDiscountedPrice = (product) => {
     if (hasActiveDiscount(product.discount)) {
       const { type, value } = product.discount;
-
       if (type === "percentage") {
         return Math.max(0, product.price * (1 - value));
       } else if (type === "fixed") {
@@ -81,7 +108,7 @@ const ConfirmationPage = ({ formData }) => {
               )}
 
               {formData.paymentMethod === 'paypal' && (
-                <li><strong>Email PayPal:</strong> {formData.paypalEmail}</li>
+                <li><strong></strong> {formData.paypalEmail}</li>
               )}
 
               {formData.paymentMethod === 'ccdb' && (
@@ -94,7 +121,8 @@ const ConfirmationPage = ({ formData }) => {
             <h6 className="mt-4 mb-3 text-center">Produtos Comprados</h6>
             <ul className="list-group text-start">
               {(formData.items || []).map((item, idx) => {
-                const product = item.product || {};
+                // Use fetched product if available, else fallback
+                const product = products[item.product?._id] || item.product || {};
                 const discountActive = hasActiveDiscount(product.discount);
                 const discountedPrice = calculateDiscountedPrice(product);
 
@@ -105,7 +133,7 @@ const ConfirmationPage = ({ formData }) => {
                   >
                     <div className="d-flex align-items-center">
                       <img
-                        src={product.images?.[0] || '/assets/images/cao.gif'}
+                        src={getImageUrl(product.images?.[0])}
                         alt={product.name}
                         style={{
                           width: '80px',
