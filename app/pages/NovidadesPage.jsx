@@ -89,6 +89,7 @@ const NovidadesPage = () => {
                             products.map((product, index) => (
                                 <Product
                                     key={"product" + index}
+                                    _id={product._id}
                                     name={product.name}
                                     description={product.description}
                                     price={product.price}
