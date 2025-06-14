@@ -6,6 +6,16 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/thumbs";
 
+const BACKEND_URL = "http://localhost:3000";
+
+const getImageUrl = (image) => {
+  if (!image) return "/assets/images/cao.gif";
+  if (typeof image === "string") return image;
+  if (image.url && image.url.startsWith("http")) return image.url;
+  if (image.url) return `${BACKEND_URL}/${image.url}`;
+  return "/assets/images/cao.gif";
+};
+
 const ProductImagesSwiper = ({ imageFiles = [], onRemove }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
@@ -28,7 +38,7 @@ const ProductImagesSwiper = ({ imageFiles = [], onRemove }) => {
           <SwiperSlide key={index}>
             <div className="position-relative">
               <img
-                src={image}
+                src={getImageUrl(image)}
                 className="img-fluid rounded"
                 alt={`Product Image ${index + 1}`}
               />
@@ -47,7 +57,7 @@ const ProductImagesSwiper = ({ imageFiles = [], onRemove }) => {
         {imageFiles.map((image, index) => (
           <SwiperSlide key={index}>
             <img
-              src={image}
+              src={getImageUrl(image)}
               className="img-fluid rounded"
               alt={`Product Image Thumbnail ${index + 1}`}
             />

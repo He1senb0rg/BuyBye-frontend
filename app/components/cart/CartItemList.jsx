@@ -1,10 +1,50 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { removeFromCart } from "../../services/api";
+import { getProductById, removeFromCart } from "../../services/api";
+
+const BACKEND_URL = "http://localhost:3000";
+
+const getImageUrl = (image) => {
+  if (!image) return "/assets/images/cao.gif";
+  if (typeof image === "string") return `${BACKEND_URL}/images/${image}`; // Assuming image string is an ID/filename
+  if (image.url && image.url.startsWith("http")) return image.url;
+  if (image.url) return `${BACKEND_URL}/${image.url}`;
+  return "/assets/images/cao.gif";
+};
 
 const CartItemList = ({ items, onUpdate }) => {
-  if (!items?.length) {
+  const [fullItems, setFullItems] = useState([]);
+
+  useEffect(() => {
+    async function fetchFullProducts() {
+      if (!items?.length) {
+        setFullItems([]);
+        return;
+      }
+
+      const itemsWithFullProducts = await Promise.all(
+        items.map(async (item) => {
+          try {
+            const fullProduct = await getProductById(item.product._id);
+            return {
+              ...item,
+              product: fullProduct,
+            };
+          } catch (error) {
+            console.error("Failed to fetch product details for", item.product._id, error);
+            return item; // fallback to original if fetch fails
+          }
+        })
+      );
+
+      setFullItems(itemsWithFullProducts);
+    }
+
+    fetchFullProducts();
+  }, [items]);
+
+  if (!fullItems.length) {
     return (
       <div className="alert alert-info text-center mt-4">
         O seu carrinho está vazio.
@@ -45,10 +85,12 @@ const CartItemList = ({ items, onUpdate }) => {
 
   return (
     <div className="w-100">
-      {items.map((item) => {
+      {fullItems.map((item) => {
         const product = item.product || {};
         const color = item.selectedColor || "Normal";
         const size = item.selectedSize || "Normal";
+
+        console.log("product.images:", product.images);
 
         const discountActive = hasActiveDiscount(product.discount);
         const discountedPrice = calculateDiscountedPrice(product);
@@ -57,15 +99,15 @@ const CartItemList = ({ items, onUpdate }) => {
           <div
             key={`${product._id}-${color}-${size}`}
             className="card mb-3 bg-dark text-white d-flex flex-row align-items-center p-2"
-            style={{ minWidth: 0 }} // Fix flex shrink issues
+            style={{ minWidth: 0 }}
           >
             <Link
               to={`/product/${product._id}`}
               className="d-flex align-items-center flex-grow-1 text-white text-decoration-none"
-              style={{ minWidth: 0 }} // Allow text to shrink inside flex container
+              style={{ minWidth: 0 }}
             >
               <img
-                src={product.images?.[0] || "/assets/images/cao.gif"}
+                src={getImageUrl(product.images?.[0])}
                 alt={product.name}
                 style={{
                   width: "80px",

@@ -9,7 +9,7 @@ const BACKEND_URL = "http://localhost:3000";
 const getImageUrl = (image) => {
   if (!image) return "/assets/images/cao.gif";
   if (typeof image === "string") return image;
-  if (image.filename) return `${BACKEND_URL}/api/files/${image.filename}`;
+  if (image.url) return `${BACKEND_URL}/${image.url}`;
   return "/assets/images/cao.gif";
 };
 
@@ -27,12 +27,10 @@ const Product = ({
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Debug _id presence
   useEffect(() => {
     console.log("Product _id:", _id);
   }, [_id]);
 
-  // Fetch initial wishlist status only if _id exists
   useEffect(() => {
     const fetchWishlistStatus = async () => {
       if (user && _id) {
