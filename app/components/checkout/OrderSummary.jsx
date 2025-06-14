@@ -44,7 +44,7 @@ const OrderSummary = ({ items = [], onTotalChange }) => {
     if (onTotalChange && items.length > 0) {
       onTotalChange(total);
     }
-  }, [total, items, onTotalChange]);
+  }, [total, onTotalChange, items.length]);
 
   return (
     <div

@@ -19,8 +19,11 @@ const Checkout = () => {
   const handleBack = () => setStep((prev) => prev - 1);
 
   // This is called from OrderSummary to update the total amount including shipping
-  const handleTotalChange = (total) => {
-    setFormData((prev) => ({ ...prev, amount: total }));
+const handleTotalChange = (total) => {
+    setFormData((prev) => {
+      if (prev.amount === total) return prev;  // Prevent state update if no change
+      return { ...prev, amount: total };
+    });
   };
 
   const handleCheckout = async () => {
