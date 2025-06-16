@@ -83,8 +83,8 @@ const SalesPage = () => {
                         <p className="h2">Os nossos produtos em promoção: </p>
                     </div>
 
-                    <div className="d-flex align-items-center justify-content-end py-3">
-                        <div className="form-floating me-3">
+                    <div className="d-flex flex-wrap align-items-center justify-content-end gap-3 py-3">
+                        <div className="form-floating me-3" style={{ minWidth: "150px" }}>
                             <select
                                 className="form-select"
                                 onChange={handleLimitChange}
