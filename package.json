@@ -1,0 +1,58 @@
+{
+  "name": "buybye-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Frontend application with React, Vite and Bootstrap",
+  "keywords": [
+    "react",
+    "vite",
+    "bootstrap",
+    "nginx",
+    "docker"
+  ],
+  "author": "André Santos <aaass1@iscte-iul.pt>",
+  "contributors": [
+    {
+      "name": "Joana Carvalho",
+      "email": "jlcoo@iscte-iul.pt"
+    },
+    {
+      "name": "Guilherme Sardinha",
+      "email": "glmsa@iscte-iul.pt"
+    },
+    {
+      "name": "Filipe Brites",
+      "email": "fabso@iscte-iul.pt"
+    }
+  ],
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prestart": "npm run build",
+    "start": "vite preview"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.11.8",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.9",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.9.0",
+    "react-chartjs-2": "^5.3.0",
+    "react-credit-cards-2": "^1.0.3",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.5.2",
+    "react-router-dom": "^6.22.1",
+    "swiper": "^11.2.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "sass": "^1.87.0",
+    "vite": "^5.0.0"
+  }
+}

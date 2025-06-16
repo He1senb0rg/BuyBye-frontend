@@ -1,0 +1,115 @@
+.icon-color {
+  transition: 0.3s;
+}
+
+.icon-color:hover {
+  color: #00adef;
+}
+
+.product-image {
+  height: 250px;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; 
+  transition: 0.3s;
+}
+
+.product-image:hover img {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.product-title:hover {
+  color: #00adef;
+}
+
+.payment-icon {
+  width: 50px;
+  height: auto;
+  margin: 0 10px;
+}
+
+/* Swiper principal */
+.mySwiper2 {
+  height: 500px;
+  width: 100%;
+  margin-bottom: 10px; 
+}
+
+/* Thumbnails */
+.mySwiper {
+  height: auto;
+  padding: 10px 0;
+}
+
+.mySwiper .swiper-slide {
+  width: 25%;
+  height: auto;
+  opacity: 0.4;
+}
+
+.mySwiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+/* Estilos gerais do Swiper */
+.swiper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: var(--bs-breadcrumb-divider, ">") !important;
+}
+
+.btn-hover-red i {
+  color: inherit;
+  transition: color 0.3s ease;
+}
+
+.btn-hover-red:hover i {
+  color: rgb(220, 53, 69);
+}
+
+.sidebar-link-home:hover,
+.sidebar-link-home:hover i,
+.sidebar-link-home:hover p {
+  color: #00adef !important;
+  transition: color 0.3s ease;
+}
+
+.product-description {
+  min-height: 48px;
+  max-height: 48px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2; 
+  line-clamp: 2; 
+  -webkit-box-orient: vertical;
+}
